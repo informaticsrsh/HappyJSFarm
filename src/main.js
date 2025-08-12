@@ -5,7 +5,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const storeItems = document.getElementById('store-items');
     const storeModal = document.getElementById('store-modal');
     const openStoreBtn = document.getElementById('open-store-btn');
-    const closeBtn = document.querySelector('.close-btn');
+    const storeCloseBtn = document.querySelector('.store-close');
+
+    const refModal = document.getElementById('ref-modal');
+    const openRefBtn = document.getElementById('open-ref-btn');
+    const refCloseBtn = document.querySelector('.ref-close');
+    const refContent = document.getElementById('ref-content');
 
     // --- Game State ---
     const NUM_ROWS = 5;
@@ -16,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedSeed: null
     };
 
-    let field = Array(NUM_ROWS).fill(null).map(() => Array(NUM_COLS).fill({ crop: null, growthStage: 0 }));
+    let field = Array(NUM_ROWS).fill(null).map(() => Array(NUM_COLS).fill({ crop: null, growthStage: 0, stageStartTime: 0 }));
 
     let warehouse = {
         'wheat_seed': 5,
@@ -40,30 +45,30 @@ document.addEventListener('DOMContentLoaded', () => {
         'wheat': {
             icon: '🌾',
             seed_icon: '🌱',
-            maxGrowth: 3,
+            growthTime: 3000, // ms per stage
             visuals: ['🌱', '🌿', '🌾'],
-            harvestYield: 1
+            yieldRange: [1, 3]
         },
         'carrot': {
             icon: '🥕',
             seed_icon: '🌱',
-            maxGrowth: 4,
-            visuals: ['🌱', '🌿', '🥕', '🥕'],
-            harvestYield: 1
+            growthTime: 4000,
+            visuals: ['🌱', '🌿', '🥕'],
+            yieldRange: [1, 2]
         },
         'tomato': {
             icon: '🍅',
             seed_icon: '🌱',
-            maxGrowth: 5,
-            visuals: ['🌱', '🌿', '🍅', '🍅', '🍅'],
-            harvestYield: 2
+            growthTime: 5000,
+            visuals: ['🌱', '🌿', '🍅'],
+            yieldRange: [2, 4]
         },
         'potato': {
             icon: '🥔',
             seed_icon: '🌱',
-            maxGrowth: 4,
-            visuals: ['🌱', '🌿', '🥔', '🥔'],
-            harvestYield: 3
+            growthTime: 6000,
+            visuals: ['🌱', '🌿', '🥔'],
+            yieldRange: [3, 6]
         }
     };
 
@@ -103,6 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (warehouse[item] > 0) {
                 const itemDiv = document.createElement('div');
                 itemDiv.classList.add('item');
+                itemDiv.classList.add(item.replace(/ /g, '-')); // Add class for styling
                 const icon = getIconForItem(item);
                 itemDiv.textContent = `${icon} ${item.replace('_', ' ')}: ${warehouse[item]}`;
                 if (item.endsWith('_seed')) {
@@ -121,6 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
         store.forEach(item => {
             const itemDiv = document.createElement('div');
             itemDiv.classList.add('item');
+            itemDiv.classList.add(item.name.replace(/ /g, '-')); // Add class for styling
             const icon = getIconForItem(item.name);
             itemDiv.textContent = `Buy ${icon} ${item.name.replace('_', ' ')} ($${item.price})`;
             itemDiv.dataset.itemName = item.name;
@@ -128,11 +135,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function renderReference() {
+        refContent.innerHTML = '';
+        Object.keys(cropTypes).forEach(cropName => {
+            const crop = cropTypes[cropName];
+            const storeItem = store.find(s => s.name === `${cropName}_seed`);
+
+            const cropDiv = document.createElement('div');
+            cropDiv.innerHTML = `
+                <h3>${crop.icon} ${cropName.charAt(0).toUpperCase() + cropName.slice(1)}</h3>
+                <p><strong>Price:</strong> $${storeItem.price}</p>
+                <p><strong>Growth Time:</strong> ${crop.growthTime / 1000}s per stage</p>
+                <p><strong>Yield:</strong> ${crop.yieldRange[0]} to ${crop.yieldRange[1]}</p>
+                <p><strong>Stages:</strong> ${crop.visuals.join(' → ')}</p>
+            `;
+            refContent.appendChild(cropDiv);
+        });
+    }
+
     function renderAll() {
         renderField();
         renderWarehouse();
         renderStore();
-        // Could also render player money here if there was a dedicated element
+        renderReference();
     }
 
     // --- Game Logic Functions ---
@@ -146,7 +171,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const cropName = player.selectedSeed.replace('_seed', '');
             field[r][c] = {
                 crop: cropName,
-                growthStage: 0
+                growthStage: 0,
+                stageStartTime: Date.now()
             };
             if (warehouse[player.selectedSeed] === 0) {
                 player.selectedSeed = null; // Deselect if non left
@@ -158,9 +184,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function harvestCrop(r, c) {
         const cell = field[r][c];
         const crop = cropTypes[cell.crop];
-        if (cell.growthStage >= crop.maxGrowth -1) {
-            warehouse[cell.crop] = (warehouse[cell.crop] || 0) + crop.harvestYield;
-            field[r][c] = { crop: null, growthStage: 0 };
+        if (cell.growthStage >= crop.visuals.length - 1) {
+            const [min, max] = crop.yieldRange;
+            const yieldAmount = Math.floor(Math.random() * (max - min + 1)) + min;
+            warehouse[cell.crop] = (warehouse[cell.crop] || 0) + yieldAmount;
+            field[r][c] = { crop: null, growthStage: 0, stageStartTime: 0 };
             renderAll();
         } else {
             alert("Not ready to harvest yet!");
@@ -169,14 +197,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function gameTick() {
         let changed = false;
+        const now = Date.now();
         for (let r = 0; r < NUM_ROWS; r++) {
             for (let c = 0; c < NUM_COLS; c++) {
                 const cell = field[r][c];
                 if (cell.crop) {
                     const crop = cropTypes[cell.crop];
-                    if (cell.growthStage < crop.maxGrowth -1) {
-                        cell.growthStage++;
-                        changed = true;
+                    if (cell.growthStage < crop.visuals.length - 1) {
+                        if (now - cell.stageStartTime >= crop.growthTime) {
+                            cell.growthStage++;
+                            cell.stageStartTime = now;
+                            changed = true;
+                        }
                     }
                 }
             }
@@ -225,19 +257,28 @@ document.addEventListener('DOMContentLoaded', () => {
     openStoreBtn.addEventListener('click', () => {
         storeModal.style.display = 'block';
     });
-
-    closeBtn.addEventListener('click', () => {
+    storeCloseBtn.addEventListener('click', () => {
         storeModal.style.display = 'none';
+    });
+
+    openRefBtn.addEventListener('click', () => {
+        refModal.style.display = 'block';
+    });
+    refCloseBtn.addEventListener('click', () => {
+        refModal.style.display = 'none';
     });
 
     window.addEventListener('click', (e) => {
         if (e.target == storeModal) {
             storeModal.style.display = 'none';
         }
+        if (e.target == refModal) {
+            refModal.style.display = 'none';
+        }
     });
 
 
     // --- Initial Game Start ---
     renderAll();
-    setInterval(gameTick, 2000); // Grow crops every 2 seconds
+    setInterval(gameTick, 100); // Check for growth every 100ms
 });

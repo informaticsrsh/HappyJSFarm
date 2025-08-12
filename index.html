@@ -10,7 +10,10 @@
     <h1>My Farm Game</h1>
     <div id="game-container">
         <div id="left-panel">
-            <button id="open-store-btn" class="btn">Open Store</button>
+            <div class="button-group">
+                <button id="open-store-btn" class="btn">Open Store</button>
+                <button id="open-ref-btn" class="btn">Reference</button>
+            </div>
             <div id="warehouse-container">
                 <h2>Warehouse</h2>
                 <div id="warehouse-items"></div>
@@ -25,11 +28,20 @@
     <!-- Store Modal -->
     <div id="store-modal" class="modal">
         <div class="modal-content">
-            <span class="close-btn">&times;</span>
+            <span class="close-btn store-close">&times;</span>
             <div id="store-container">
                 <h2>Store</h2>
                 <div id="store-items"></div>
             </div>
+        </div>
+    </div>
+
+    <!-- Reference Modal -->
+    <div id="ref-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn ref-close">&times;</span>
+            <h2>Crop Reference</h2>
+            <div id="ref-content"></div>
         </div>
     </div>
 

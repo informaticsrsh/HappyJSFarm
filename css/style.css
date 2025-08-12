@@ -57,6 +57,11 @@ h1 {
     background-color: #3d405b;
 }
 
+.button-group {
+    display: flex;
+    gap: 10px;
+}
+
 /* Modal Styles */
 .modal {
     display: none; /* Hidden by default */
@@ -138,4 +143,15 @@ h1 {
     color: #fff;
     box-shadow: 0 0 5px #81b29a;
     font-weight: 700;
+}
+
+/* Seed-specific colors */
+.wheat-seed { color: #f2cc8f; }
+.carrot-seed { color: #e07a5f; }
+.tomato-seed { color: #f28482; }
+.potato-seed { color: #a5682a; }
+
+/* Override for selected items to ensure text is readable */
+.item.selected {
+    color: #fff !important;
 }
