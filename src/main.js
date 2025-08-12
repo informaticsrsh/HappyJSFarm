@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
             "market_title": "Ринок",
             "reference_title": "Довідник",
             "warehouse_title": "Склад",
+            "field_title": "Поле",
             "btn_store": "Крамниця",
             "btn_market": "Ринок",
             "btn_reference": "Довідник",
@@ -108,7 +109,8 @@ document.addEventListener('DOMContentLoaded', () => {
         warehouseTitle: document.querySelector('#warehouse-container h2'),
         storeTitle: document.querySelector('#store-modal h2'),
         marketTitle: document.querySelector('#market-modal h2'),
-        refTitle: document.querySelector('#ref-modal h2')
+        refTitle: document.querySelector('#ref-modal h2'),
+        fieldTitle: document.querySelector('#field-container h2')
     };
 
     // --- Game State ---
@@ -311,6 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
         DOM.marketTitle.textContent = t('market_title');
         DOM.refTitle.textContent = t('reference_title');
         DOM.warehouseTitle.textContent = t('warehouse_title');
+        DOM.fieldTitle.textContent = t('field_title');
         DOM.openStoreBtn.textContent = t('btn_store');
         DOM.openMarketBtn.textContent = t('btn_market');
         DOM.openRefBtn.textContent = t('btn_reference');

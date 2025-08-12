@@ -177,7 +177,7 @@ h1 {
 }
 
 /* Crop-specific colors in the field */
-.plot.wheat { color: #f2cc8f; }
-.plot.carrot { color: #e07a5f; }
-.plot.tomato { color: #f28482; }
-.plot.potato { color: #8d5b2d; }
+.plot.wheat { background-color: #f2cc8f44; }
+.plot.carrot { background-color: #e07a5f44; }
+.plot.tomato { background-color: #f2848244; }
+.plot.potato { background-color: #a5682a44; }
