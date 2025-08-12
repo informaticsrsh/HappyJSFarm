@@ -1,21 +1,115 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- Localization Engine ---
+    const locales = {
+        "en": {
+            "title": "My Farm Game",
+            "store_title": "Store",
+            "market_title": "Market",
+            "reference_title": "Reference",
+            "warehouse_title": "Warehouse",
+            "btn_store": "Store",
+            "btn_market": "Market",
+            "btn_reference": "Reference",
+            "btn_sell_one": "Sell 1",
+            "wheat_seed": "wheat seed",
+            "carrot_seed": "carrot seed",
+            "tomato_seed": "tomato seed",
+            "potato_seed": "potato seed",
+            "wheat": "wheat",
+            "carrot": "carrot",
+            "tomato": "tomato",
+            "potato": "potato",
+            "buy_item": "Buy {icon} {itemName} (${price})",
+            "warehouse_item": "{icon} {itemName}: {amount}",
+            "market_item_price": "(Price: ${price})",
+            "ref_seed_price": "Seed Price:",
+            "ref_growth_time": "Growth Time:",
+            "ref_yield": "Yield:",
+            "ref_market_price": "Market Price:",
+            "ref_stages": "Stages:",
+            "ref_per_stage": "{time}s per stage",
+            "ref_yield_range": "{min} to {max}",
+            "alert_select_seed": "Select a seed from the warehouse first!",
+            "alert_not_ready_harvest": "Not ready to harvest yet!",
+            "alert_no_crop_to_sell": "You don't have any to sell!",
+            "alert_not_enough_money": "Not enough money!"
+        },
+        "uk": {
+            "title": "Моя Ферма",
+            "store_title": "Крамниця",
+            "market_title": "Ринок",
+            "reference_title": "Довідник",
+            "warehouse_title": "Склад",
+            "btn_store": "Крамниця",
+            "btn_market": "Ринок",
+            "btn_reference": "Довідник",
+            "btn_sell_one": "Продати 1",
+            "wheat_seed": "насіння пшениці",
+            "carrot_seed": "насіння моркви",
+            "tomato_seed": "насіння томатів",
+            "potato_seed": "насіння картоплі",
+            "wheat": "пшениця",
+            "carrot": "морква",
+            "tomato": "томат",
+            "potato": "картопля",
+            "buy_item": "Купити {icon} {itemName} (${price})",
+            "warehouse_item": "{icon} {itemName}: {amount}",
+            "market_item_price": "(Ціна: ${price})",
+            "ref_seed_price": "Ціна насіння:",
+            "ref_growth_time": "Час росту:",
+            "ref_yield": "Урожай:",
+            "ref_market_price": "Ринкова ціна:",
+            "ref_stages": "Стадії:",
+            "ref_per_stage": "{time}с за стадію",
+            "ref_yield_range": "від {min} до {max}",
+            "alert_select_seed": "Спочатку виберіть насіння зі складу!",
+            "alert_not_ready_harvest": "Ще не готово для збору!",
+            "alert_no_crop_to_sell": "У вас немає нічого для продажу!",
+            "alert_not_enough_money": "Недостатньо грошей!"
+        }
+    };
+
+    let currentLang = 'en';
+    let translations = locales[currentLang];
+
+    function t(key, options = {}) {
+        let text = translations[key] || key;
+        for (const option in options) {
+            text = text.replace(`{${option}}`, options[option]);
+        }
+        return text;
+    }
+
+    function setLanguage(lang) {
+        currentLang = lang;
+        translations = locales[lang];
+        renderAll();
+    }
+
     // --- DOM Elements ---
-    const fieldGrid = document.getElementById('field-grid');
-    const warehouseItems = document.getElementById('warehouse-items');
-    const storeItems = document.getElementById('store-items');
-    const storeModal = document.getElementById('store-modal');
-    const openStoreBtn = document.getElementById('open-store-btn');
-    const storeCloseBtn = document.querySelector('.store-close');
-
-    const refModal = document.getElementById('ref-modal');
-    const openRefBtn = document.getElementById('open-ref-btn');
-    const refCloseBtn = document.querySelector('.ref-close');
-    const refContent = document.getElementById('ref-content');
-
-    const marketModal = document.getElementById('market-modal');
-    const openMarketBtn = document.getElementById('open-market-btn');
-    const marketCloseBtn = document.querySelector('.market-close');
-    const marketItems = document.getElementById('market-items');
+    const DOM = {
+        fieldGrid: document.getElementById('field-grid'),
+        warehouseItems: document.getElementById('warehouse-items'),
+        storeItems: document.getElementById('store-items'),
+        storeModal: document.getElementById('store-modal'),
+        openStoreBtn: document.getElementById('open-store-btn'),
+        storeCloseBtn: document.querySelector('.store-close'),
+        refModal: document.getElementById('ref-modal'),
+        openRefBtn: document.getElementById('open-ref-btn'),
+        refCloseBtn: document.querySelector('.ref-close'),
+        refContent: document.getElementById('ref-content'),
+        marketModal: document.getElementById('market-modal'),
+        openMarketBtn: document.getElementById('open-market-btn'),
+        marketCloseBtn: document.querySelector('.market-close'),
+        marketItems: document.getElementById('market-items'),
+        langEnBtn: document.getElementById('lang-en'),
+        langUkBtn: document.getElementById('lang-uk'),
+        mainTitle: document.getElementById('main-title'),
+        warehouseTitle: document.querySelector('#warehouse-container h2'),
+        storeTitle: document.querySelector('#store-modal h2'),
+        marketTitle: document.querySelector('#market-modal h2'),
+        refTitle: document.querySelector('#ref-modal h2')
+    };
 
     // --- Game State ---
     const NUM_ROWS = 5;
@@ -113,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Rendering Functions ---
     function renderField() {
-        fieldGrid.innerHTML = '';
+        DOM.fieldGrid.innerHTML = '';
         for (let r = 0; r < NUM_ROWS; r++) {
             for (let c = 0; c < NUM_COLS; c++) {
                 const plot = document.createElement('div');
@@ -128,65 +222,73 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     plot.textContent = '🟫';
                 }
-                fieldGrid.appendChild(plot);
+                DOM.fieldGrid.appendChild(plot);
             }
         }
     }
 
     function renderWarehouse() {
-        warehouseItems.innerHTML = '';
+        DOM.warehouseItems.innerHTML = '';
         for (const item in warehouse) {
             if (warehouse[item] > 0) {
                 const itemDiv = document.createElement('div');
                 itemDiv.classList.add('item');
-                itemDiv.classList.add(item.replace(/ /g, '-')); // Add class for styling
+                itemDiv.classList.add(item.replace(/ /g, '-'));
                 const icon = getIconForItem(item);
-                itemDiv.textContent = `${icon} ${item.replace('_', ' ')}: ${warehouse[item]}`;
+                itemDiv.textContent = t('warehouse_item', {
+                    icon,
+                    itemName: t(item),
+                    amount: warehouse[item]
+                });
                 if (item.endsWith('_seed')) {
                     itemDiv.dataset.seed = item;
                     if (player.selectedSeed === item) {
                         itemDiv.classList.add('selected');
                     }
                 }
-                warehouseItems.appendChild(itemDiv);
+                DOM.warehouseItems.appendChild(itemDiv);
             }
         }
     }
 
     function renderStore() {
-        storeItems.innerHTML = '';
+        DOM.storeItems.innerHTML = '';
         store.forEach(item => {
             const itemDiv = document.createElement('div');
             itemDiv.classList.add('item');
-            itemDiv.classList.add(item.name.replace(/ /g, '-')); // Add class for styling
+            itemDiv.classList.add(item.name.replace(/ /g, '-'));
             const icon = getIconForItem(item.name);
-            itemDiv.textContent = `Buy ${icon} ${item.name.replace('_', ' ')} ($${item.price})`;
+            itemDiv.textContent = t('buy_item', {
+                icon,
+                itemName: t(item.name),
+                price: item.price
+            });
             itemDiv.dataset.itemName = item.name;
-            storeItems.appendChild(itemDiv);
+            DOM.storeItems.appendChild(itemDiv);
         });
     }
 
     function renderReference() {
-        refContent.innerHTML = '';
+        DOM.refContent.innerHTML = '';
         Object.keys(cropTypes).forEach(cropName => {
             const crop = cropTypes[cropName];
             const storeItem = store.find(s => s.name === `${cropName}_seed`);
 
             const cropDiv = document.createElement('div');
             cropDiv.innerHTML = `
-                <h3>${crop.icon} ${cropName.charAt(0).toUpperCase() + cropName.slice(1)}</h3>
-                <p><strong>Seed Price:</strong> $${storeItem.price}</p>
-                <p><strong>Growth Time:</strong> ${crop.growthTime / 1000}s per stage</p>
-                <p><strong>Yield:</strong> ${crop.yieldRange[0]} to ${crop.yieldRange[1]}</p>
-                <p><strong>Market Price:</strong> $${crop.minPrice} - $${crop.maxPrice}</p>
-                <p><strong>Stages:</strong> ${crop.visuals.join(' → ')}</p>
+                <h3>${crop.icon} ${t(cropName)}</h3>
+                <p><strong>${t('ref_seed_price')}</strong> $${storeItem.price}</p>
+                <p><strong>${t('ref_growth_time')}</strong> ${t('ref_per_stage', { time: crop.growthTime / 1000 })}</p>
+                <p><strong>${t('ref_yield')}</strong> ${t('ref_yield_range', { min: crop.yieldRange[0], max: crop.yieldRange[1] })}</p>
+                <p><strong>${t('ref_market_price')}</strong> $${crop.minPrice} - $${crop.maxPrice}</p>
+                <p><strong>${t('ref_stages')}</strong> ${crop.visuals.join(' → ')}</p>
             `;
-            refContent.appendChild(cropDiv);
+            DOM.refContent.appendChild(cropDiv);
         });
     }
 
     function renderMarket() {
-        marketItems.innerHTML = '';
+        DOM.marketItems.innerHTML = '';
         Object.keys(warehouse).forEach(itemName => {
             if (!itemName.endsWith('_seed') && warehouse[itemName] > 0) {
                 const itemDiv = document.createElement('div');
@@ -194,16 +296,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 const icon = getIconForItem(itemName);
                 const price = marketState[itemName].currentPrice;
                 itemDiv.innerHTML = `
-                    ${icon} ${itemName}: ${warehouse[itemName]}
-                    <span>(Price: $${price})</span>
-                    <button class="btn sell-btn" data-crop-name="${itemName}">Sell 1</button>
+                    ${icon} ${t(itemName)}: ${warehouse[itemName]}
+                    <span>${t('market_item_price', { price })}</span>
+                    <button class="btn sell-btn" data-crop-name="${itemName}">${t('btn_sell_one')}</button>
                 `;
-                marketItems.appendChild(itemDiv);
+                DOM.marketItems.appendChild(itemDiv);
             }
         });
     }
 
+    function renderStaticUI() {
+        DOM.mainTitle.textContent = t('title');
+        DOM.storeTitle.textContent = t('store_title');
+        DOM.marketTitle.textContent = t('market_title');
+        DOM.refTitle.textContent = t('reference_title');
+        DOM.warehouseTitle.textContent = t('warehouse_title');
+        DOM.openStoreBtn.textContent = t('btn_store');
+        DOM.openMarketBtn.textContent = t('btn_market');
+        DOM.openRefBtn.textContent = t('btn_reference');
+    }
+
     function renderAll() {
+        renderStaticUI();
         renderField();
         renderWarehouse();
         renderStore();
@@ -214,7 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Game Logic Functions ---
     function plantSeed(r, c) {
         if (!player.selectedSeed) {
-            alert("Select a seed from the warehouse first!");
+            alert(t('alert_select_seed'));
             return;
         }
         if (warehouse[player.selectedSeed] > 0) {
@@ -242,7 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
             field[r][c] = { crop: null, growthStage: 0, stageStartTime: 0 };
             renderAll();
         } else {
-            alert("Not ready to harvest yet!");
+            alert(t('alert_not_ready_harvest'));
         }
     }
 
@@ -261,15 +375,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             renderAll();
         } else {
-            alert("You don't have any to sell!");
+            alert(t('alert_no_crop_to_sell'));
         }
     }
 
-    function gameTick() {
-        const now = Date.now();
+    function updateCropGrowth(now) {
         let fieldChanged = false;
-
-        // 1. Grow crops
         for (let r = 0; r < NUM_ROWS; r++) {
             for (let c = 0; c < NUM_COLS; c++) {
                 const cell = field[r][c];
@@ -288,15 +399,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (fieldChanged) {
             renderField();
         }
+    }
 
-        // 2. Update market prices
+    function updateMarketPrices(now) {
         let marketChanged = false;
         for (const cropName in marketState) {
             const market = marketState[cropName];
             const crop = cropTypes[cropName];
             if (market.currentPrice < crop.maxPrice) {
                 if (now - market.lastRecoveryTime >= crop.priceRecoveryRate) {
-                    // Recover some sales volume, which in turn raises the price
                     market.totalSold = Math.max(0, market.totalSold - crop.salesVolumeForPriceDrop);
                     const priceDrop = Math.floor(market.totalSold / crop.salesVolumeForPriceDrop);
                     market.currentPrice = Math.max(crop.minPrice, crop.maxPrice - priceDrop);
@@ -306,14 +417,19 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         if (marketChanged) {
-            // Re-render any components that show market prices
-            if (typeof renderMarket === 'function') renderMarket();
-            if (typeof renderReference === 'function') renderReference();
+            renderMarket();
+            renderReference();
         }
     }
 
+    function gameTick() {
+        const now = Date.now();
+        updateCropGrowth(now);
+        updateMarketPrices(now);
+    }
+
     // --- Event Listeners ---
-    fieldGrid.addEventListener('click', (e) => {
+    DOM.fieldGrid.addEventListener('click', (e) => {
         if (e.target.classList.contains('plot')) {
             const r = e.target.dataset.row;
             const c = e.target.dataset.col;
@@ -326,14 +442,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    warehouseItems.addEventListener('click', (e) => {
+    DOM.warehouseItems.addEventListener('click', (e) => {
         if (e.target.dataset.seed) {
             player.selectedSeed = e.target.dataset.seed;
             renderWarehouse(); // Re-render to show selection
         }
     });
 
-    storeItems.addEventListener('click', (e) => {
+    DOM.storeItems.addEventListener('click', (e) => {
         if (e.target.dataset.itemName) {
             const itemName = e.target.dataset.itemName;
             const item = store.find(i => i.name === itemName);
@@ -342,34 +458,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 warehouse[itemName] = (warehouse[itemName] || 0) + 1;
                 renderAll();
             } else {
-                alert("Not enough money!");
+                alert(t('alert_not_enough_money'));
             }
         }
     });
 
+    DOM.langEnBtn.addEventListener('click', () => setLanguage('en'));
+    DOM.langUkBtn.addEventListener('click', () => setLanguage('uk'));
+
     // Modal event listeners
-    openStoreBtn.addEventListener('click', () => {
-        storeModal.style.display = 'block';
+    DOM.openStoreBtn.addEventListener('click', () => {
+        DOM.storeModal.style.display = 'block';
     });
-    storeCloseBtn.addEventListener('click', () => {
-        storeModal.style.display = 'none';
-    });
-
-    openRefBtn.addEventListener('click', () => {
-        refModal.style.display = 'block';
-    });
-    refCloseBtn.addEventListener('click', () => {
-        refModal.style.display = 'none';
+    DOM.storeCloseBtn.addEventListener('click', () => {
+        DOM.storeModal.style.display = 'none';
     });
 
-    openMarketBtn.addEventListener('click', () => {
-        marketModal.style.display = 'block';
+    DOM.openRefBtn.addEventListener('click', () => {
+        DOM.refModal.style.display = 'block';
     });
-    marketCloseBtn.addEventListener('click', () => {
-        marketModal.style.display = 'none';
+    DOM.refCloseBtn.addEventListener('click', () => {
+        DOM.refModal.style.display = 'none';
     });
 
-    marketItems.addEventListener('click', (e) => {
+    DOM.openMarketBtn.addEventListener('click', () => {
+        DOM.marketModal.style.display = 'block';
+    });
+    DOM.marketCloseBtn.addEventListener('click', () => {
+        DOM.marketModal.style.display = 'none';
+    });
+
+    DOM.marketItems.addEventListener('click', (e) => {
         if (e.target.classList.contains('sell-btn')) {
             const cropName = e.target.dataset.cropName;
             sellCrop(cropName);
@@ -377,14 +496,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     window.addEventListener('click', (e) => {
-        if (e.target == storeModal) {
-            storeModal.style.display = 'none';
+        if (e.target == DOM.storeModal) {
+            DOM.storeModal.style.display = 'none';
         }
-        if (e.target == refModal) {
-            refModal.style.display = 'none';
+        if (e.target == DOM.refModal) {
+            DOM.refModal.style.display = 'none';
         }
-        if (e.target == marketModal) {
-            marketModal.style.display = 'none';
+        if (e.target == DOM.marketModal) {
+            DOM.marketModal.style.display = 'none';
         }
     });
 
