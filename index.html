@@ -4,18 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Farm Game</title>
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-        }
-        canvas {
-            display: block;
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <canvas id="gameCanvas"></canvas>
+    <h1>My Farm Game</h1>
+    <div id="game-container">
+        <div id="left-panel">
+            <div id="store-container">
+                <h2>Store</h2>
+                <div id="store-items"></div>
+            </div>
+            <div id="warehouse-container">
+                <h2>Warehouse</h2>
+                <div id="warehouse-items"></div>
+            </div>
+        </div>
+        <div id="field-container">
+            <h2>Field</h2>
+            <div id="field-grid"></div>
+        </div>
+    </div>
     <script src="src/main.js"></script>
 </body>
 </html>
