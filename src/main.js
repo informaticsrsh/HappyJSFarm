@@ -4,9 +4,12 @@ document.addEventListener('DOMContentLoaded', () => {
         "en": {
             "title": "My Farm Game",
             "store_title": "Store",
+            "seeds_tab": "Seeds",
+            "upgrades_tab": "Upgrades",
             "market_title": "Market",
             "reference_title": "Reference",
             "warehouse_title": "Warehouse",
+            "field_title": "Field",
             "btn_store": "Store",
             "btn_market": "Market",
             "btn_reference": "Reference",
@@ -37,6 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
         "uk": {
             "title": "Моя Ферма",
             "store_title": "Крамниця",
+            "seeds_tab": "Насіння",
+            "upgrades_tab": "Покращення",
             "market_title": "Ринок",
             "reference_title": "Довідник",
             "warehouse_title": "Склад",
@@ -107,10 +112,16 @@ document.addEventListener('DOMContentLoaded', () => {
         langUkBtn: document.getElementById('lang-uk'),
         mainTitle: document.getElementById('main-title'),
         warehouseTitle: document.querySelector('#warehouse-container h2'),
-        storeTitle: document.querySelector('#store-modal h2'),
         marketTitle: document.querySelector('#market-modal h2'),
         refTitle: document.querySelector('#ref-modal h2'),
-        fieldTitle: document.querySelector('#field-container h2')
+        fieldTitle: document.querySelector('#field-container h2'),
+        // Store tabs
+        storeTabs: document.querySelector('.store-tabs'),
+        seedsContent: document.getElementById('seeds-content'),
+        upgradesContent: document.getElementById('upgrades-content'),
+        upgradesItems: document.getElementById('upgrades-items'),
+        seedsTabBtn: document.getElementById('seeds-tab-btn'),
+        upgradesTabBtn: document.getElementById('upgrades-tab-btn')
     };
 
     // --- Game State ---
@@ -119,7 +130,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let player = {
         money: 100,
-        selectedSeed: null
+        selectedSeed: null,
+        upgrades: {
+            growthMultiplier: 1.0, // e.g., 0.9 would be 10% faster
+            yieldBonus: 0,
+            seedDiscount: 0, // as a percentage, e.g., 0.1 for 10%
+            marketBonus: 0 // as a flat addition
+        }
     };
 
     let field = Array(NUM_ROWS).fill(null).map(() => Array(NUM_COLS).fill({ crop: null, growthStage: 0, stageStartTime: 0 }));
@@ -189,6 +206,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const upgrades = {
+        'fertilizer1': { cost: 200, name: 'Better Fertilizer', description: 'Crops grow 10% faster.', effect: { type: 'growthMultiplier', value: 0.9 }, purchased: false },
+        'fertilizer2': { cost: 500, name: 'Super Fertilizer', description: 'Crops grow 25% faster in total.', effect: { type: 'growthMultiplier', value: 0.75 }, purchased: false },
+        'compost1': { cost: 300, name: 'Compost Bin', description: 'Increases all crop yields by 1.', effect: { type: 'yieldBonus', value: 1 }, purchased: false },
+        'negotiation1': { cost: 400, name: 'Negotiation Skills', description: 'Get a 10% discount on all seeds.', effect: { type: 'seedDiscount', value: 0.1 }, purchased: false },
+        'charm1': { cost: 600, name: 'Friendly Charm', description: 'Increase all market sale prices by $2.', effect: { type: 'marketBonus', value: 2 }, purchased: false },
+    };
+
     let marketState = {};
     Object.keys(cropTypes).forEach(cropName => {
         marketState[cropName] = {
@@ -235,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (warehouse[item] > 0) {
                 const itemDiv = document.createElement('div');
                 itemDiv.classList.add('item');
-                itemDiv.classList.add(item.replace(/ /g, '-'));
+                itemDiv.classList.add(item.replace(/_/g, '-'));
                 const icon = getIconForItem(item);
                 itemDiv.textContent = t('warehouse_item', {
                     icon,
@@ -258,12 +283,19 @@ document.addEventListener('DOMContentLoaded', () => {
         store.forEach(item => {
             const itemDiv = document.createElement('div');
             itemDiv.classList.add('item');
-            itemDiv.classList.add(item.name.replace(/ /g, '-'));
+            itemDiv.classList.add(item.name.replace(/_/g, '-'));
             const icon = getIconForItem(item.name);
-            itemDiv.textContent = t('buy_item', {
+            const finalPrice = Math.round(item.price * (1 - player.upgrades.seedDiscount));
+
+            let priceHtml = `$${item.price}`;
+            if (finalPrice < item.price) {
+                priceHtml = `<del>$${item.price}</del> <ins>$${finalPrice}</ins>`;
+            }
+
+            itemDiv.innerHTML = t('buy_item', {
                 icon,
                 itemName: t(item.name),
-                price: item.price
+                price: priceHtml
             });
             itemDiv.dataset.itemName = item.name;
             DOM.storeItems.appendChild(itemDiv);
@@ -309,7 +341,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderStaticUI() {
         DOM.mainTitle.textContent = t('title');
-        DOM.storeTitle.textContent = t('store_title');
         DOM.marketTitle.textContent = t('market_title');
         DOM.refTitle.textContent = t('reference_title');
         DOM.warehouseTitle.textContent = t('warehouse_title');
@@ -317,6 +348,29 @@ document.addEventListener('DOMContentLoaded', () => {
         DOM.openStoreBtn.textContent = t('btn_store');
         DOM.openMarketBtn.textContent = t('btn_market');
         DOM.openRefBtn.textContent = t('btn_reference');
+        DOM.seedsTabBtn.textContent = t('seeds_tab');
+        DOM.upgradesTabBtn.textContent = t('upgrades_tab');
+    }
+
+    function renderUpgrades() {
+        DOM.upgradesItems.innerHTML = '';
+        for (const upgradeId in upgrades) {
+            const upgrade = upgrades[upgradeId];
+            const itemDiv = document.createElement('div');
+            itemDiv.classList.add('item');
+
+            let buyButton = `<button class="btn" data-upgrade-id="${upgradeId}">Buy ($${upgrade.cost})</button>`;
+            if (upgrade.purchased) {
+                buyButton = `<span>Purchased</span>`;
+            }
+
+            itemDiv.innerHTML = `
+                <strong>${upgrade.name}</strong>
+                <p>${upgrade.description}</p>
+                ${buyButton}
+            `;
+            DOM.upgradesItems.appendChild(itemDiv);
+        }
     }
 
     function renderAll() {
@@ -326,6 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderStore();
         renderReference();
         renderMarket();
+        renderUpgrades();
     }
 
     // --- Game Logic Functions ---
@@ -354,7 +409,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const crop = cropTypes[cell.crop];
         if (cell.growthStage >= crop.visuals.length - 1) {
             const [min, max] = crop.yieldRange;
-            const yieldAmount = Math.floor(Math.random() * (max - min + 1)) + min;
+            let yieldAmount = Math.floor(Math.random() * (max - min + 1)) + min;
+            yieldAmount += player.upgrades.yieldBonus; // Add yield bonus
             warehouse[cell.crop] = (warehouse[cell.crop] || 0) + yieldAmount;
             field[r][c] = { crop: null, growthStage: 0, stageStartTime: 0 };
             renderAll();
@@ -367,9 +423,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (warehouse[cropName] > 0) {
             const crop = cropTypes[cropName];
             const market = marketState[cropName];
+            const salePrice = market.currentPrice + player.upgrades.marketBonus;
 
             warehouse[cropName]--;
-            player.money += market.currentPrice;
+            player.money += salePrice;
             market.totalSold++;
 
             // Recalculate price
@@ -382,6 +439,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function buyUpgrade(upgradeId) {
+        const upgrade = upgrades[upgradeId];
+        if (!upgrade || upgrade.purchased) {
+            alert("Upgrade not available."); // Should not happen in normal gameplay
+            return;
+        }
+
+        if (player.money >= upgrade.cost) {
+            player.money -= upgrade.cost;
+            upgrade.purchased = true;
+
+            // Apply the effect to the player's state
+            const { type, value } = upgrade.effect;
+            if (type === 'growthMultiplier') {
+                // Multipliers are set directly, not added
+                player.upgrades[type] = value;
+            } else {
+                // Bonuses are additive
+                player.upgrades[type] += value;
+            }
+
+            renderAll();
+        } else {
+            alert(t('alert_not_enough_money'));
+        }
+    }
+
     function updateCropGrowth(now) {
         let fieldChanged = false;
         for (let r = 0; r < NUM_ROWS; r++) {
@@ -390,7 +474,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (cell.crop) {
                     const crop = cropTypes[cell.crop];
                     if (cell.growthStage < crop.visuals.length - 1) {
-                        if (now - cell.stageStartTime >= crop.growthTime) {
+                        const timeToGrow = crop.growthTime * player.upgrades.growthMultiplier;
+                        if (now - cell.stageStartTime >= timeToGrow) {
                             cell.growthStage++;
                             cell.stageStartTime = now;
                             fieldChanged = true;
@@ -445,6 +530,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    DOM.upgradesItems.addEventListener('click', (e) => {
+        if (e.target.dataset.upgradeId) {
+            buyUpgrade(e.target.dataset.upgradeId);
+        }
+    });
+
+    DOM.storeTabs.addEventListener('click', (e) => {
+        if (e.target.classList.contains('tab-btn')) {
+            const tab = e.target.dataset.tab;
+            DOM.storeTabs.querySelector('.active').classList.remove('active');
+            e.target.classList.add('active');
+
+            DOM.seedsContent.classList.remove('active');
+            DOM.upgradesContent.classList.remove('active');
+            if (tab === 'seeds') {
+                DOM.seedsContent.classList.add('active');
+            } else {
+                DOM.upgradesContent.classList.add('active');
+            }
+        }
+    });
+
     DOM.warehouseItems.addEventListener('click', (e) => {
         if (e.target.dataset.seed) {
             player.selectedSeed = e.target.dataset.seed;
@@ -456,8 +563,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target.dataset.itemName) {
             const itemName = e.target.dataset.itemName;
             const item = store.find(i => i.name === itemName);
-            if (player.money >= item.price) {
-                player.money -= item.price;
+            const finalPrice = Math.round(item.price * (1 - player.upgrades.seedDiscount));
+
+            if (player.money >= finalPrice) {
+                player.money -= finalPrice;
                 warehouse[itemName] = (warehouse[itemName] || 0) + 1;
                 renderAll();
             } else {

@@ -82,6 +82,38 @@ h1 {
     margin-left: 10px;
 }
 
+/* Store Tab Styles */
+.store-tabs {
+    display: flex;
+    border-bottom: 2px solid #3d405b;
+    margin-bottom: 15px;
+}
+
+.tab-btn {
+    background-color: transparent;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 700;
+    color: #3d405b;
+    opacity: 0.6;
+}
+
+.tab-btn.active {
+    opacity: 1;
+    border-bottom: 3px solid #e07a5f;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+
 /* Modal Styles */
 .modal {
     display: none; /* Hidden by default */

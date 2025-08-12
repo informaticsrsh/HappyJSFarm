@@ -34,9 +34,15 @@
     <div id="store-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn store-close">&times;</span>
-            <div id="store-container">
-                <h2>Store</h2>
+            <div class="store-tabs">
+                <button id="seeds-tab-btn" class="tab-btn active" data-tab="seeds">Seeds</button>
+                <button id="upgrades-tab-btn" class="tab-btn" data-tab="upgrades">Upgrades</button>
+            </div>
+            <div id="seeds-content" class="tab-content active">
                 <div id="store-items"></div>
+            </div>
+            <div id="upgrades-content" class="tab-content">
+                <div id="upgrades-items"></div>
             </div>
         </div>
     </div>
