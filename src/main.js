@@ -12,6 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const refCloseBtn = document.querySelector('.ref-close');
     const refContent = document.getElementById('ref-content');
 
+    const marketModal = document.getElementById('market-modal');
+    const openMarketBtn = document.getElementById('open-market-btn');
+    const marketCloseBtn = document.querySelector('.market-close');
+    const marketItems = document.getElementById('market-items');
+
     // --- Game State ---
     const NUM_ROWS = 5;
     const NUM_COLS = 5;
@@ -47,30 +52,55 @@ document.addEventListener('DOMContentLoaded', () => {
             seed_icon: '🌱',
             growthTime: 3000, // ms per stage
             visuals: ['🌱', '🌿', '🌾'],
-            yieldRange: [1, 3]
+            yieldRange: [1, 3],
+            maxPrice: 15,
+            minPrice: 5,
+            priceRecoveryRate: 10000, // ms to recover 1 price point
+            salesVolumeForPriceDrop: 10 // amount of sales to drop price by 1
         },
         'carrot': {
             icon: '🥕',
             seed_icon: '🌱',
             growthTime: 4000,
             visuals: ['🌱', '🌿', '🥕'],
-            yieldRange: [1, 2]
+            yieldRange: [1, 2],
+            maxPrice: 25,
+            minPrice: 10,
+            priceRecoveryRate: 12000,
+            salesVolumeForPriceDrop: 8
         },
         'tomato': {
             icon: '🍅',
             seed_icon: '🌱',
             growthTime: 5000,
             visuals: ['🌱', '🌿', '🍅'],
-            yieldRange: [2, 4]
+            yieldRange: [2, 4],
+            maxPrice: 50,
+            minPrice: 20,
+            priceRecoveryRate: 15000,
+            salesVolumeForPriceDrop: 5
         },
         'potato': {
             icon: '🥔',
             seed_icon: '🌱',
             growthTime: 6000,
             visuals: ['🌱', '🌿', '🥔'],
-            yieldRange: [3, 6]
+            yieldRange: [3, 6],
+            maxPrice: 80,
+            minPrice: 30,
+            priceRecoveryRate: 20000,
+            salesVolumeForPriceDrop: 3
         }
     };
+
+    let marketState = {};
+    Object.keys(cropTypes).forEach(cropName => {
+        marketState[cropName] = {
+            currentPrice: cropTypes[cropName].maxPrice,
+            totalSold: 0,
+            lastRecoveryTime: Date.now()
+        };
+    });
 
     function getIconForItem(itemName) {
         if (itemName.endsWith('_seed')) {
@@ -94,6 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const cell = field[r][c];
                 if (cell.crop) {
                     plot.textContent = cropTypes[cell.crop].visuals[cell.growthStage];
+                    plot.classList.add(cell.crop); // Add class for crop color
                 } else {
                     plot.textContent = '🟫';
                 }
@@ -144,12 +175,31 @@ document.addEventListener('DOMContentLoaded', () => {
             const cropDiv = document.createElement('div');
             cropDiv.innerHTML = `
                 <h3>${crop.icon} ${cropName.charAt(0).toUpperCase() + cropName.slice(1)}</h3>
-                <p><strong>Price:</strong> $${storeItem.price}</p>
+                <p><strong>Seed Price:</strong> $${storeItem.price}</p>
                 <p><strong>Growth Time:</strong> ${crop.growthTime / 1000}s per stage</p>
                 <p><strong>Yield:</strong> ${crop.yieldRange[0]} to ${crop.yieldRange[1]}</p>
+                <p><strong>Market Price:</strong> $${crop.minPrice} - $${crop.maxPrice}</p>
                 <p><strong>Stages:</strong> ${crop.visuals.join(' → ')}</p>
             `;
             refContent.appendChild(cropDiv);
+        });
+    }
+
+    function renderMarket() {
+        marketItems.innerHTML = '';
+        Object.keys(warehouse).forEach(itemName => {
+            if (!itemName.endsWith('_seed') && warehouse[itemName] > 0) {
+                const itemDiv = document.createElement('div');
+                itemDiv.classList.add('item');
+                const icon = getIconForItem(itemName);
+                const price = marketState[itemName].currentPrice;
+                itemDiv.innerHTML = `
+                    ${icon} ${itemName}: ${warehouse[itemName]}
+                    <span>(Price: $${price})</span>
+                    <button class="btn sell-btn" data-crop-name="${itemName}">Sell 1</button>
+                `;
+                marketItems.appendChild(itemDiv);
+            }
         });
     }
 
@@ -158,6 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderWarehouse();
         renderStore();
         renderReference();
+        renderMarket();
     }
 
     // --- Game Logic Functions ---
@@ -195,9 +246,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function sellCrop(cropName) {
+        if (warehouse[cropName] > 0) {
+            const crop = cropTypes[cropName];
+            const market = marketState[cropName];
+
+            warehouse[cropName]--;
+            player.money += market.currentPrice;
+            market.totalSold++;
+
+            // Recalculate price
+            const priceDrop = Math.floor(market.totalSold / crop.salesVolumeForPriceDrop);
+            market.currentPrice = Math.max(crop.minPrice, crop.maxPrice - priceDrop);
+
+            renderAll();
+        } else {
+            alert("You don't have any to sell!");
+        }
+    }
+
     function gameTick() {
-        let changed = false;
         const now = Date.now();
+        let fieldChanged = false;
+
+        // 1. Grow crops
         for (let r = 0; r < NUM_ROWS; r++) {
             for (let c = 0; c < NUM_COLS; c++) {
                 const cell = field[r][c];
@@ -207,14 +279,36 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (now - cell.stageStartTime >= crop.growthTime) {
                             cell.growthStage++;
                             cell.stageStartTime = now;
-                            changed = true;
+                            fieldChanged = true;
                         }
                     }
                 }
             }
         }
-        if (changed) {
+        if (fieldChanged) {
             renderField();
+        }
+
+        // 2. Update market prices
+        let marketChanged = false;
+        for (const cropName in marketState) {
+            const market = marketState[cropName];
+            const crop = cropTypes[cropName];
+            if (market.currentPrice < crop.maxPrice) {
+                if (now - market.lastRecoveryTime >= crop.priceRecoveryRate) {
+                    // Recover some sales volume, which in turn raises the price
+                    market.totalSold = Math.max(0, market.totalSold - crop.salesVolumeForPriceDrop);
+                    const priceDrop = Math.floor(market.totalSold / crop.salesVolumeForPriceDrop);
+                    market.currentPrice = Math.max(crop.minPrice, crop.maxPrice - priceDrop);
+                    market.lastRecoveryTime = now;
+                    marketChanged = true;
+                }
+            }
+        }
+        if (marketChanged) {
+            // Re-render any components that show market prices
+            if (typeof renderMarket === 'function') renderMarket();
+            if (typeof renderReference === 'function') renderReference();
         }
     }
 
@@ -268,12 +362,29 @@ document.addEventListener('DOMContentLoaded', () => {
         refModal.style.display = 'none';
     });
 
+    openMarketBtn.addEventListener('click', () => {
+        marketModal.style.display = 'block';
+    });
+    marketCloseBtn.addEventListener('click', () => {
+        marketModal.style.display = 'none';
+    });
+
+    marketItems.addEventListener('click', (e) => {
+        if (e.target.classList.contains('sell-btn')) {
+            const cropName = e.target.dataset.cropName;
+            sellCrop(cropName);
+        }
+    });
+
     window.addEventListener('click', (e) => {
         if (e.target == storeModal) {
             storeModal.style.display = 'none';
         }
         if (e.target == refModal) {
             refModal.style.display = 'none';
+        }
+        if (e.target == marketModal) {
+            marketModal.style.display = 'none';
         }
     });
 

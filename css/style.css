@@ -62,6 +62,13 @@ h1 {
     gap: 10px;
 }
 
+.sell-btn {
+    background-color: #f28482;
+    padding: 2px 8px;
+    font-size: 14px;
+    margin-left: 10px;
+}
+
 /* Modal Styles */
 .modal {
     display: none; /* Hidden by default */
@@ -155,3 +162,9 @@ h1 {
 .item.selected {
     color: #fff !important;
 }
+
+/* Crop-specific colors in the field */
+.plot.wheat { color: #f2cc8f; }
+.plot.carrot { color: #e07a5f; }
+.plot.tomato { color: #f28482; }
+.plot.potato { color: #8d5b2d; }
