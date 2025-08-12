@@ -121,7 +121,10 @@ document.addEventListener('DOMContentLoaded', () => {
         upgradesContent: document.getElementById('upgrades-content'),
         upgradesItems: document.getElementById('upgrades-items'),
         seedsTabBtn: document.getElementById('seeds-tab-btn'),
-        upgradesTabBtn: document.getElementById('upgrades-tab-btn')
+        upgradesTabBtn: document.getElementById('upgrades-tab-btn'),
+        // Dev elements
+        devMoneyBtn: document.getElementById('dev-money-btn'),
+        moneyDisplay: document.getElementById('money-display')
     };
 
     // --- Game State ---
@@ -373,6 +376,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function renderPlayerState() {
+        DOM.moneyDisplay.textContent = `💰 $${player.money}`;
+    }
+
     function renderAll() {
         renderStaticUI();
         renderField();
@@ -381,6 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderReference();
         renderMarket();
         renderUpgrades();
+        renderPlayerState();
     }
 
     // --- Game Logic Functions ---
@@ -577,6 +585,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     DOM.langEnBtn.addEventListener('click', () => setLanguage('en'));
     DOM.langUkBtn.addEventListener('click', () => setLanguage('uk'));
+    DOM.devMoneyBtn.addEventListener('click', () => {
+        player.money += 1000;
+        renderPlayerState();
+    });
 
     // Modal event listeners
     DOM.openStoreBtn.addEventListener('click', () => {

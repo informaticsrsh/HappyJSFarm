@@ -62,6 +62,21 @@ h1 {
     gap: 10px;
 }
 
+.dev-panel {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+#player-stats {
+    background-color: #e07a5f88;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+}
+
 .language-switcher {
     position: absolute;
     top: 10px;
@@ -198,14 +213,15 @@ h1 {
 }
 
 /* Seed-specific colors */
-.wheat-seed { color: #f2cc8f; }
-.carrot-seed { color: #e07a5f; }
-.tomato-seed { color: #f28482; }
-.potato-seed { color: #a5682a; }
+.wheat-seed { background-color: #f2cc8f44; }
+.carrot-seed { background-color: #e07a5f44; }
+.tomato-seed { background-color: #f2848244; }
+.potato-seed { background-color: #a5682a44; }
 
 /* Override for selected items to ensure text is readable */
 .item.selected {
     color: #fff !important;
+    background-color: #81b29a;
 }
 
 /* Crop-specific colors in the field */
