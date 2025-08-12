@@ -10,10 +10,7 @@
     <h1>My Farm Game</h1>
     <div id="game-container">
         <div id="left-panel">
-            <div id="store-container">
-                <h2>Store</h2>
-                <div id="store-items"></div>
-            </div>
+            <button id="open-store-btn" class="btn">Open Store</button>
             <div id="warehouse-container">
                 <h2>Warehouse</h2>
                 <div id="warehouse-items"></div>
@@ -24,6 +21,18 @@
             <div id="field-grid"></div>
         </div>
     </div>
+
+    <!-- Store Modal -->
+    <div id="store-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div id="store-container">
+                <h2>Store</h2>
+                <div id="store-items"></div>
+            </div>
+        </div>
+    </div>
+
     <script src="src/main.js"></script>
 </body>
 </html>

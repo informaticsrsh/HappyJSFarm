@@ -3,6 +3,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const fieldGrid = document.getElementById('field-grid');
     const warehouseItems = document.getElementById('warehouse-items');
     const storeItems = document.getElementById('store-items');
+    const storeModal = document.getElementById('store-modal');
+    const openStoreBtn = document.getElementById('open-store-btn');
+    const closeBtn = document.querySelector('.close-btn');
 
     // --- Game State ---
     const NUM_ROWS = 5;
@@ -18,27 +21,60 @@ document.addEventListener('DOMContentLoaded', () => {
     let warehouse = {
         'wheat_seed': 5,
         'carrot_seed': 3,
+        'tomato_seed': 2,
+        'potato_seed': 2,
         'wheat': 0,
-        'carrot': 0
+        'carrot': 0,
+        'tomato': 0,
+        'potato': 0
     };
 
     const store = [
         { name: 'wheat_seed', price: 10, type: 'seed' },
-        { name: 'carrot_seed', price: 15, type: 'seed' }
+        { name: 'carrot_seed', price: 15, type: 'seed' },
+        { name: 'tomato_seed', price: 20, type: 'seed' },
+        { name: 'potato_seed', price: 25, type: 'seed' }
     ];
 
     const cropTypes = {
         'wheat': {
+            icon: '🌾',
+            seed_icon: '🌱',
             maxGrowth: 3,
             visuals: ['🌱', '🌿', '🌾'],
             harvestYield: 1
         },
         'carrot': {
+            icon: '🥕',
+            seed_icon: '🌱',
             maxGrowth: 4,
             visuals: ['🌱', '🌿', '🥕', '🥕'],
             harvestYield: 1
+        },
+        'tomato': {
+            icon: '🍅',
+            seed_icon: '🌱',
+            maxGrowth: 5,
+            visuals: ['🌱', '🌿', '🍅', '🍅', '🍅'],
+            harvestYield: 2
+        },
+        'potato': {
+            icon: '🥔',
+            seed_icon: '🌱',
+            maxGrowth: 4,
+            visuals: ['🌱', '🌿', '🥔', '🥔'],
+            harvestYield: 3
         }
     };
+
+    function getIconForItem(itemName) {
+        if (itemName.endsWith('_seed')) {
+            const cropName = itemName.replace('_seed', '');
+            return cropTypes[cropName]?.seed_icon || '🌰';
+        } else {
+            return cropTypes[itemName]?.icon || '📦';
+        }
+    }
 
     // --- Rendering Functions ---
     function renderField() {
@@ -67,7 +103,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (warehouse[item] > 0) {
                 const itemDiv = document.createElement('div');
                 itemDiv.classList.add('item');
-                itemDiv.textContent = `${item.replace('_', ' ')}: ${warehouse[item]}`;
+                const icon = getIconForItem(item);
+                itemDiv.textContent = `${icon} ${item.replace('_', ' ')}: ${warehouse[item]}`;
                 if (item.endsWith('_seed')) {
                     itemDiv.dataset.seed = item;
                     if (player.selectedSeed === item) {
@@ -84,7 +121,8 @@ document.addEventListener('DOMContentLoaded', () => {
         store.forEach(item => {
             const itemDiv = document.createElement('div');
             itemDiv.classList.add('item');
-            itemDiv.textContent = `Buy ${item.name.replace('_', ' ')} ($${item.price})`;
+            const icon = getIconForItem(item.name);
+            itemDiv.textContent = `Buy ${icon} ${item.name.replace('_', ' ')} ($${item.price})`;
             itemDiv.dataset.itemName = item.name;
             storeItems.appendChild(itemDiv);
         });
@@ -110,7 +148,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 crop: cropName,
                 growthStage: 0
             };
-            player.selectedSeed = null; // Deselect after planting
+            if (warehouse[player.selectedSeed] === 0) {
+                player.selectedSeed = null; // Deselect if non left
+            }
             renderAll();
         }
     }
@@ -178,6 +218,21 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 alert("Not enough money!");
             }
+        }
+    });
+
+    // Modal event listeners
+    openStoreBtn.addEventListener('click', () => {
+        storeModal.style.display = 'block';
+    });
+
+    closeBtn.addEventListener('click', () => {
+        storeModal.style.display = 'none';
+    });
+
+    window.addEventListener('click', (e) => {
+        if (e.target == storeModal) {
+            storeModal.style.display = 'none';
         }
     });
 

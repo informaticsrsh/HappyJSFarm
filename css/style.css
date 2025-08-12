@@ -1,58 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=Karla:wght@400;700&display=swap');
+
 body {
-    font-family: sans-serif;
-    background-color: #f0f0f0;
+    font-family: 'Karla', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+    background-color: #f4f1de;
+    color: #3d405b;
+    margin: 0;
+    padding: 20px;
+}
+
+h1, h2 {
+    font-weight: 700;
+    color: #81b29a;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
 }
 
 #game-container {
     display: flex;
-    gap: 20px;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
 }
 
 #left-panel {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 30px;
+    min-width: 200px;
+}
+
+#field-container, #warehouse-container, .modal-content {
+    background-color: #c6d5ac; /* New, softer background color */
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border: 2px solid #3d405b;
+}
+
+.btn {
+    background-color: #81b29a;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Karla', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    transition: background-color 0.2s;
+}
+
+.btn:hover {
+    background-color: #3d405b;
+}
+
+/* Modal Styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    margin: 15% auto;
+    width: 80%;
+    max-width: 400px;
+    position: relative;
+}
+
+.close-btn {
+    color: #3d405b;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: #e07a5f;
 }
 
 #field-grid {
     display: grid;
     grid-template-columns: repeat(5, 50px);
     grid-template-rows: repeat(5, 50px);
-    gap: 5px;
+    gap: 8px;
+    background-color: #f2cc8f;
+    padding: 10px;
+    border-radius: 8px;
 }
 
 .plot {
     width: 50px;
     height: 50px;
     background-color: #a5682a;
-    border: 1px solid #654321;
+    border: 2px solid #654321;
+    border-radius: 4px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 24px;
+    font-size: 30px;
     cursor: pointer;
+    transition: transform 0.2s;
 }
 
 .plot:hover {
-    background-color: #b5783a;
-}
-
-#warehouse-container, #store-container {
-    border: 1px solid #ccc;
-    padding: 10px;
-    background-color: #fff;
+    transform: scale(1.1);
 }
 
 .item {
     cursor: pointer;
-    padding: 5px;
-    border: 1px solid transparent;
+    padding: 8px;
+    border-radius: 6px;
+    margin-bottom: 5px;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    border: 2px solid transparent;
 }
 
 .item:hover {
-    background-color: #eee;
+    background-color: #f4f1de;
 }
 
 .item.selected {
-    border-color: #007bff;
+    background-color: #81b29a;
+    color: #fff;
+    box-shadow: 0 0 5px #81b29a;
+    font-weight: 700;
 }
