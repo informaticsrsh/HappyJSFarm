@@ -40,24 +40,29 @@ export function harvestCrop(r, c) {
     }
 }
 
+function updateMarketPrice(cropName) {
+    const crop = cropTypes[cropName];
+    const market = marketState[cropName];
+    const priceDrop = Math.floor(market.totalSold / crop.salesVolumeForPriceDrop);
+    market.currentPrice = Math.max(crop.minPrice, crop.maxPrice - priceDrop);
+}
+
 export function sellCrop(cropName, amount) {
     if (!amount || amount <= 0) return false;
     if (warehouse[cropName] > 0 && warehouse[cropName] >= amount) {
-        const crop = cropTypes[cropName];
         const market = marketState[cropName];
-        let totalSalePrice = 0;
 
-        for (let i = 0; i < amount; i++) {
-            const salePrice = market.currentPrice + player.upgrades.marketBonus;
-            totalSalePrice += salePrice;
-            market.totalSold++;
-            // Recalculate price for each item sold
-            const priceDrop = Math.floor(market.totalSold / crop.salesVolumeForPriceDrop);
-            market.currentPrice = Math.max(crop.minPrice, crop.maxPrice - priceDrop);
-        }
+        // Calculate sale price based on the current market price
+        const salePrice = market.currentPrice + player.upgrades.marketBonus;
+        const totalSalePrice = salePrice * amount;
 
+        // Update player money and warehouse
         warehouse[cropName] -= amount;
         player.money += totalSalePrice;
+
+        // Update market state *after* the sale
+        market.totalSold += amount;
+        updateMarketPrice(cropName);
 
         return true;
     } else {
@@ -141,8 +146,7 @@ function updateMarketPrices(now) {
         if (market.currentPrice < crop.maxPrice) {
             if (now - market.lastRecoveryTime >= crop.priceRecoveryRate) {
                 market.totalSold = Math.max(0, market.totalSold - crop.salesVolumeForPriceDrop);
-                const priceDrop = Math.floor(market.totalSold / crop.salesVolumeForPriceDrop);
-                market.currentPrice = Math.max(crop.minPrice, crop.maxPrice - priceDrop);
+                updateMarketPrice(cropName);
                 market.lastRecoveryTime = now;
                 marketChanged = true;
             }
