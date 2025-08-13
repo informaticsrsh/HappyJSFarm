@@ -77,6 +77,13 @@ h1 {
     font-weight: 700;
 }
 
+#bonus-display {
+    font-size: 14px;
+    font-weight: 400;
+    margin-top: 10px;
+    opacity: 0.8;
+}
+
 .language-switcher {
     position: absolute;
     top: 10px;

@@ -124,7 +124,8 @@ document.addEventListener('DOMContentLoaded', () => {
         upgradesTabBtn: document.getElementById('upgrades-tab-btn'),
         // Dev elements
         devMoneyBtn: document.getElementById('dev-money-btn'),
-        moneyDisplay: document.getElementById('money-display')
+        moneyDisplay: document.getElementById('money-display'),
+        bonusDisplay: document.getElementById('bonus-display')
     };
 
     // --- Game State ---
@@ -331,7 +332,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const itemDiv = document.createElement('div');
                 itemDiv.classList.add('item');
                 const icon = getIconForItem(itemName);
-                const price = marketState[itemName].currentPrice;
+                const price = marketState[itemName].currentPrice + player.upgrades.marketBonus;
                 itemDiv.innerHTML = `
                     ${icon} ${t(itemName)}: ${warehouse[itemName]}
                     <span>${t('market_item_price', { price })}</span>
@@ -378,6 +379,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderPlayerState() {
         DOM.moneyDisplay.textContent = `💰 $${player.money}`;
+
+        let bonusHtml = '';
+        if (player.upgrades.growthMultiplier < 1.0) {
+            const percentage = (1 - player.upgrades.growthMultiplier) * 100;
+            bonusHtml += `<div>Growth: +${percentage.toFixed(0)}%</div>`;
+        }
+        if (player.upgrades.yieldBonus > 0) {
+            bonusHtml += `<div>Yield: +${player.upgrades.yieldBonus}</div>`;
+        }
+        if (player.upgrades.seedDiscount > 0) {
+            const percentage = player.upgrades.seedDiscount * 100;
+            bonusHtml += `<div>Seed Discount: ${percentage.toFixed(0)}%</div>`;
+        }
+        if (player.upgrades.marketBonus > 0) {
+            bonusHtml += `<div>Market Bonus: +$${player.upgrades.marketBonus}</div>`;
+        }
+        DOM.bonusDisplay.innerHTML = bonusHtml;
     }
 
     function renderAll() {
