@@ -1,6 +1,6 @@
 import { setLanguage } from './modules/localization.js';
 import { DOM, renderAll } from './modules/ui.js';
-import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder } from './modules/game.js';
+import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder, forceGenerateOrder } from './modules/game.js';
 import { player, field, warehouse } from './modules/state.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -75,6 +75,11 @@ document.addEventListener('DOMContentLoaded', () => {
     DOM.devMoneyBtn.addEventListener('click', () => {
         player.money += 1000;
         renderAll();
+    });
+    DOM.devOrderBtn.addEventListener('click', () => {
+        if (forceGenerateOrder()) {
+            renderAll();
+        }
     });
 
     // Modal event listeners

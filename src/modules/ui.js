@@ -34,6 +34,7 @@ export const DOM = {
     upgradesTabBtn: document.getElementById('upgrades-tab-btn'),
     // Dev elements
     devMoneyBtn: document.getElementById('dev-money-btn'),
+    devOrderBtn: document.getElementById('dev-order-btn'),
     moneyDisplay: document.getElementById('money-display'),
     bonusDisplay: document.getElementById('bonus-display'),
     notificationBanner: document.getElementById('notification-banner')

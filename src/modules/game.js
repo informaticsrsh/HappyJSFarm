@@ -212,7 +212,7 @@ function updateOrders(now) {
     let ordersToAttempt = 0;
     if (activeOrderCount < 2) {
         ordersToAttempt = 2 - activeOrderCount;
-    } else if (activeOrderCount === 2 && Math.random() < 0.005) { // ~5% chance per second
+    } else if (activeOrderCount === 2 && Math.random() < 0.02) { // ~20% chance per second
         ordersToAttempt = 1;
     }
 
@@ -257,4 +257,15 @@ export function fulfillOrder(customerId) {
         showNotification(t('alert_not_enough_crops'));
         return false;
     }
+}
+
+export function forceGenerateOrder() {
+    const customersWithoutOrders = Object.keys(customers).filter(id => !customers[id].order);
+    if (customersWithoutOrders.length > 0) {
+        const randomCustomerId = customersWithoutOrders[Math.floor(Math.random() * customersWithoutOrders.length)];
+        generateOrder(randomCustomerId);
+        return true;
+    }
+    showNotification("All customers already have orders!");
+    return false;
 }
