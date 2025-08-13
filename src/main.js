@@ -1,6 +1,6 @@
 import { setLanguage } from './modules/localization.js';
 import { DOM, renderAll } from './modules/ui.js';
-import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed } from './modules/game.js';
+import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder } from './modules/game.js';
 import { player, field, warehouse } from './modules/state.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -129,6 +129,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (e.target == DOM.marketModal) {
             DOM.marketModal.style.display = 'none';
+        }
+    });
+
+    DOM.orderItems.addEventListener('click', (e) => {
+        if (e.target.classList.contains('fulfill-btn')) {
+            const customerId = e.target.dataset.customerId;
+            if (fulfillOrder(customerId)) {
+                renderAll();
+            }
         }
     });
 

@@ -32,3 +32,18 @@ Object.keys(cropTypes).forEach(cropName => {
         lastRecoveryTime: Date.now()
     };
 });
+
+export let customers = {
+    'npc1': {
+        trust: 0,
+        order: null // { crop, amount, reward, expiresAt }
+    },
+    'npc2': {
+        trust: 0,
+        order: null
+    },
+    'npc3': {
+        trust: 0,
+        order: null
+    }
+};

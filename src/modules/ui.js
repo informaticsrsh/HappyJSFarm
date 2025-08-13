@@ -1,10 +1,11 @@
 import { t } from './localization.js';
-import { player, field, warehouse, marketState } from './state.js';
-import { NUM_ROWS, NUM_COLS, store, cropTypes, upgrades } from './config.js';
+import { player, field, warehouse, marketState, customers } from './state.js';
+import { NUM_ROWS, NUM_COLS, store, cropTypes, upgrades, customerConfig } from './config.js';
 
 export const DOM = {
     fieldGrid: document.getElementById('field-grid'),
     warehouseItems: document.getElementById('warehouse-items'),
+    orderItems: document.getElementById('order-items'),
     storeItems: document.getElementById('store-items'),
     storeModal: document.getElementById('store-modal'),
     openStoreBtn: document.getElementById('open-store-btn'),
@@ -190,6 +191,33 @@ function renderStaticUI() {
     DOM.openRefBtn.textContent = t('btn_reference');
     DOM.seedsTabBtn.textContent = t('seeds_tab');
     DOM.upgradesTabBtn.textContent = t('upgrades_tab');
+    document.querySelector('#orders-container h2').textContent = t('orders_title');
+}
+
+function renderOrders() {
+    DOM.orderItems.innerHTML = '';
+    for (const customerId in customers) {
+        const customer = customers[customerId];
+        const config = customerConfig.customers[customerId];
+        if (customer.order) {
+            const orderDiv = document.createElement('div');
+            orderDiv.classList.add('order');
+
+            const timeLeft = Math.round((customer.order.expiresAt - Date.now()) / 1000);
+            const icon = getIconForItem(customer.order.crop);
+
+            orderDiv.innerHTML = `
+                <div class="order-info">
+                    <strong>${t(config.name)}</strong> (Trust: ${customer.trust})<br>
+                    Wants: ${icon} ${customer.order.amount} ${t(customer.order.crop)}<br>
+                    Reward: $${customer.order.reward}<br>
+                    Time left: ${timeLeft}s
+                </div>
+                <button class="btn fulfill-btn" data-customer-id="${customerId}">Fulfill</button>
+            `;
+            DOM.orderItems.appendChild(orderDiv);
+        }
+    }
 }
 
 function renderUpgrades() {
@@ -241,6 +269,7 @@ export function renderAll() {
     renderStore();
     renderReference();
     renderMarket();
+    renderOrders();
     renderUpgrades();
     renderPlayerState();
 }

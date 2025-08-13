@@ -62,3 +62,18 @@ export const upgrades = {
     'negotiation1': { cost: 400, name: 'Negotiation Skills', description: 'Get a 10% discount on all seeds.', effect: { type: 'seedDiscount', value: 0.1 }, purchased: false },
     'charm1': { cost: 600, name: 'Friendly Charm', description: 'Increase all market sale prices by $2.', effect: { type: 'marketBonus', value: 2 }, purchased: false },
 };
+
+export const customerConfig = {
+    orderGenerationInterval: 15000, // ms
+    orderLifetime: 60000, // ms
+    trustLevels: [
+        { trust: 0, size: [5, 10], reward: 1.2 }, // 20% bonus
+        { trust: 100, size: [10, 20], reward: 1.3 },
+        { trust: 200, size: [20, 40], reward: 1.5 },
+    ],
+    customers: {
+        'npc1': { name: 'Farmer Joe' },
+        'npc2': { name: 'Granny Smith' },
+        'npc3': { name: 'Chef Pierre' }
+    }
+};

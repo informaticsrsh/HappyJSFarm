@@ -1,6 +1,6 @@
 import { t } from './localization.js';
-import { player, field, warehouse, marketState } from './state.js';
-import { cropTypes, upgrades, NUM_ROWS, NUM_COLS, store } from './config.js';
+import { player, field, warehouse, marketState, customers } from './state.js';
+import { cropTypes, upgrades, NUM_ROWS, NUM_COLS, store, customerConfig } from './config.js';
 import { showNotification } from './ui.js';
 
 export function plantSeed(r, c) {
@@ -155,9 +155,94 @@ function updateMarketPrices(now) {
     return marketChanged;
 }
 
+function getCustomerTier(trust) {
+    let currentTier = customerConfig.trustLevels[0];
+    for (const tier of customerConfig.trustLevels) {
+        if (trust >= tier.trust) {
+            currentTier = tier;
+        } else {
+            break;
+        }
+    }
+    return currentTier;
+}
+
+function generateOrder(customerId) {
+    const customer = customers[customerId];
+    if (customer.order) return; // Don't generate if one is active
+
+    const availableCrops = Object.keys(cropTypes);
+    const randomCrop = availableCrops[Math.floor(Math.random() * availableCrops.length)];
+    const tier = getCustomerTier(customer.trust);
+    const [minSize, maxSize] = tier.size;
+    const amount = Math.floor(Math.random() * (maxSize - minSize + 1)) + minSize;
+    const marketPrice = marketState[randomCrop].currentPrice;
+    const reward = Math.round(marketPrice * amount * tier.reward);
+
+    customer.order = {
+        crop: randomCrop,
+        amount,
+        reward,
+        expiresAt: Date.now() + customerConfig.orderLifetime
+    };
+}
+
+let lastOrderCheck = Date.now();
+
+function updateOrders(now) {
+    let ordersChanged = false;
+
+    // Expire old orders
+    for (const customerId in customers) {
+        const customer = customers[customerId];
+        if (customer.order && now > customer.order.expiresAt) {
+            customer.order = null;
+            customer.trust = Math.max(0, customer.trust - 10); // Penalty
+            ordersChanged = true;
+            showNotification(t('alert_order_expired', { name: customerConfig.customers[customerId].name }));
+        }
+    }
+
+    // Generate new orders
+    if (now - lastOrderCheck > customerConfig.orderGenerationInterval) {
+        lastOrderCheck = now;
+        const customersWithoutOrders = Object.keys(customers).filter(id => !customers[id].order);
+        if (customersWithoutOrders.length > 0) {
+            const randomCustomerId = customersWithoutOrders[Math.floor(Math.random() * customersWithoutOrders.length)];
+            generateOrder(randomCustomerId);
+            ordersChanged = true;
+        }
+    }
+    return ordersChanged;
+}
+
+
 export function gameTick() {
     const now = Date.now();
     const growthChanged = updateCropGrowth(now);
     const marketChanged = updateMarketPrices(now);
-    return growthChanged || marketChanged;
+    const ordersChanged = updateOrders(now);
+    return growthChanged || marketChanged || ordersChanged;
+}
+
+export function fulfillOrder(customerId) {
+    const customer = customers[customerId];
+    const order = customer.order;
+
+    if (!order) {
+        showNotification("This order is no longer available.");
+        return false;
+    }
+
+    if (warehouse[order.crop] >= order.amount) {
+        warehouse[order.crop] -= order.amount;
+        player.money += order.reward;
+        customer.trust += 20; // Reward for fulfilling
+        customer.order = null;
+        showNotification(t('alert_order_fulfilled', { name: customerConfig.customers[customerId].name }));
+        return true;
+    } else {
+        showNotification(t('alert_not_enough_crops'));
+        return false;
+    }
 }
