@@ -11,7 +11,7 @@ export let player = {
     }
 };
 
-export let field = Array(NUM_ROWS).fill(null).map(() => Array(NUM_COLS).fill({ crop: null, growthStage: 0, stageStartTime: 0 }));
+export let field = Array(NUM_ROWS).fill(null).map(() => Array(NUM_COLS).fill(null).map(() => ({ crop: null, growthStage: 0, stageStartTime: 0 })));
 
 export let warehouse = {
     'wheat_seed': 5,
