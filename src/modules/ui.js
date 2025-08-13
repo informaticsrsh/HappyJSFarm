@@ -206,15 +206,16 @@ function renderOrders() {
 
             const timeLeft = Math.round((customer.order.expiresAt - Date.now()) / 1000);
             const icon = getIconForItem(customer.order.crop);
+            const haveAmount = warehouse[customer.order.crop] || 0;
 
             orderDiv.innerHTML = `
                 <div class="order-info">
                     <strong>${t(config.name)}</strong> (Trust: ${customer.trust})<br>
-                    Wants: ${icon} ${customer.order.amount} ${t(customer.order.crop)}<br>
+                    Wants: ${icon} ${customer.order.amount} ${t(customer.order.crop)} (Have: ${haveAmount}/${customer.order.amount})<br>
                     Reward: $${customer.order.reward}<br>
                     Time left: ${timeLeft}s
                 </div>
-                <button class="btn fulfill-btn" data-customer-id="${customerId}">Fulfill</button>
+                <button class="btn fulfill-btn" data-customer-id="${customerId}" ${haveAmount >= customer.order.amount ? '' : 'disabled'}>Fulfill</button>
             `;
             DOM.orderItems.appendChild(orderDiv);
         }
