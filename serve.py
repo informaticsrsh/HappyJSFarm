@@ -14,7 +14,7 @@ class MyHttpRequestHandler(http.server.SimpleHTTPRequestHandler):
         '.js': 'application/javascript',
     }
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory=".", **kwargs)
+        super().__init__(*args, **kwargs)
 
 def open_browser():
     """
