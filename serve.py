@@ -8,6 +8,11 @@ ADDRESS = "localhost"
 URL = f"http://{ADDRESS}:{PORT}"
 
 class MyHttpRequestHandler(http.server.SimpleHTTPRequestHandler):
+    # Add .js to the extensions map with the correct MIME type
+    extensions_map = {
+        **http.server.SimpleHTTPRequestHandler.extensions_map,
+        '.js': 'application/javascript',
+    }
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=".", **kwargs)
 
