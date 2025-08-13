@@ -34,8 +34,24 @@ export const DOM = {
     // Dev elements
     devMoneyBtn: document.getElementById('dev-money-btn'),
     moneyDisplay: document.getElementById('money-display'),
-    bonusDisplay: document.getElementById('bonus-display')
+    bonusDisplay: document.getElementById('bonus-display'),
+    notificationBanner: document.getElementById('notification-banner')
 };
+
+let notificationTimeout;
+
+export function showNotification(message) {
+    if (notificationTimeout) {
+        clearTimeout(notificationTimeout);
+    }
+
+    DOM.notificationBanner.textContent = message;
+    DOM.notificationBanner.classList.add('show');
+
+    notificationTimeout = setTimeout(() => {
+        DOM.notificationBanner.classList.remove('show');
+    }, 3000);
+}
 
 function getIconForItem(itemName) {
     if (itemName.endsWith('_seed')) {
@@ -105,12 +121,16 @@ function renderStore() {
             priceHtml = `<del>$${item.price}</del> <ins>$${finalPrice}</ins>`;
         }
 
-        itemDiv.innerHTML = t('buy_item', {
-            icon,
-            itemName: t(item.name),
-            price: priceHtml
-        });
-        itemDiv.dataset.itemName = item.name;
+        itemDiv.innerHTML = `
+            <div class="store-item-info">
+                ${icon} ${t(item.name)}
+                <span>${priceHtml}</span>
+            </div>
+            <div class="store-actions">
+                <input type="number" class="buy-amount-input" min="1" value="1">
+                <button class="btn buy-btn" data-item-name="${item.name}">${t('btn_buy')}</button>
+            </div>
+        `;
         DOM.storeItems.appendChild(itemDiv);
     });
 }
@@ -143,9 +163,16 @@ function renderMarket() {
             const icon = getIconForItem(itemName);
             const price = marketState[itemName].currentPrice + player.upgrades.marketBonus;
             itemDiv.innerHTML = `
-                ${icon} ${t(itemName)}: ${warehouse[itemName]}
-                <span>${t('market_item_price', { price })}</span>
-                <button class="btn sell-btn" data-crop-name="${itemName}">${t('btn_sell_one')}</button>
+                <div class="market-item-info">
+                    ${icon} ${t(itemName)}: ${warehouse[itemName]}
+                    <span>${t('market_item_price', { price })}</span>
+                </div>
+                <div class="market-actions">
+                    <button class="btn sell-btn" data-crop-name="${itemName}" data-amount="1">${t('btn_sell_one')}</button>
+                    <button class="btn sell-btn" data-crop-name="${itemName}" data-amount="all">${t('btn_sell_all')}</button>
+                    <input type="number" class="sell-amount-input" min="1" max="${warehouse[itemName]}" placeholder="Amount">
+                    <button class="btn sell-btn" data-crop-name="${itemName}" data-amount="custom">${t('btn_sell_amount')}</button>
+                </div>
             `;
             DOM.marketItems.appendChild(itemDiv);
         }

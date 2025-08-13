@@ -1,10 +1,11 @@
 import { t } from './localization.js';
 import { player, field, warehouse, marketState } from './state.js';
 import { cropTypes, upgrades, NUM_ROWS, NUM_COLS, store } from './config.js';
+import { showNotification } from './ui.js';
 
 export function plantSeed(r, c) {
     if (!player.selectedSeed) {
-        alert(t('alert_select_seed'));
+        showNotification(t('alert_select_seed'));
         return false;
     }
     if (warehouse[player.selectedSeed] > 0) {
@@ -34,44 +35,51 @@ export function harvestCrop(r, c) {
         field[r][c] = { crop: null, growthStage: 0, stageStartTime: 0 };
         return true;
     } else {
-        alert(t('alert_not_ready_harvest'));
+        showNotification(t('alert_not_ready_harvest'));
         return false;
     }
 }
 
-export function sellCrop(cropName) {
-    if (warehouse[cropName] > 0) {
+export function sellCrop(cropName, amount) {
+    if (!amount || amount <= 0) return false;
+    if (warehouse[cropName] > 0 && warehouse[cropName] >= amount) {
         const crop = cropTypes[cropName];
         const market = marketState[cropName];
-        const salePrice = market.currentPrice + player.upgrades.marketBonus;
+        let totalSalePrice = 0;
 
-        warehouse[cropName]--;
-        player.money += salePrice;
-        market.totalSold++;
+        for (let i = 0; i < amount; i++) {
+            const salePrice = market.currentPrice + player.upgrades.marketBonus;
+            totalSalePrice += salePrice;
+            market.totalSold++;
+            // Recalculate price for each item sold
+            const priceDrop = Math.floor(market.totalSold / crop.salesVolumeForPriceDrop);
+            market.currentPrice = Math.max(crop.minPrice, crop.maxPrice - priceDrop);
+        }
 
-        // Recalculate price
-        const priceDrop = Math.floor(market.totalSold / crop.salesVolumeForPriceDrop);
-        market.currentPrice = Math.max(crop.minPrice, crop.maxPrice - priceDrop);
+        warehouse[cropName] -= amount;
+        player.money += totalSalePrice;
 
         return true;
     } else {
-        alert(t('alert_no_crop_to_sell'));
+        showNotification(t('alert_no_crop_to_sell'));
         return false;
     }
 }
 
-export function buySeed(itemName) {
+export function buySeed(itemName, amount) {
+    if (!amount || amount <= 0) return false;
     const item = store.find(i => i.name === itemName);
     if (!item) return false;
 
     const finalPrice = Math.round(item.price * (1 - player.upgrades.seedDiscount));
+    const totalCost = finalPrice * amount;
 
-    if (player.money >= finalPrice) {
-        player.money -= finalPrice;
-        warehouse[itemName] = (warehouse[itemName] || 0) + 1;
+    if (player.money >= totalCost) {
+        player.money -= totalCost;
+        warehouse[itemName] = (warehouse[itemName] || 0) + amount;
         return true;
     } else {
-        alert(t('alert_not_enough_money'));
+        showNotification(t('alert_not_enough_money'));
         return false;
     }
 }
@@ -79,7 +87,7 @@ export function buySeed(itemName) {
 export function buyUpgrade(upgradeId) {
     const upgrade = upgrades[upgradeId];
     if (!upgrade || upgrade.purchased) {
-        alert("Upgrade not available."); // Should not happen in normal gameplay
+        showNotification("Upgrade not available."); // Should not happen in normal gameplay
         return false;
     }
 
@@ -99,7 +107,7 @@ export function buyUpgrade(upgradeId) {
 
         return true;
     } else {
-        alert(t('alert_not_enough_money'));
+        showNotification(t('alert_not_enough_money'));
         return false;
     }
 }

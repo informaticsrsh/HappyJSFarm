@@ -1,7 +1,7 @@
 import { setLanguage } from './modules/localization.js';
 import { DOM, renderAll } from './modules/ui.js';
 import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed } from './modules/game.js';
-import { player, field } from './modules/state.js';
+import { player, field, warehouse } from './modules/state.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- Event Listeners ---
@@ -53,12 +53,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     DOM.storeItems.addEventListener('click', (e) => {
-        const itemElement = e.target.closest('[data-item-name]');
-        if (itemElement) {
-            const itemName = itemElement.dataset.itemName;
-            if (buySeed(itemName)) {
-                renderAll();
-            }
+        if (!e.target.classList.contains('buy-btn')) return;
+
+        const itemName = e.target.dataset.itemName;
+        const input = e.target.previousElementSibling;
+        const amount = parseInt(input.value, 10);
+
+        if (buySeed(itemName, amount)) {
+            renderAll();
         }
     });
 
@@ -98,11 +100,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     DOM.marketItems.addEventListener('click', (e) => {
-        if (e.target.classList.contains('sell-btn')) {
-            const cropName = e.target.dataset.cropName;
-            if (sellCrop(cropName)) {
-                renderAll();
-            }
+        if (!e.target.classList.contains('sell-btn')) return;
+
+        const cropName = e.target.dataset.cropName;
+        const amountType = e.target.dataset.amount;
+        let amountToSell = 0;
+
+        if (amountType === '1') {
+            amountToSell = 1;
+        } else if (amountType === 'all') {
+            amountToSell = warehouse[cropName];
+        } else if (amountType === 'custom') {
+            const input = e.target.previousElementSibling;
+            amountToSell = parseInt(input.value, 10);
+        }
+
+        if (sellCrop(cropName, amountToSell)) {
+            renderAll();
         }
     });
 
