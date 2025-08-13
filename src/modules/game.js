@@ -187,8 +187,6 @@ function generateOrder(customerId) {
     };
 }
 
-let lastOrderCheck = Date.now();
-
 function updateOrders(now) {
     let ordersChanged = false;
 
@@ -203,16 +201,30 @@ function updateOrders(now) {
         }
     }
 
-    // Generate new orders
-    if (now - lastOrderCheck > customerConfig.orderGenerationInterval) {
-        lastOrderCheck = now;
-        const customersWithoutOrders = Object.keys(customers).filter(id => !customers[id].order);
-        if (customersWithoutOrders.length > 0) {
-            const randomCustomerId = customersWithoutOrders[Math.floor(Math.random() * customersWithoutOrders.length)];
-            generateOrder(randomCustomerId);
+    // --- New Generation Logic ---
+    const activeOrderCount = Object.values(customers).filter(c => c.order).length;
+    const customersWithoutOrders = Object.keys(customers).filter(id => !customers[id].order);
+
+    if (customersWithoutOrders.length === 0) {
+        return ordersChanged;
+    }
+
+    let ordersToAttempt = 0;
+    if (activeOrderCount < 2) {
+        ordersToAttempt = 2 - activeOrderCount;
+    } else if (activeOrderCount === 2 && Math.random() < 0.005) { // ~5% chance per second
+        ordersToAttempt = 1;
+    }
+
+    if (ordersToAttempt > 0) {
+        customersWithoutOrders.sort(() => 0.5 - Math.random());
+
+        for (let i = 0; i < Math.min(ordersToAttempt, customersWithoutOrders.length); i++) {
+            generateOrder(customersWithoutOrders[i]);
             ordersChanged = true;
         }
     }
+
     return ordersChanged;
 }
 

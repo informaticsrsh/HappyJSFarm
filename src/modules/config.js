@@ -64,7 +64,6 @@ export const upgrades = {
 };
 
 export const customerConfig = {
-    orderGenerationInterval: 15000, // ms
     orderLifetime: 60000, // ms
     trustLevels: [
         { trust: 0, size: [5, 10], reward: 1.2 }, // 20% bonus
@@ -74,6 +73,8 @@ export const customerConfig = {
     customers: {
         'npc1': { name: 'Farmer Joe' },
         'npc2': { name: 'Granny Smith' },
-        'npc3': { name: 'Chef Pierre' }
+        'npc3': { name: 'Chef Pierre' },
+        'npc4': { name: 'Rancher Rick' },
+        'npc5': { name: 'Baker Betty' }
     }
 };

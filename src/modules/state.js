@@ -45,5 +45,13 @@ export let customers = {
     'npc3': {
         trust: 0,
         order: null
+    },
+    'npc4': {
+        trust: 0,
+        order: null
+    },
+    'npc5': {
+        trust: 0,
+        order: null
     }
 };
