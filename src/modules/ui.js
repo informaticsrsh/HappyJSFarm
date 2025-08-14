@@ -216,7 +216,7 @@ function renderOrders() {
         const config = customerConfig.customers[customerId];
         if (customer.order) {
             const orderDiv = document.createElement('div');
-            orderDiv.classList.add('order');
+            orderDiv.classList.add('order', `order-customer-${customerId}`);
             orderDiv.dataset.customerId = customerId;
 
             const timeLeft = Math.round((customer.order.expiresAt - Date.now()) / 1000);

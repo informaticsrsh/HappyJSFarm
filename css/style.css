@@ -225,7 +225,7 @@ h1 {
 
 #buildings-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 15px;
 }
 
@@ -361,3 +361,36 @@ h1 {
 .plot.carrot { background-color: #e07a5f44; }
 .plot.tomato { background-color: #f2848244; }
 .plot.potato { background-color: #a5682a44; }
+
+/* Orders Section */
+#orders-container {
+    background-color: #f4f1de;
+    padding: 15px;
+    border-radius: 12px;
+    margin: 0 auto 20px auto;
+    max-width: 1200px;
+}
+
+#order-items {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.order {
+    padding: 15px;
+    border-radius: 8px;
+    border: 2px solid rgba(0,0,0,0.2);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.order-info {
+    font-size: 14px;
+}
+
+/* Customer-specific Order Colors */
+.order-customer-npc1 { background-color: #f2cc8fcc; } /* Farmer Joe - Wheat-like */
+.order-customer-npc2 { background-color: #a2d2ffcc; } /* Granny Smith - Sky Blue */
+.order-customer-npc3 { background-color: #ffc8ddcc; } /* Chef Pierre - Rosy Pink */
+.order-customer-npc4 { background-color: #cdb4dbcc; } /* Rancher Rick - Lavender */
+.order-customer-npc5 { background-color: #bde0fecc; } /* Baker Betty - Light Blue */
