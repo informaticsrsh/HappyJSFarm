@@ -1,6 +1,6 @@
 import { setLanguage } from './modules/localization.js';
 import { DOM, renderAll, renderOrderTimers } from './modules/ui.js';
-import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder, forceGenerateOrder, increaseTrust, buyBuilding, startProduction, devAddAllProducts } from './modules/game.js';
+import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder, forceGenerateOrder, increaseTrust, buyBuilding, startProduction, devAddAllProducts, togglePlotAutomation, toggleBuildingAutomation } from './modules/game.js';
 import { player, field, warehouse } from './modules/state.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -11,17 +11,23 @@ document.addEventListener('DOMContentLoaded', () => {
             const c = e.target.dataset.col;
             const cell = field[r][c];
             let stateChanged = false;
-            if (cell.crop) {
-                stateChanged = harvestCrop(r, c);
+
+            if (e.shiftKey) { // Use Shift+Click to toggle automation
+                stateChanged = togglePlotAutomation(r, c);
             } else {
-                stateChanged = plantSeed(r, c);
+                if (cell.crop) {
+                    stateChanged = harvestCrop(r, c);
+                } else {
+                    stateChanged = plantSeed(r, c);
+                }
             }
+
             if (stateChanged) renderAll();
         }
     });
 
     DOM.upgradesItems.addEventListener('click', (e) => {
-        if (e.target.dataset.upgradeId) {
+        if (e.target.classList.contains('buy-upgrade-btn')) {
             if (buyUpgrade(e.target.dataset.upgradeId)) {
                 renderAll();
             }
@@ -50,10 +56,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     DOM.buildingsGrid.addEventListener('click', (e) => {
+        const buildingId = e.target.dataset.buildingId;
+        if (!buildingId) return;
+
+        let stateChanged = false;
         if (e.target.classList.contains('start-production-btn')) {
-            if (startProduction(e.target.dataset.buildingId)) {
-                renderAll();
-            }
+            stateChanged = startProduction(buildingId);
+        } else if (e.target.classList.contains('toggle-auto-btn')) {
+            stateChanged = toggleBuildingAutomation(buildingId);
+        }
+
+        if (stateChanged) {
+            renderAll();
         }
     });
 

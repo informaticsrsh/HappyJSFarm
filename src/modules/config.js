@@ -96,6 +96,8 @@ export const upgrades = {
     'compost1': { cost: 300, name: 'Compost Bin', description: 'Increases all crop yields by 1.', effect: { type: 'yieldBonus', value: 1 }, purchased: false },
     'negotiation1': { cost: 400, name: 'Negotiation Skills', description: 'Get a 10% discount on all seeds.', effect: { type: 'seedDiscount', value: 0.1 }, purchased: false },
     'charm1': { cost: 600, name: 'Friendly Charm', description: 'Increase all market sale prices by $2.', effect: { type: 'marketBonus', value: 2 }, purchased: false },
+    'automation': { cost: 5000, name: 'Building Automation', description: 'Allows buildings to be automated.', effect: { type: 'buildingAutomation', value: true }, purchased: false },
+    'autoharvest': { cost: 1000, name: 'Auto Harvester', description: 'Automates a single plot to harvest and replant.', effect: { type: 'autoharvest', value: 1 }, purchased: false, repeatable: true },
 };
 
 export const buildings = {

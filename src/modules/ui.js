@@ -83,9 +83,13 @@ function renderField() {
             const cell = field[r][c];
             if (cell.crop) {
                 plot.textContent = cropTypes[cell.crop].visuals[cell.growthStage];
-                plot.classList.add(cell.crop); // Add class for crop color
+                plot.classList.add(cell.crop);
             } else {
                 plot.textContent = '🟫';
+            }
+
+            if (cell.automated) {
+                plot.classList.add('automated');
             }
             DOM.fieldGrid.appendChild(plot);
         }
@@ -259,14 +263,21 @@ function renderUpgrades() {
         const itemDiv = document.createElement('div');
         itemDiv.classList.add('item');
 
-        let buyButton = `<button class="btn" data-upgrade-id="${upgradeId}">Buy ($${upgrade.cost})</button>`;
-        if (upgrade.purchased) {
-            buyButton = `<span>Purchased</span>`;
+        let buyButton = `<button class="btn buy-upgrade-btn" data-upgrade-id="${upgradeId}">${t('btn_buy')} ($${upgrade.cost})</button>`;
+        if (upgrade.purchased && !upgrade.repeatable) {
+            buyButton = `<span>${t('status_purchased')}</span>`;
         }
 
+        let description = t(upgrade.description);
+        if (upgrade.repeatable) {
+            const availableSlots = player.upgrades[upgrade.effect.type] || 0;
+            description += ` ${t('status_available', { count: availableSlots })}`;
+        }
+
+
         itemDiv.innerHTML = `
-            <strong>${upgrade.name}</strong>
-            <p>${upgrade.description}</p>
+            <strong>${t(upgrade.name)}</strong>
+            <p>${description}</p>
             ${buyButton}
         `;
         DOM.upgradesItems.appendChild(itemDiv);
@@ -309,6 +320,9 @@ function renderBuildings() {
             const building = buildings[buildingId];
             const buildingDiv = document.createElement('div');
             buildingDiv.classList.add('building');
+            if (playerBuilding.automated) {
+                buildingDiv.classList.add('automated');
+            }
 
             const inputs = Object.entries(building.input).map(([key, value]) => `${value} ${t(key)}`).join(', ');
             const outputs = Object.entries(building.output).map(([key, value]) => `${value} ${t(key)}`).join(', ');
@@ -316,16 +330,24 @@ function renderBuildings() {
             let status;
             if (playerBuilding.productionStartTime > 0) {
                 const timeLeft = Math.round((playerBuilding.productionStartTime + building.productionTime - Date.now()) / 1000);
-                status = `<div class="building-status">Producing... (${timeLeft}s left)</div>`;
+                status = `<div class="building-status">${t('status_producing')} (${t('status_time_left', { time: timeLeft })})</div>`;
             } else {
                 status = `<button class="btn start-production-btn" data-building-id="${buildingId}">${t('btn_start_production')}</button>`;
             }
+
+            let autoButton = '';
+            if (player.upgrades.buildingAutomation) {
+                const btnText = playerBuilding.automated ? t('btn_deactivate_auto') : t('btn_activate_auto');
+                autoButton = `<button class="btn toggle-auto-btn" data-building-id="${buildingId}">${btnText}</button>`;
+            }
+
 
             buildingDiv.innerHTML = `
                 <div class="building-icon">${building.icon}</div>
                 <strong class="building-name">${t(building.name)}</strong>
                 <div class="building-recipe">${inputs} → ${outputs}</div>
                 <div class="building-timer">${status}</div>
+                <div class="building-automation">${autoButton}</div>
             `;
             DOM.buildingsGrid.appendChild(buildingDiv);
         }

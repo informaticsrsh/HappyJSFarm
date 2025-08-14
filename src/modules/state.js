@@ -10,11 +10,11 @@ export let player = {
         marketBonus: 0
     },
     buildings: {
-        'bakery': { purchased: false, productionStartTime: 0 },
-        'dairy': { purchased: false, productionStartTime: 0 },
-        'pig_pen': { purchased: false, productionStartTime: 0 },
-        'sandwich_shop': { purchased: false, productionStartTime: 0 },
-        'breakfast_bar': { purchased: false, productionStartTime: 0 }
+        'bakery': { purchased: false, productionStartTime: 0, automated: false },
+        'dairy': { purchased: false, productionStartTime: 0, automated: false },
+        'pig_pen': { purchased: false, productionStartTime: 0, automated: false },
+        'sandwich_shop': { purchased: false, productionStartTime: 0, automated: false },
+        'breakfast_bar': { purchased: false, productionStartTime: 0, automated: false }
     },
     npcBonuses: {
         growthMultiplier: 1.0,
@@ -25,7 +25,7 @@ export let player = {
     }
 };
 
-export let field = Array(NUM_ROWS).fill(null).map(() => Array(NUM_COLS).fill(null).map(() => ({ crop: null, growthStage: 0, stageStartTime: 0 })));
+export let field = Array(NUM_ROWS).fill(null).map(() => Array(NUM_COLS).fill(null).map(() => ({ crop: null, growthStage: 0, stageStartTime: 0, automated: false })));
 
 export let warehouse = {
     'wheat_seed': 5,
