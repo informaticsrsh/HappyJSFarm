@@ -1,5 +1,5 @@
 import { setLanguage } from './modules/localization.js';
-import { DOM, renderAll } from './modules/ui.js';
+import { DOM, renderAll, renderOrderTimers } from './modules/ui.js';
 import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder, forceGenerateOrder, increaseTrust } from './modules/game.js';
 import { player, field, warehouse } from './modules/state.js';
 
@@ -162,5 +162,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (gameTick()) {
             renderAll();
         }
-    }, 100); // Check for growth every 100ms
+    }, 100); // Main game loop
+    setInterval(renderOrderTimers, 1000); // Timer-only render loop
 });

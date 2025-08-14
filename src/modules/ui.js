@@ -204,6 +204,7 @@ function renderOrders() {
         if (customer.order) {
             const orderDiv = document.createElement('div');
             orderDiv.classList.add('order');
+            orderDiv.dataset.customerId = customerId;
 
             const timeLeft = Math.round((customer.order.expiresAt - Date.now()) / 1000);
             const icon = getIconForItem(customer.order.crop);
@@ -214,13 +215,28 @@ function renderOrders() {
                     <strong>${t(config.name)}</strong> (Trust: ${customer.trust})<br>
                     Wants: ${icon} ${customer.order.amount} ${t(customer.order.crop)} (Have: ${haveAmount}/${customer.order.amount})<br>
                     Reward: $${customer.order.reward}<br>
-                    Time left: ${timeLeft}s
+                    Time left: <span class="order-timer">${timeLeft}s</span>
                 </div>
                 <button class="btn fulfill-btn" data-customer-id="${customerId}" ${haveAmount >= customer.order.amount ? '' : 'disabled'}>Fulfill</button>
             `;
             DOM.orderItems.appendChild(orderDiv);
         }
     }
+}
+
+export function renderOrderTimers() {
+    const orderElements = DOM.orderItems.querySelectorAll('.order');
+    orderElements.forEach(orderElement => {
+        const customerId = orderElement.dataset.customerId;
+        const customer = customers[customerId];
+        if (customer && customer.order) {
+            const timerSpan = orderElement.querySelector('.order-timer');
+            if (timerSpan) {
+                const timeLeft = Math.round((customer.order.expiresAt - Date.now()) / 1000);
+                timerSpan.textContent = `${Math.max(0, timeLeft)}s`;
+            }
+        }
+    });
 }
 
 function renderUpgrades() {
