@@ -52,6 +52,41 @@ export const cropTypes = {
         minPrice: 30,
         priceRecoveryRate: 20000,
         salesVolumeForPriceDrop: 3
+    },
+    'bread': {
+        icon: '🍞',
+        maxPrice: 50,
+        minPrice: 20,
+        priceRecoveryRate: 10000,
+        salesVolumeForPriceDrop: 5
+    },
+    'milk': {
+        icon: '🥛',
+        maxPrice: 60,
+        minPrice: 25,
+        priceRecoveryRate: 12000,
+        salesVolumeForPriceDrop: 4
+    },
+    'bacon': {
+        icon: '🥓',
+        maxPrice: 80,
+        minPrice: 35,
+        priceRecoveryRate: 15000,
+        salesVolumeForPriceDrop: 3
+    },
+    'sandwich': {
+        icon: '🥪',
+        maxPrice: 200,
+        minPrice: 100,
+        priceRecoveryRate: 20000,
+        salesVolumeForPriceDrop: 2
+    },
+    'cereal': {
+        icon: '🥣',
+        maxPrice: 250,
+        minPrice: 120,
+        priceRecoveryRate: 25000,
+        salesVolumeForPriceDrop: 1
     }
 };
 
@@ -61,6 +96,59 @@ export const upgrades = {
     'compost1': { cost: 300, name: 'Compost Bin', description: 'Increases all crop yields by 1.', effect: { type: 'yieldBonus', value: 1 }, purchased: false },
     'negotiation1': { cost: 400, name: 'Negotiation Skills', description: 'Get a 10% discount on all seeds.', effect: { type: 'seedDiscount', value: 0.1 }, purchased: false },
     'charm1': { cost: 600, name: 'Friendly Charm', description: 'Increase all market sale prices by $2.', effect: { type: 'marketBonus', value: 2 }, purchased: false },
+};
+
+export const buildings = {
+    'bakery': {
+        name: 'Bakery',
+        cost: 1000,
+        description: 'Bakes bread from grain.',
+        input: { 'wheat': 2 },
+        output: { 'bread': 1 },
+        productionTime: 20000, // 20 seconds
+        purchased: false,
+        productionStartTime: 0
+    },
+    'dairy': {
+        name: 'Dairy',
+        cost: 1200,
+        description: 'Produces milk from wheat.',
+        input: { 'wheat': 3 },
+        output: { 'milk': 1 },
+        productionTime: 30000, // 30 seconds
+        purchased: false,
+        productionStartTime: 0
+    },
+    'pig_pen': {
+        name: 'Pig Pen',
+        cost: 1500,
+        description: 'Produces bacon from potatoes.',
+        input: { 'potato': 5 },
+        output: { 'bacon': 1 },
+        productionTime: 45000, // 45 seconds
+        purchased: false,
+        productionStartTime: 0
+    },
+    'sandwich_shop': {
+        name: 'Sandwich Shop',
+        cost: 5000,
+        description: 'Makes delicious sandwiches.',
+        input: { 'bread': 2, 'bacon': 1 },
+        output: { 'sandwich': 1 },
+        productionTime: 60000, // 1 minute
+        purchased: false,
+        productionStartTime: 0
+    },
+    'breakfast_bar': {
+        name: 'Breakfast Bar',
+        cost: 6000,
+        description: 'Makes healthy cereal.',
+        input: { 'milk': 1, 'wheat': 2 },
+        output: { 'cereal': 1 },
+        productionTime: 75000, // 1.25 minutes
+        purchased: false,
+        productionStartTime: 0
+    }
 };
 
 export const customerConfig = {

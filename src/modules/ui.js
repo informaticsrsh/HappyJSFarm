@@ -1,6 +1,6 @@
 import { t } from './localization.js';
 import { player, field, warehouse, marketState, customers } from './state.js';
-import { NUM_ROWS, NUM_COLS, store, cropTypes, upgrades, customerConfig } from './config.js';
+import { NUM_ROWS, NUM_COLS, store, cropTypes, upgrades, customerConfig, buildings } from './config.js';
 
 export const DOM = {
     fieldGrid: document.getElementById('field-grid'),
@@ -28,9 +28,12 @@ export const DOM = {
     // Store tabs
     storeTabs: document.querySelector('.store-tabs'),
     seedsContent: document.getElementById('seeds-content'),
+    productionContent: document.getElementById('production-content'),
     upgradesContent: document.getElementById('upgrades-content'),
+    productionItems: document.getElementById('production-items'),
     upgradesItems: document.getElementById('upgrades-items'),
     seedsTabBtn: document.getElementById('seeds-tab-btn'),
+    productionTabBtn: document.getElementById('production-tab-btn'),
     upgradesTabBtn: document.getElementById('upgrades-tab-btn'),
     // Dev elements
     devPanel: document.querySelector('.dev-panel'),
@@ -192,6 +195,7 @@ function renderStaticUI() {
     DOM.openMarketBtn.textContent = t('btn_market');
     DOM.openRefBtn.textContent = t('btn_reference');
     DOM.seedsTabBtn.textContent = t('seeds_tab');
+    DOM.productionTabBtn.textContent = t('production_tab');
     DOM.upgradesTabBtn.textContent = t('upgrades_tab');
     document.querySelector('#orders-container h2').textContent = t('orders_title');
 }
@@ -260,6 +264,41 @@ function renderUpgrades() {
     }
 }
 
+function renderProduction() {
+    DOM.productionItems.innerHTML = '';
+    for (const buildingId in buildings) {
+        const building = buildings[buildingId];
+        const playerBuilding = player.buildings[buildingId];
+        const itemDiv = document.createElement('div');
+        itemDiv.classList.add('item');
+
+        const inputs = Object.entries(building.input).map(([key, value]) => `${value} ${t(key)}`).join(', ');
+        const outputs = Object.entries(building.output).map(([key, value]) => `${value} ${t(key)}`).join(', ');
+
+        let actionButton;
+        if (playerBuilding.purchased) {
+            if (playerBuilding.productionStartTime > 0) {
+                const timeLeft = Math.round((playerBuilding.productionStartTime + building.productionTime - Date.now()) / 1000);
+                actionButton = `<span>Producing... (${timeLeft}s left)</span>`;
+            } else {
+                actionButton = `<button class="btn start-production-btn" data-building-id="${buildingId}">${t('btn_start_production')}</button>`;
+            }
+        } else {
+            actionButton = `<button class="btn buy-building-btn" data-building-id="${buildingId}">${t('btn_buy')} ($${building.cost})</button>`;
+        }
+
+        itemDiv.innerHTML = `
+            <strong>${t(building.name)}</strong>
+            <p>${t(building.description)}</p>
+            <p><strong>${t('production_input')}:</strong> ${inputs}</p>
+            <p><strong>${t('production_output')}:</strong> ${outputs}</p>
+            <p><strong>${t('production_time')}:</strong> ${building.productionTime / 1000}s</p>
+            ${actionButton}
+        `;
+        DOM.productionItems.appendChild(itemDiv);
+    }
+}
+
 function renderPlayerState() {
     DOM.moneyDisplay.textContent = `💰 $${player.money}`;
 
@@ -322,5 +361,17 @@ export function renderAll() {
     renderMarket();
     renderOrders();
     renderUpgrades();
+    renderProduction();
     renderPlayerState();
 }
+
+// Export DOM elements to be used in main.js for event listeners
+export const {
+    storeTabs,
+    seedsContent,
+    productionContent,
+    upgradesContent,
+    productionItems,
+    upgradesItems,
+    storeModal
+} = DOM;

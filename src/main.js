@@ -1,6 +1,6 @@
 import { setLanguage } from './modules/localization.js';
 import { DOM, renderAll, renderOrderTimers } from './modules/ui.js';
-import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder, forceGenerateOrder, increaseTrust } from './modules/game.js';
+import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder, forceGenerateOrder, increaseTrust, buyBuilding, startProduction } from './modules/game.js';
 import { player, field, warehouse } from './modules/state.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -31,15 +31,24 @@ document.addEventListener('DOMContentLoaded', () => {
     DOM.storeTabs.addEventListener('click', (e) => {
         if (e.target.classList.contains('tab-btn')) {
             const tab = e.target.dataset.tab;
+            // Toggle active button
             DOM.storeTabs.querySelector('.active').classList.remove('active');
             e.target.classList.add('active');
 
-            DOM.seedsContent.classList.remove('active');
-            DOM.upgradesContent.classList.remove('active');
-            if (tab === 'seeds') {
-                DOM.seedsContent.classList.add('active');
-            } else {
-                DOM.upgradesContent.classList.add('active');
+            // Toggle active content
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(`${tab}-content`).classList.add('active');
+        }
+    });
+
+    DOM.productionItems.addEventListener('click', (e) => {
+        if (e.target.classList.contains('buy-building-btn')) {
+            if (buyBuilding(e.target.dataset.buildingId)) {
+                renderAll();
+            }
+        } else if (e.target.classList.contains('start-production-btn')) {
+            if (startProduction(e.target.dataset.buildingId)) {
+                renderAll();
             }
         }
     });

@@ -9,6 +9,13 @@ export let player = {
         seedDiscount: 0,
         marketBonus: 0
     },
+    buildings: {
+        'bakery': { purchased: false, productionStartTime: 0 },
+        'dairy': { purchased: false, productionStartTime: 0 },
+        'pig_pen': { purchased: false, productionStartTime: 0 },
+        'sandwich_shop': { purchased: false, productionStartTime: 0 },
+        'breakfast_bar': { purchased: false, productionStartTime: 0 }
+    },
     npcBonuses: {
         growthMultiplier: 1.0,
         yieldBonus: 0,
@@ -28,7 +35,12 @@ export let warehouse = {
     'wheat': 0,
     'carrot': 0,
     'tomato': 0,
-    'potato': 0
+    'potato': 0,
+    'bread': 0,
+    'milk': 0,
+    'bacon': 0,
+    'sandwich': 0,
+    'cereal': 0
 };
 
 export let marketState = {};
