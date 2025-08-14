@@ -25,6 +25,8 @@ export const DOM = {
     marketTitle: document.querySelector('#market-modal h2'),
     refTitle: document.querySelector('#ref-modal h2'),
     fieldTitle: document.querySelector('#field-container h2'),
+    buildingsContainer: document.getElementById('buildings-container'),
+    buildingsGrid: document.getElementById('buildings-grid'),
     // Store tabs
     storeTabs: document.querySelector('.store-tabs'),
     seedsContent: document.getElementById('seeds-content'),
@@ -39,6 +41,7 @@ export const DOM = {
     devPanel: document.querySelector('.dev-panel'),
     devMoneyBtn: document.getElementById('dev-money-btn'),
     devOrderBtn: document.getElementById('dev-order-btn'),
+    devAddAllBtn: document.getElementById('dev-add-all-btn'),
     moneyDisplay: document.getElementById('money-display'),
     bonusDisplay: document.getElementById('bonus-display'),
     notificationBanner: document.getElementById('notification-banner')
@@ -196,6 +199,7 @@ function renderStaticUI() {
     DOM.refTitle.textContent = t('reference_title');
     DOM.warehouseTitle.textContent = t('warehouse_title');
     DOM.fieldTitle.textContent = t('field_title');
+    document.querySelector('#buildings-container h2').textContent = t('buildings_title');
     DOM.openStoreBtn.textContent = t('btn_store');
     DOM.openMarketBtn.textContent = t('btn_market');
     DOM.openRefBtn.textContent = t('btn_reference');
@@ -274,23 +278,16 @@ function renderProduction() {
     for (const buildingId in buildings) {
         const building = buildings[buildingId];
         const playerBuilding = player.buildings[buildingId];
+        if (playerBuilding.purchased) {
+            continue; // Skip purchased buildings
+        }
+
         const itemDiv = document.createElement('div');
         itemDiv.classList.add('item');
 
         const inputs = Object.entries(building.input).map(([key, value]) => `${value} ${t(key)}`).join(', ');
         const outputs = Object.entries(building.output).map(([key, value]) => `${value} ${t(key)}`).join(', ');
-
-        let actionButton;
-        if (playerBuilding.purchased) {
-            if (playerBuilding.productionStartTime > 0) {
-                const timeLeft = Math.round((playerBuilding.productionStartTime + building.productionTime - Date.now()) / 1000);
-                actionButton = `<span>Producing... (${timeLeft}s left)</span>`;
-            } else {
-                actionButton = `<button class="btn start-production-btn" data-building-id="${buildingId}">${t('btn_start_production')}</button>`;
-            }
-        } else {
-            actionButton = `<button class="btn buy-building-btn" data-building-id="${buildingId}">${t('btn_buy')} ($${building.cost})</button>`;
-        }
+        const actionButton = `<button class="btn buy-building-btn" data-building-id="${buildingId}">${t('btn_buy')} ($${building.cost})</button>`;
 
         itemDiv.innerHTML = `
             <strong>${t(building.name)}</strong>
@@ -301,6 +298,36 @@ function renderProduction() {
             ${actionButton}
         `;
         DOM.productionItems.appendChild(itemDiv);
+    }
+}
+
+function renderBuildings() {
+    DOM.buildingsGrid.innerHTML = '';
+    for (const buildingId in player.buildings) {
+        const playerBuilding = player.buildings[buildingId];
+        if (playerBuilding.purchased) {
+            const building = buildings[buildingId];
+            const buildingDiv = document.createElement('div');
+            buildingDiv.classList.add('building');
+
+            const inputs = Object.entries(building.input).map(([key, value]) => `${value} ${t(key)}`).join(', ');
+            const outputs = Object.entries(building.output).map(([key, value]) => `${value} ${t(key)}`).join(', ');
+
+            let status;
+            if (playerBuilding.productionStartTime > 0) {
+                const timeLeft = Math.round((playerBuilding.productionStartTime + building.productionTime - Date.now()) / 1000);
+                status = `<div class="building-status">Producing... (${timeLeft}s left)</div>`;
+            } else {
+                status = `<button class="btn start-production-btn" data-building-id="${buildingId}">${t('btn_start_production')}</button>`;
+            }
+
+            buildingDiv.innerHTML = `
+                <strong>${t(building.name)}</strong>
+                <p>${inputs} → ${outputs}</p>
+                ${status}
+            `;
+            DOM.buildingsGrid.appendChild(buildingDiv);
+        }
     }
 }
 
@@ -367,6 +394,7 @@ export function renderAll() {
     renderOrders();
     renderUpgrades();
     renderProduction();
+    renderBuildings();
     renderPlayerState();
 }
 
@@ -378,5 +406,6 @@ export const {
     upgradesContent,
     productionItems,
     upgradesItems,
-    storeModal
+    storeModal,
+    buildingsGrid
 } = DOM;

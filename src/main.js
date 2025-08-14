@@ -1,6 +1,6 @@
 import { setLanguage } from './modules/localization.js';
 import { DOM, renderAll, renderOrderTimers } from './modules/ui.js';
-import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder, forceGenerateOrder, increaseTrust, buyBuilding, startProduction } from './modules/game.js';
+import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder, forceGenerateOrder, increaseTrust, buyBuilding, startProduction, devAddAllProducts } from './modules/game.js';
 import { player, field, warehouse } from './modules/state.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -46,7 +46,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (buyBuilding(e.target.dataset.buildingId)) {
                 renderAll();
             }
-        } else if (e.target.classList.contains('start-production-btn')) {
+        }
+    });
+
+    DOM.buildingsGrid.addEventListener('click', (e) => {
+        if (e.target.classList.contains('start-production-btn')) {
             if (startProduction(e.target.dataset.buildingId)) {
                 renderAll();
             }
@@ -96,6 +100,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     DOM.devOrderBtn.addEventListener('click', () => {
         if (forceGenerateOrder()) {
+            renderAll();
+        }
+    });
+    DOM.devAddAllBtn.addEventListener('click', () => {
+        if (devAddAllProducts()) {
             renderAll();
         }
     });

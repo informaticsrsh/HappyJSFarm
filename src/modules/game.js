@@ -386,3 +386,10 @@ export function forceGenerateOrder() {
     showNotification("All customers already have orders!");
     return false;
 }
+
+export function devAddAllProducts() {
+    for (const item in warehouse) {
+        warehouse[item] += 100;
+    }
+    return true;
+}
