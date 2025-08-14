@@ -1,6 +1,6 @@
 import { t } from './localization.js';
-import { player, field, warehouse, marketState } from './state.js';
-import { cropTypes, upgrades, NUM_ROWS, NUM_COLS, store } from './config.js';
+import { player, field, warehouse, marketState, customers } from './state.js';
+import { cropTypes, upgrades, NUM_ROWS, NUM_COLS, store, customerConfig } from './config.js';
 import { showNotification } from './ui.js';
 
 export function plantSeed(r, c) {
@@ -30,7 +30,7 @@ export function harvestCrop(r, c) {
     if (cell.growthStage >= crop.visuals.length - 1) {
         const [min, max] = crop.yieldRange;
         let yieldAmount = Math.floor(Math.random() * (max - min + 1)) + min;
-        yieldAmount += player.upgrades.yieldBonus; // Add yield bonus
+        yieldAmount += (player.upgrades.yieldBonus + player.npcBonuses.yieldBonus); // Add yield bonus
         warehouse[cell.crop] = (warehouse[cell.crop] || 0) + yieldAmount;
         field[r][c] = { crop: null, growthStage: 0, stageStartTime: 0 };
         return true;
@@ -53,7 +53,8 @@ export function sellCrop(cropName, amount) {
         const market = marketState[cropName];
 
         // Calculate sale price based on the current market price
-        const salePrice = market.currentPrice + player.upgrades.marketBonus;
+        const priceBonus = player.npcBonuses.priceBonus[cropName] || 0;
+        const salePrice = market.currentPrice + player.upgrades.marketBonus + player.npcBonuses.marketBonus + priceBonus;
         const totalSalePrice = salePrice * amount;
 
         // Update player money and warehouse
@@ -76,7 +77,7 @@ export function buySeed(itemName, amount) {
     const item = store.find(i => i.name === itemName);
     if (!item) return false;
 
-    const finalPrice = Math.round(item.price * (1 - player.upgrades.seedDiscount));
+    const finalPrice = Math.round(item.price * (1 - (player.upgrades.seedDiscount + player.npcBonuses.seedDiscount)));
     const totalCost = finalPrice * amount;
 
     if (player.money >= totalCost) {
@@ -125,7 +126,7 @@ function updateCropGrowth(now) {
             if (cell.crop) {
                 const crop = cropTypes[cell.crop];
                 if (cell.growthStage < crop.visuals.length - 1) {
-                    const timeToGrow = crop.growthTime * player.upgrades.growthMultiplier;
+                    const timeToGrow = crop.growthTime * player.upgrades.growthMultiplier * player.npcBonuses.growthMultiplier;
                     if (now - cell.stageStartTime >= timeToGrow) {
                         cell.growthStage++;
                         cell.stageStartTime = now;
@@ -155,9 +156,169 @@ function updateMarketPrices(now) {
     return marketChanged;
 }
 
+function getCustomerTier(trust) {
+    let currentTier = customerConfig.trustLevels[0];
+    for (const tier of customerConfig.trustLevels) {
+        if (trust >= tier.trust) {
+            currentTier = tier;
+        } else {
+            break;
+        }
+    }
+    return currentTier;
+}
+
+function generateOrder(customerId) {
+    const customer = customers[customerId];
+    if (customer.order) return; // Don't generate if one is active
+
+    const availableCrops = Object.keys(cropTypes);
+    const randomCrop = availableCrops[Math.floor(Math.random() * availableCrops.length)];
+    const tier = getCustomerTier(customer.trust);
+    const [minSize, maxSize] = tier.size;
+    const amount = Math.floor(Math.random() * (maxSize - minSize + 1)) + minSize;
+    const marketPrice = marketState[randomCrop].currentPrice;
+    const reward = Math.round(marketPrice * amount * tier.reward);
+
+    customer.order = {
+        crop: randomCrop,
+        amount,
+        reward,
+        expiresAt: Date.now() + customerConfig.orderLifetime
+    };
+}
+
+function updateOrders(now) {
+    let ordersChanged = false;
+
+    // Expire old orders
+    for (const customerId in customers) {
+        const customer = customers[customerId];
+        if (customer.order && now > customer.order.expiresAt) {
+            customer.order = null;
+            customer.trust = Math.max(0, customer.trust - 10); // Penalty
+            updateNpcBonuses();
+            ordersChanged = true;
+            showNotification(t('alert_order_expired', { name: customerConfig.customers[customerId].name }));
+        }
+    }
+
+    // --- New Generation Logic ---
+    const activeOrderCount = Object.values(customers).filter(c => c.order).length;
+    const customersWithoutOrders = Object.keys(customers).filter(id => !customers[id].order);
+
+    if (customersWithoutOrders.length === 0) {
+        return ordersChanged;
+    }
+
+    let ordersToAttempt = 0;
+    if (activeOrderCount < 1) {
+        ordersToAttempt = 1;
+    } else if (activeOrderCount < 3 && Math.random() < 0.05) { // ~40% chance per second
+        ordersToAttempt = 1;
+    }
+
+    if (ordersToAttempt > 0) {
+        customersWithoutOrders.sort(() => 0.5 - Math.random());
+
+        for (let i = 0; i < Math.min(ordersToAttempt, customersWithoutOrders.length); i++) {
+            generateOrder(customersWithoutOrders[i]);
+            ordersChanged = true;
+        }
+    }
+    return ordersChanged;
+}
+
+function updateNpcBonuses() {
+    // Reset bonuses to default state
+    player.npcBonuses = {
+        growthMultiplier: 1.0,
+        yieldBonus: 0,
+        seedDiscount: 0,
+        marketBonus: 0,
+        priceBonus: {}
+    };
+
+    for (const customerId in customers) {
+        const customer = customers[customerId];
+        const bonusConfig = customerConfig.customers[customerId].bonus;
+        if (!bonusConfig) continue;
+
+        let bonusLevel = 0;
+        if (customer.trust >= 400) bonusLevel = 5;
+        else if (customer.trust >= 300) bonusLevel = 4;
+
+        if (bonusLevel > 0) {
+            const value = bonusConfig[`value_l${bonusLevel}`];
+            switch (bonusConfig.type) {
+                case 'yieldBonus':
+                case 'marketBonus':
+                case 'seedDiscount':
+                    player.npcBonuses[bonusConfig.type] += value;
+                    break;
+                case 'growthMultiplier':
+                    // For multipliers, we multiply them together, starting from 1.0
+                    player.npcBonuses[bonusConfig.type] *= value;
+                    break;
+                case 'priceBonus':
+                    if (!player.npcBonuses.priceBonus[bonusConfig.crop]) {
+                        player.npcBonuses.priceBonus[bonusConfig.crop] = 0;
+                    }
+                    player.npcBonuses.priceBonus[bonusConfig.crop] += value;
+                    break;
+            }
+        }
+    }
+}
+
+
 export function gameTick() {
     const now = Date.now();
     const growthChanged = updateCropGrowth(now);
     const marketChanged = updateMarketPrices(now);
-    return growthChanged || marketChanged;
+    const ordersChanged = updateOrders(now);
+    return growthChanged || marketChanged || ordersChanged;
+}
+
+export function fulfillOrder(customerId) {
+    const customer = customers[customerId];
+    const order = customer.order;
+
+    if (!order) {
+        showNotification("This order is no longer available.");
+        return false;
+    }
+
+    if (warehouse[order.crop] >= order.amount) {
+        warehouse[order.crop] -= order.amount;
+        player.money += order.reward;
+        customer.trust += 20; // Reward for fulfilling
+        customer.order = null;
+        updateNpcBonuses();
+        showNotification(t('alert_order_fulfilled', { name: customerConfig.customers[customerId].name }));
+        return true;
+    } else {
+        showNotification(t('alert_not_enough_crops'));
+        return false;
+    }
+}
+
+export function increaseTrust(customerId, amount) {
+    if (customers[customerId]) {
+        customers[customerId].trust += amount;
+        updateNpcBonuses();
+        return true;
+    }
+    return false;
+}
+
+export function forceGenerateOrder() {
+    const customersWithoutOrders = Object.keys(customers).filter(id => !customers[id].order);
+    if (customersWithoutOrders.length > 0) {
+        const randomCustomerId = customersWithoutOrders[Math.floor(Math.random() * customersWithoutOrders.length)];
+        generateOrder(randomCustomerId);
+        return true;
+    }
+    showNotification("All customers already have orders!");
+    return false;
 }

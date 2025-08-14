@@ -1,6 +1,6 @@
 import { setLanguage } from './modules/localization.js';
-import { DOM, renderAll } from './modules/ui.js';
-import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed } from './modules/game.js';
+import { DOM, renderAll, renderOrderTimers } from './modules/ui.js';
+import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder, forceGenerateOrder, increaseTrust } from './modules/game.js';
 import { player, field, warehouse } from './modules/state.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -52,6 +52,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    DOM.devPanel.addEventListener('click', (e) => {
+        if (e.target.classList.contains('dev-trust-btn')) {
+            const customerId = e.target.dataset.customerId;
+            if (increaseTrust(customerId, 50)) {
+                renderAll();
+            }
+        }
+    });
+
     DOM.storeItems.addEventListener('click', (e) => {
         if (!e.target.classList.contains('buy-btn')) return;
 
@@ -75,6 +84,11 @@ document.addEventListener('DOMContentLoaded', () => {
     DOM.devMoneyBtn.addEventListener('click', () => {
         player.money += 1000;
         renderAll();
+    });
+    DOM.devOrderBtn.addEventListener('click', () => {
+        if (forceGenerateOrder()) {
+            renderAll();
+        }
     });
 
     // Modal event listeners
@@ -132,6 +146,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    DOM.orderItems.addEventListener('click', (e) => {
+        if (e.target.classList.contains('fulfill-btn')) {
+            const customerId = e.target.dataset.customerId;
+            if (fulfillOrder(customerId)) {
+                renderAll();
+            }
+        }
+    });
+
 
     // --- Initial Game Start ---
     renderAll();
@@ -139,5 +162,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (gameTick()) {
             renderAll();
         }
-    }, 100); // Check for growth every 100ms
+    }, 100); // Main game loop
+    setInterval(renderOrderTimers, 1000); // Timer-only render loop
 });

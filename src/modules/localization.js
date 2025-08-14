@@ -36,7 +36,16 @@ const locales = {
         "alert_select_seed": "Select a seed from the warehouse first!",
         "alert_not_ready_harvest": "Not ready to harvest yet!",
         "alert_no_crop_to_sell": "You don't have any to sell!",
-        "alert_not_enough_money": "Not enough money!"
+        "alert_not_enough_money": "Not enough money!",
+        "orders_title": "Orders",
+        "Farmer Joe": "Farmer Joe",
+        "Granny Smith": "Granny Smith",
+        "Chef Pierre": "Chef Pierre",
+        "Rancher Rick": "Rancher Rick",
+        "Baker Betty": "Baker Betty",
+        "alert_order_expired": "Order from {name} has expired!",
+        "alert_order_fulfilled": "Order for {name} fulfilled! You received a bonus.",
+        "alert_not_enough_crops": "You don't have enough crops to fulfill this order."
     },
     "uk": {
         "title": "Моя Ферма",
@@ -75,7 +84,16 @@ const locales = {
         "alert_select_seed": "Спочатку виберіть насіння зі складу!",
         "alert_not_ready_harvest": "Ще не готово для збору!",
         "alert_no_crop_to_sell": "У вас немає нічого для продажу!",
-        "alert_not_enough_money": "Недостатньо грошей!"
+        "alert_not_enough_money": "Недостатньо грошей!",
+        "orders_title": "Замовлення",
+        "Farmer Joe": "Фермер Джо",
+        "Granny Smith": "Бабуся Сміт",
+        "Chef Pierre": "Шеф-кухар П'єр",
+        "Rancher Rick": "Ранчер Рік",
+        "Baker Betty": "Пекар Бетті",
+        "alert_order_expired": "Замовлення від {name} закінчилося!",
+        "alert_order_fulfilled": "Замовлення для {name} виконано! Ви отримали бонус.",
+        "alert_not_enough_crops": "У вас недостатньо врожаю для виконання цього замовлення."
     }
 };
 

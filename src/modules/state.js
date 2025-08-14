@@ -4,10 +4,17 @@ export let player = {
     money: 100,
     selectedSeed: null,
     upgrades: {
-        growthMultiplier: 1.0, // e.g., 0.9 would be 10% faster
+        growthMultiplier: 1.0,
         yieldBonus: 0,
-        seedDiscount: 0, // as a percentage, e.g., 0.1 for 10%
-        marketBonus: 0 // as a flat addition
+        seedDiscount: 0,
+        marketBonus: 0
+    },
+    npcBonuses: {
+        growthMultiplier: 1.0,
+        yieldBonus: 0,
+        seedDiscount: 0,
+        marketBonus: 0,
+        priceBonus: {} // e.g., { 'wheat': 5 }
     }
 };
 
@@ -32,3 +39,26 @@ Object.keys(cropTypes).forEach(cropName => {
         lastRecoveryTime: Date.now()
     };
 });
+
+export let customers = {
+    'npc1': {
+        trust: 0,
+        order: null // { crop, amount, reward, expiresAt }
+    },
+    'npc2': {
+        trust: 0,
+        order: null
+    },
+    'npc3': {
+        trust: 0,
+        order: null
+    },
+    'npc4': {
+        trust: 0,
+        order: null
+    },
+    'npc5': {
+        trust: 0,
+        order: null
+    }
+};

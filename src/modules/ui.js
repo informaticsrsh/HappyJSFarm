@@ -1,10 +1,11 @@
 import { t } from './localization.js';
-import { player, field, warehouse, marketState } from './state.js';
-import { NUM_ROWS, NUM_COLS, store, cropTypes, upgrades } from './config.js';
+import { player, field, warehouse, marketState, customers } from './state.js';
+import { NUM_ROWS, NUM_COLS, store, cropTypes, upgrades, customerConfig } from './config.js';
 
 export const DOM = {
     fieldGrid: document.getElementById('field-grid'),
     warehouseItems: document.getElementById('warehouse-items'),
+    orderItems: document.getElementById('order-items'),
     storeItems: document.getElementById('store-items'),
     storeModal: document.getElementById('store-modal'),
     openStoreBtn: document.getElementById('open-store-btn'),
@@ -32,7 +33,9 @@ export const DOM = {
     seedsTabBtn: document.getElementById('seeds-tab-btn'),
     upgradesTabBtn: document.getElementById('upgrades-tab-btn'),
     // Dev elements
+    devPanel: document.querySelector('.dev-panel'),
     devMoneyBtn: document.getElementById('dev-money-btn'),
+    devOrderBtn: document.getElementById('dev-order-btn'),
     moneyDisplay: document.getElementById('money-display'),
     bonusDisplay: document.getElementById('bonus-display'),
     notificationBanner: document.getElementById('notification-banner')
@@ -190,6 +193,50 @@ function renderStaticUI() {
     DOM.openRefBtn.textContent = t('btn_reference');
     DOM.seedsTabBtn.textContent = t('seeds_tab');
     DOM.upgradesTabBtn.textContent = t('upgrades_tab');
+    document.querySelector('#orders-container h2').textContent = t('orders_title');
+}
+
+function renderOrders() {
+    DOM.orderItems.innerHTML = '';
+    for (const customerId in customers) {
+        const customer = customers[customerId];
+        const config = customerConfig.customers[customerId];
+        if (customer.order) {
+            const orderDiv = document.createElement('div');
+            orderDiv.classList.add('order');
+            orderDiv.dataset.customerId = customerId;
+
+            const timeLeft = Math.round((customer.order.expiresAt - Date.now()) / 1000);
+            const icon = getIconForItem(customer.order.crop);
+            const haveAmount = warehouse[customer.order.crop] || 0;
+
+            orderDiv.innerHTML = `
+                <div class="order-info">
+                    <strong>${t(config.name)}</strong> (Trust: ${customer.trust})<br>
+                    Wants: ${icon} ${customer.order.amount} ${t(customer.order.crop)} (Have: ${haveAmount}/${customer.order.amount})<br>
+                    Reward: $${customer.order.reward}<br>
+                    Time left: <span class="order-timer">${timeLeft}s</span>
+                </div>
+                <button class="btn fulfill-btn" data-customer-id="${customerId}" ${haveAmount >= customer.order.amount ? '' : 'disabled'}>Fulfill</button>
+            `;
+            DOM.orderItems.appendChild(orderDiv);
+        }
+    }
+}
+
+export function renderOrderTimers() {
+    const orderElements = DOM.orderItems.querySelectorAll('.order');
+    orderElements.forEach(orderElement => {
+        const customerId = orderElement.dataset.customerId;
+        const customer = customers[customerId];
+        if (customer && customer.order) {
+            const timerSpan = orderElement.querySelector('.order-timer');
+            if (timerSpan) {
+                const timeLeft = Math.round((customer.order.expiresAt - Date.now()) / 1000);
+                timerSpan.textContent = `${Math.max(0, timeLeft)}s`;
+            }
+        }
+    });
 }
 
 function renderUpgrades() {
@@ -231,6 +278,38 @@ function renderPlayerState() {
     if (player.upgrades.marketBonus > 0) {
         bonusHtml += `<div>Market Bonus: +$${player.upgrades.marketBonus}</div>`;
     }
+
+    // Display NPC Bonuses
+    const { npcBonuses } = player;
+    const hasNpcBonus =
+        npcBonuses.yieldBonus > 0 ||
+        npcBonuses.growthMultiplier < 1.0 ||
+        npcBonuses.marketBonus > 0 ||
+        npcBonuses.seedDiscount > 0 ||
+        Object.keys(npcBonuses.priceBonus).length > 0;
+
+    if (hasNpcBonus) {
+        bonusHtml += `<div class="bonus-section-title">NPC Bonuses:</div>`;
+        if (npcBonuses.growthMultiplier < 1.0) {
+            const percentage = Math.round((1 - npcBonuses.growthMultiplier) * 100);
+            bonusHtml += `<div>- Growth Speed: +${percentage}%</div>`;
+        }
+        if (npcBonuses.yieldBonus > 0) {
+            bonusHtml += `<div>- Yield: +${npcBonuses.yieldBonus}</div>`;
+        }
+        if (npcBonuses.seedDiscount > 0) {
+            const percentage = Math.round(npcBonuses.seedDiscount * 100);
+            bonusHtml += `<div>- Seed Discount: ${percentage}%</div>`;
+        }
+        if (npcBonuses.marketBonus > 0) {
+            bonusHtml += `<div>- Market Prices: +$${npcBonuses.marketBonus}</div>`;
+        }
+        for (const cropName in npcBonuses.priceBonus) {
+            const bonus = npcBonuses.priceBonus[cropName];
+            bonusHtml += `<div>- ${t(cropName)} Price: +$${bonus}</div>`;
+        }
+    }
+
     DOM.bonusDisplay.innerHTML = bonusHtml;
 }
 
@@ -241,6 +320,7 @@ export function renderAll() {
     renderStore();
     renderReference();
     renderMarket();
+    renderOrders();
     renderUpgrades();
     renderPlayerState();
 }
