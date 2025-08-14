@@ -147,6 +147,11 @@ function renderReference() {
         const crop = cropTypes[cropName];
         const storeItem = store.find(s => s.name === `${cropName}_seed`);
 
+        // If it's not a seed you can buy, it's not a crop for the reference page.
+        if (!storeItem) {
+            return;
+        }
+
         const cropDiv = document.createElement('div');
         cropDiv.innerHTML = `
             <h3>${crop.icon} ${t(cropName)}</h3>
