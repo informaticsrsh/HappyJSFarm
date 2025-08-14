@@ -292,6 +292,15 @@ export function fulfillOrder(customerId) {
     }
 }
 
+export function increaseTrust(customerId, amount) {
+    if (customers[customerId]) {
+        customers[customerId].trust += amount;
+        updateNpcBonuses();
+        return true;
+    }
+    return false;
+}
+
 export function forceGenerateOrder() {
     const customersWithoutOrders = Object.keys(customers).filter(id => !customers[id].order);
     if (customersWithoutOrders.length > 0) {

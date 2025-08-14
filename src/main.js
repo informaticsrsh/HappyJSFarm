@@ -1,6 +1,6 @@
 import { setLanguage } from './modules/localization.js';
 import { DOM, renderAll } from './modules/ui.js';
-import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder, forceGenerateOrder } from './modules/game.js';
+import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder, forceGenerateOrder, increaseTrust } from './modules/game.js';
 import { player, field, warehouse } from './modules/state.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -49,6 +49,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (seed) {
             player.selectedSeed = seed.dataset.seed;
             renderAll();
+        }
+    });
+
+    DOM.devPanel.addEventListener('click', (e) => {
+        if (e.target.classList.contains('dev-trust-btn')) {
+            const customerId = e.target.dataset.customerId;
+            if (increaseTrust(customerId, 50)) {
+                renderAll();
+            }
         }
     });
 

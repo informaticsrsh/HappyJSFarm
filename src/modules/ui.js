@@ -33,6 +33,7 @@ export const DOM = {
     seedsTabBtn: document.getElementById('seeds-tab-btn'),
     upgradesTabBtn: document.getElementById('upgrades-tab-btn'),
     // Dev elements
+    devPanel: document.querySelector('.dev-panel'),
     devMoneyBtn: document.getElementById('dev-money-btn'),
     devOrderBtn: document.getElementById('dev-order-btn'),
     moneyDisplay: document.getElementById('money-display'),
