@@ -261,6 +261,38 @@ function renderPlayerState() {
     if (player.upgrades.marketBonus > 0) {
         bonusHtml += `<div>Market Bonus: +$${player.upgrades.marketBonus}</div>`;
     }
+
+    // Display NPC Bonuses
+    const { npcBonuses } = player;
+    const hasNpcBonus =
+        npcBonuses.yieldBonus > 0 ||
+        npcBonuses.growthMultiplier < 1.0 ||
+        npcBonuses.marketBonus > 0 ||
+        npcBonuses.seedDiscount > 0 ||
+        Object.keys(npcBonuses.priceBonus).length > 0;
+
+    if (hasNpcBonus) {
+        bonusHtml += `<div class="bonus-section-title">NPC Bonuses:</div>`;
+        if (npcBonuses.growthMultiplier < 1.0) {
+            const percentage = Math.round((1 - npcBonuses.growthMultiplier) * 100);
+            bonusHtml += `<div>- Growth Speed: +${percentage}%</div>`;
+        }
+        if (npcBonuses.yieldBonus > 0) {
+            bonusHtml += `<div>- Yield: +${npcBonuses.yieldBonus}</div>`;
+        }
+        if (npcBonuses.seedDiscount > 0) {
+            const percentage = Math.round(npcBonuses.seedDiscount * 100);
+            bonusHtml += `<div>- Seed Discount: ${percentage}%</div>`;
+        }
+        if (npcBonuses.marketBonus > 0) {
+            bonusHtml += `<div>- Market Prices: +$${npcBonuses.marketBonus}</div>`;
+        }
+        for (const cropName in npcBonuses.priceBonus) {
+            const bonus = npcBonuses.priceBonus[cropName];
+            bonusHtml += `<div>- ${t(cropName)} Price: +$${bonus}</div>`;
+        }
+    }
+
     DOM.bonusDisplay.innerHTML = bonusHtml;
 }
 

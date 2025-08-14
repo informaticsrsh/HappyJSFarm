@@ -66,15 +66,32 @@ export const upgrades = {
 export const customerConfig = {
     orderLifetime: 60000, // ms
     trustLevels: [
-        { trust: 0, size: [5, 10], reward: 1.2 }, // 20% bonus
-        { trust: 100, size: [10, 20], reward: 1.3 },
-        { trust: 200, size: [20, 40], reward: 1.5 },
+        { level: 1, trust: 0, size: [5, 10], reward: 1.2 },
+        { level: 2, trust: 100, size: [10, 20], reward: 1.3 },
+        { level: 3, trust: 200, size: [20, 40], reward: 1.5 },
+        { level: 4, trust: 300, size: [30, 50], reward: 1.7 },
+        { level: 5, trust: 400, size: [40, 60], reward: 2.0 },
     ],
     customers: {
-        'npc1': { name: 'Farmer Joe' },
-        'npc2': { name: 'Granny Smith' },
-        'npc3': { name: 'Chef Pierre' },
-        'npc4': { name: 'Rancher Rick' },
-        'npc5': { name: 'Baker Betty' }
+        'npc1': {
+            name: 'Farmer Joe',
+            bonus: { description: "Increases all crop yields.", type: 'yieldBonus', value_l4: 1, value_l5: 2 }
+        },
+        'npc2': {
+            name: 'Granny Smith',
+            bonus: { description: "All crops grow faster.", type: 'growthMultiplier', value_l4: 0.95, value_l5: 0.9 }
+        },
+        'npc3': {
+            name: 'Chef Pierre',
+            bonus: { description: "Increases all market sale prices.", type: 'marketBonus', value_l4: 2, value_l5: 5 }
+        },
+        'npc4': {
+            name: 'Rancher Rick',
+            bonus: { description: "Get a discount on all seeds.", type: 'seedDiscount', value_l4: 0.05, value_l5: 0.1 }
+        },
+        'npc5': {
+            name: 'Baker Betty',
+            bonus: { description: "Increases sale price of wheat.", type: 'priceBonus', crop: 'wheat', value_l4: 5, value_l5: 10 }
+        }
     }
 };
