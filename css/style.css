@@ -362,6 +362,24 @@ h1 {
 .plot.tomato { background-color: #f2848244; }
 .plot.potato { background-color: #a5682a44; }
 
+.automated-plot {
+    border: 3px dashed #81b29a;
+    box-sizing: border-box;
+}
+.automated-plot.automated-wheat { border-color: #f2cc8f; }
+.automated-plot.automated-carrot { border-color: #e07a5f; }
+.automated-plot.automated-tomato { border-color: #f28482; }
+.automated-plot.automated-potato { border-color: #a5682a; }
+
+.building.automated {
+    border-color: #81b29a;
+    box-shadow: 0 0 10px #81b29a;
+}
+
+.building-automation {
+    margin-top: 5px;
+}
+
 /* Orders Section */
 #orders-container {
     background-color: #f4f1de;

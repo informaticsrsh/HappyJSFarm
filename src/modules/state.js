@@ -7,7 +7,8 @@ export let player = {
         growthMultiplier: 1.0,
         yieldBonus: 0,
         seedDiscount: 0,
-        marketBonus: 0
+        marketBonus: 0,
+        buildingAutomation: false
     },
     buildings: {
         'bakery': { purchased: false, productionStartTime: 0, automated: false },
@@ -25,7 +26,7 @@ export let player = {
     }
 };
 
-export let field = Array(NUM_ROWS).fill(null).map(() => Array(NUM_COLS).fill(null).map(() => ({ crop: null, growthStage: 0, stageStartTime: 0, automated: false })));
+export let field = Array(NUM_ROWS).fill(null).map(() => Array(NUM_COLS).fill(null).map(() => ({ crop: null, growthStage: 0, stageStartTime: 0, autoCrop: null })));
 
 export let warehouse = {
     'wheat_seed': 5,

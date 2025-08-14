@@ -83,13 +83,16 @@ function renderField() {
             const cell = field[r][c];
             if (cell.crop) {
                 plot.textContent = cropTypes[cell.crop].visuals[cell.growthStage];
-                plot.classList.add(cell.crop);
-            } else {
+                plot.classList.add(cell.crop); // Add class for crop color
+            } else if (cell.autoCrop) {
+                plot.textContent = cropTypes[cell.autoCrop].icon; // Show icon on empty auto plot
+            }
+            else {
                 plot.textContent = '🟫';
             }
 
-            if (cell.automated) {
-                plot.classList.add('automated');
+            if (cell.autoCrop) {
+                plot.classList.add('automated-plot', `automated-${cell.autoCrop}`);
             }
             DOM.fieldGrid.appendChild(plot);
         }
@@ -263,22 +266,23 @@ function renderUpgrades() {
         const itemDiv = document.createElement('div');
         itemDiv.classList.add('item');
 
-        let buyButton = `<button class="btn buy-upgrade-btn" data-upgrade-id="${upgradeId}">${t('btn_buy')} ($${upgrade.cost})</button>`;
-        if (upgrade.purchased && !upgrade.repeatable) {
-            buyButton = `<span>${t('status_purchased')}</span>`;
-        }
-
-        let description = t(upgrade.description);
+        let buyButton;
         if (upgrade.repeatable) {
-            const availableSlots = player.upgrades[upgrade.effect.type] || 0;
-            description += ` ${t('status_available', { count: availableSlots })}`;
+            const canPurchase = upgrade.purchasedCount < upgrade.maxPurchases;
+            const purchaseStatus = `(${upgrade.purchasedCount}/${upgrade.maxPurchases})`;
+            buyButton = canPurchase
+                ? `<button class="btn buy-upgrade-btn" data-upgrade-id="${upgradeId}">${t('btn_buy')} ($${upgrade.cost})</button> <span>${purchaseStatus}</span>`
+                : `<span>${t('status_maxed_out')} ${purchaseStatus}</span>`;
+        } else {
+            buyButton = upgrade.purchased
+                ? `<span>${t('status_purchased')}</span>`
+                : `<button class="btn buy-upgrade-btn" data-upgrade-id="${upgradeId}">${t('btn_buy')} ($${upgrade.cost})</button>`;
         }
-
 
         itemDiv.innerHTML = `
             <strong>${t(upgrade.name)}</strong>
-            <p>${description}</p>
-            ${buyButton}
+            <p>${t(upgrade.description)}</p>
+            <div class="upgrade-actions">${buyButton}</div>
         `;
         DOM.upgradesItems.appendChild(itemDiv);
     }
@@ -337,10 +341,9 @@ function renderBuildings() {
 
             let autoButton = '';
             if (player.upgrades.buildingAutomation) {
-                const btnText = playerBuilding.automated ? t('btn_deactivate_auto') : t('btn_activate_auto');
-                autoButton = `<button class="btn toggle-auto-btn" data-building-id="${buildingId}">${btnText}</button>`;
+                const btnTextKey = playerBuilding.automated ? 'btn_deactivate_auto' : 'btn_activate_auto';
+                autoButton = `<button class="btn toggle-auto-btn" data-building-id="${buildingId}">${t(btnTextKey)}</button>`;
             }
-
 
             buildingDiv.innerHTML = `
                 <div class="building-icon">${building.icon}</div>

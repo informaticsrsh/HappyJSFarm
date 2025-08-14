@@ -4,58 +4,27 @@ import { cropTypes, upgrades, NUM_ROWS, NUM_COLS, store, customerConfig, buildin
 import { showNotification } from './ui.js';
 
 export function plantSeed(r, c, cropToPlant = null) {
-    const isAutomated = cropToPlant !== null;
-    const seedToPlant = isAutomated ? `${cropToPlant}_seed` : player.selectedSeed;
+    const isAuto = !!cropToPlant;
+    const seedName = isAuto ? `${cropToPlant}_seed` : player.selectedSeed;
+    const cropName = isAuto ? cropToPlant : seedName.replace('_seed', '');
 
-    if (!seedToPlant || seedToPlant === 'null_seed') {
-        if (!isAutomated) showNotification(t('alert_select_seed'));
+    if (!seedName) {
+        showNotification(t('alert_select_seed'));
         return false;
     }
 
-    const cropName = seedToPlant.replace('_seed', '');
-    if (!cropTypes[cropName]) return false;
+    if (warehouse[seedName] > 0) {
+        warehouse[seedName]--;
+        field[r][c].crop = cropName;
+        field[r][c].growthStage = 0;
+        field[r][c].stageStartTime = Date.now();
 
-    if (warehouse[seedToPlant] > 0) {
-        warehouse[seedToPlant]--;
-        field[r][c] = {
-            ...field[r][c], // Preserve automation status
-            crop: cropName,
-            growthStage: 0,
-            stageStartTime: Date.now()
-        };
-        if (!isAutomated && warehouse[seedToPlant] === 0) {
+        if (!isAuto && warehouse[seedName] === 0) {
             player.selectedSeed = null; // Deselect if none left
         }
         return true;
     }
     return false;
-}
-
-export function togglePlotAutomation(r, c) {
-    const cell = field[r][c];
-    const automatedPlots = field.flat().filter(c => c.automated).length;
-
-    if (cell.automated) {
-        // Deactivate automation
-        cell.automated = false;
-        player.upgrades.autoharvest++; // Return the slot
-        return true;
-    } else {
-        // Activate automation
-        if (player.upgrades.autoharvest > 0) {
-            if (cell.crop) {
-                cell.automated = true;
-                player.upgrades.autoharvest--; // Use up the slot
-                return true;
-            } else {
-                showNotification(t('alert_plant_first'));
-                return false;
-            }
-        } else {
-            showNotification(t('alert_buy_autoharvest'));
-            return false;
-        }
-    }
 }
 
 export function harvestCrop(r, c) {
@@ -68,21 +37,12 @@ export function harvestCrop(r, c) {
         let yieldAmount = Math.floor(Math.random() * (max - min + 1)) + min;
         yieldAmount += (player.upgrades.yieldBonus + player.npcBonuses.yieldBonus);
         warehouse[cell.crop] = (warehouse[cell.crop] || 0) + yieldAmount;
-
-        const wasAutomated = cell.automated;
-        const originalCropName = cell.crop;
-        // Reset the cell but keep its automation status
-        field[r][c] = { crop: null, growthStage: 0, stageStartTime: 0, automated: wasAutomated };
-
-        // If it was automated, try to replant the same crop
-        if (wasAutomated) {
-            plantSeed(r, c, originalCropName);
-        }
+        cell.crop = null;
+        cell.growthStage = 0;
+        cell.stageStartTime = 0;
         return true;
     } else {
-        if (!cell.automated) { // Don't show notification for automated attempts
-            showNotification(t('alert_not_ready_harvest'));
-        }
+        showNotification(t('alert_not_ready_harvest'));
         return false;
     }
 }
@@ -139,35 +99,70 @@ export function buySeed(itemName, amount) {
 
 export function buyUpgrade(upgradeId) {
     const upgrade = upgrades[upgradeId];
-    if (!upgrade || (upgrade.purchased && !upgrade.repeatable)) {
-        showNotification("Upgrade not available.");
+    if (!upgrade) return false;
+
+    // Check if max purchases reached
+    if (upgrade.repeatable && upgrade.purchasedCount >= upgrade.maxPurchases) {
+        showNotification(t('alert_max_purchases'));
         return false;
     }
 
+    // Check if already purchased for non-repeatable upgrades
+    if (!upgrade.repeatable && upgrade.purchased) {
+        showNotification(t('alert_already_purchased'));
+        return false;
+    }
 
-    if (player.money >= upgrade.cost) {
-        player.money -= upgrade.cost;
-        if (!upgrade.repeatable) {
-            upgrade.purchased = true;
-        }
-
-        const { type, value } = upgrade.effect;
-        if (type === 'growthMultiplier') {
-            player.upgrades[type] = value;
-        } else if (type === 'buildingAutomation') {
-            player.upgrades.buildingAutomation = value;
-        } else if (type === 'autoharvest') {
-            player.upgrades.autoharvest = (player.upgrades.autoharvest || 0) + value;
-            showNotification(t('alert_autoharvest_purchased'));
-        } else {
-            player.upgrades[type] += value;
-        }
-
-        return true;
-    } else {
+    if (player.money < upgrade.cost) {
         showNotification(t('alert_not_enough_money'));
         return false;
     }
+
+    const { type, crop } = upgrade.effect;
+
+    // Handle auto plot upgrades
+    if (type === 'autoPlot') {
+        const emptyPlot = field.flat().find(cell => !cell.crop && !cell.autoCrop);
+        if (!emptyPlot) {
+            showNotification(t('alert_no_empty_plots'));
+            return false;
+        }
+        player.money -= upgrade.cost;
+        upgrade.purchasedCount++;
+        emptyPlot.autoCrop = crop;
+        showNotification(t('alert_plot_converted', { crop: t(crop) }));
+        return true;
+    }
+
+    // Handle other upgrade types
+    player.money -= upgrade.cost;
+    if (upgrade.repeatable) {
+        upgrade.purchasedCount = (upgrade.purchasedCount || 0) + 1;
+    } else {
+        upgrade.purchased = true;
+    }
+
+    const { value } = upgrade.effect;
+    if (type === 'growthMultiplier') {
+        player.upgrades[type] = value;
+    } else if (type === 'buildingAutomation') {
+        player.upgrades.buildingAutomation = value;
+    } else {
+        player.upgrades[type] = (player.upgrades[type] || 0) + value;
+    }
+
+    return true;
+}
+
+export function toggleBuildingAutomation(buildingId) {
+    if (player.upgrades.buildingAutomation) {
+        const building = player.buildings[buildingId];
+        if (building && building.purchased) {
+            building.automated = !building.automated;
+            return true;
+        }
+    }
+    return false;
 }
 
 export function buyBuilding(buildingId) {
@@ -218,22 +213,32 @@ function updateCropGrowth(now) {
     for (let r = 0; r < NUM_ROWS; r++) {
         for (let c = 0; c < NUM_COLS; c++) {
             const cell = field[r][c];
-            if (cell.crop) {
-                const crop = cropTypes[cell.crop];
-                // Check for automated harvest
-                if (cell.automated && cell.growthStage >= crop.visuals.length - 1) {
-                    if (harvestCrop(r, c)) {
+
+            // Handle automated plots
+            if (cell.autoCrop) {
+                if (!cell.crop) {
+                    // If empty, try to plant
+                    if (plantSeed(r, c, cell.autoCrop)) {
                         fieldChanged = true;
+                    }
+                } else {
+                    // If crop is mature, harvest it
+                    const crop = cropTypes[cell.crop];
+                    if (cell.growthStage >= crop.visuals.length - 1) {
+                        if (harvestCrop(r, c)) {
+                            fieldChanged = true;
+                        }
                     }
                 }
-                // Check for manual growth
-                else if (cell.growthStage < crop.visuals.length - 1) {
-                    const timeToGrow = crop.growthTime * player.upgrades.growthMultiplier * player.npcBonuses.growthMultiplier;
-                    if (now - cell.stageStartTime >= timeToGrow) {
-                        cell.growthStage++;
-                        cell.stageStartTime = now;
-                        fieldChanged = true;
-                    }
+            }
+
+            // Handle growth for all plots (manual and auto)
+            if (cell.crop && cell.growthStage < cropTypes[cell.crop].visuals.length - 1) {
+                const timeToGrow = cropTypes[cell.crop].growthTime * player.upgrades.growthMultiplier * player.npcBonuses.growthMultiplier;
+                if (now - cell.stageStartTime >= timeToGrow) {
+                    cell.growthStage++;
+                    cell.stageStartTime = now;
+                    fieldChanged = true;
                 }
             }
         }
@@ -256,17 +261,6 @@ function updateMarketPrices(now) {
         }
     }
     return marketChanged;
-}
-
-export function toggleBuildingAutomation(buildingId) {
-    if (player.upgrades.buildingAutomation) {
-        const building = player.buildings[buildingId];
-        if (building && building.purchased) {
-            building.automated = !building.automated;
-            return true;
-        }
-    }
-    return false;
 }
 
 function canAfford(ingredients) {
@@ -299,7 +293,6 @@ function updateProduction(now) {
         // Handle auto-starting production
         if (playerBuilding.purchased && playerBuilding.automated && playerBuilding.productionStartTime === 0) {
             if (canAfford(building.input)) {
-                // Consume ingredients and start
                 for (const ingredient in building.input) {
                     warehouse[ingredient] -= building.input[ingredient];
                 }

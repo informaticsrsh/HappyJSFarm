@@ -91,13 +91,21 @@ export const cropTypes = {
 };
 
 export const upgrades = {
+    // --- General Upgrades ---
     'fertilizer1': { cost: 200, name: 'Better Fertilizer', description: 'Crops grow 10% faster.', effect: { type: 'growthMultiplier', value: 0.9 }, purchased: false },
     'fertilizer2': { cost: 500, name: 'Super Fertilizer', description: 'Crops grow 25% faster in total.', effect: { type: 'growthMultiplier', value: 0.75 }, purchased: false },
     'compost1': { cost: 300, name: 'Compost Bin', description: 'Increases all crop yields by 1.', effect: { type: 'yieldBonus', value: 1 }, purchased: false },
     'negotiation1': { cost: 400, name: 'Negotiation Skills', description: 'Get a 10% discount on all seeds.', effect: { type: 'seedDiscount', value: 0.1 }, purchased: false },
     'charm1': { cost: 600, name: 'Friendly Charm', description: 'Increase all market sale prices by $2.', effect: { type: 'marketBonus', value: 2 }, purchased: false },
-    'automation': { cost: 5000, name: 'Building Automation', description: 'Allows buildings to be automated.', effect: { type: 'buildingAutomation', value: true }, purchased: false },
-    'autoharvest': { cost: 1000, name: 'Auto Harvester', description: 'Automates a single plot to harvest and replant.', effect: { type: 'autoharvest', value: 1 }, purchased: false, repeatable: true },
+
+    // --- Automation Upgrades ---
+    'building_automation': { cost: 5000, name: 'Building Automation', description: 'Allows buildings to be automated.', effect: { type: 'buildingAutomation', value: true }, purchased: false },
+
+    // --- Field Automation Upgrades ---
+    'auto_wheat': { cost: 2500, name: 'Automated Wheat Plot', description: 'Converts a free plot to automatically grow wheat.', effect: { type: 'autoPlot', crop: 'wheat' }, repeatable: true, maxPurchases: 2, purchasedCount: 0 },
+    'auto_carrot': { cost: 3000, name: 'Automated Carrot Plot', description: 'Converts a free plot to automatically grow carrots.', effect: { type: 'autoPlot', crop: 'carrot' }, repeatable: true, maxPurchases: 2, purchasedCount: 0 },
+    'auto_tomato': { cost: 3500, name: 'Automated Tomato Plot', description: 'Converts a free plot to automatically grow tomatoes.', effect: { type: 'autoPlot', crop: 'tomato' }, repeatable: true, maxPurchases: 2, purchasedCount: 0 },
+    'auto_potato': { cost: 4000, name: 'Automated Potato Plot', description: 'Converts a free plot to automatically grow potatoes.', effect: { type: 'autoPlot', crop: 'potato' }, repeatable: true, maxPurchases: 2, purchasedCount: 0 },
 };
 
 export const buildings = {
