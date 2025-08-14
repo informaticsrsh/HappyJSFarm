@@ -64,7 +64,7 @@ export const upgrades = {
 };
 
 export const customerConfig = {
-    orderLifetime: 60000, // ms
+    orderLifetime: 120000, // ms
     trustLevels: [
         { level: 1, trust: 0, size: [5, 10], reward: 1.2 },
         { level: 2, trust: 100, size: [10, 20], reward: 1.3 },

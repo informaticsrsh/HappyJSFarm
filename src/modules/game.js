@@ -119,7 +119,6 @@ export function buyUpgrade(upgradeId) {
 }
 
 function updateCropGrowth(now) {
-    let fieldChanged = false;
     for (let r = 0; r < NUM_ROWS; r++) {
         for (let c = 0; c < NUM_COLS; c++) {
             const cell = field[r][c];
@@ -130,17 +129,14 @@ function updateCropGrowth(now) {
                     if (now - cell.stageStartTime >= timeToGrow) {
                         cell.growthStage++;
                         cell.stageStartTime = now;
-                        fieldChanged = true;
                     }
                 }
             }
         }
     }
-    return fieldChanged;
 }
 
 function updateMarketPrices(now) {
-    let marketChanged = false;
     for (const cropName in marketState) {
         const market = marketState[cropName];
         const crop = cropTypes[cropName];
@@ -149,11 +145,9 @@ function updateMarketPrices(now) {
                 market.totalSold = Math.max(0, market.totalSold - crop.salesVolumeForPriceDrop);
                 updateMarketPrice(cropName);
                 market.lastRecoveryTime = now;
-                marketChanged = true;
             }
         }
     }
-    return marketChanged;
 }
 
 function getCustomerTier(trust) {
@@ -189,8 +183,6 @@ function generateOrder(customerId) {
 }
 
 function updateOrders(now) {
-    let ordersChanged = false;
-
     // Expire old orders
     for (const customerId in customers) {
         const customer = customers[customerId];
@@ -198,7 +190,6 @@ function updateOrders(now) {
             customer.order = null;
             customer.trust = Math.max(0, customer.trust - 10); // Penalty
             updateNpcBonuses();
-            ordersChanged = true;
             showNotification(t('alert_order_expired', { name: customerConfig.customers[customerId].name }));
         }
     }
@@ -208,13 +199,13 @@ function updateOrders(now) {
     const customersWithoutOrders = Object.keys(customers).filter(id => !customers[id].order);
 
     if (customersWithoutOrders.length === 0) {
-        return ordersChanged;
+        return;
     }
 
     let ordersToAttempt = 0;
-    if (activeOrderCount < 2) {
-        ordersToAttempt = 2 - activeOrderCount;
-    } else if (activeOrderCount === 2 && Math.random() < 0.02) { // ~20% chance per second
+    if (activeOrderCount < 1) {
+        ordersToAttempt = 1;
+    } else if (activeOrderCount < 3 && Math.random() < 0.05) { // ~40% chance per second
         ordersToAttempt = 1;
     }
 
@@ -223,11 +214,8 @@ function updateOrders(now) {
 
         for (let i = 0; i < Math.min(ordersToAttempt, customersWithoutOrders.length); i++) {
             generateOrder(customersWithoutOrders[i]);
-            ordersChanged = true;
         }
     }
-
-    return ordersChanged;
 }
 
 function updateNpcBonuses() {
@@ -275,10 +263,10 @@ function updateNpcBonuses() {
 
 export function gameTick() {
     const now = Date.now();
-    const growthChanged = updateCropGrowth(now);
-    const marketChanged = updateMarketPrices(now);
-    const ordersChanged = updateOrders(now);
-    return growthChanged || marketChanged || ordersChanged;
+    updateCropGrowth(now);
+    updateMarketPrices(now);
+    updateOrders(now);
+    return true; // Always return true to force a re-render for the timers
 }
 
 export function fulfillOrder(customerId) {
