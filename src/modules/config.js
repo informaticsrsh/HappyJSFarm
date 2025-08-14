@@ -101,6 +101,7 @@ export const upgrades = {
 export const buildings = {
     'bakery': {
         name: 'Bakery',
+        icon: '🏠',
         cost: 1000,
         description: 'Bakes bread from grain.',
         input: { 'wheat': 2 },
@@ -111,6 +112,7 @@ export const buildings = {
     },
     'dairy': {
         name: 'Dairy',
+        icon: '🐮',
         cost: 1200,
         description: 'Produces milk from wheat.',
         input: { 'wheat': 3 },
@@ -121,6 +123,7 @@ export const buildings = {
     },
     'pig_pen': {
         name: 'Pig Pen',
+        icon: '🐷',
         cost: 1500,
         description: 'Produces bacon from potatoes.',
         input: { 'potato': 5 },
@@ -131,6 +134,7 @@ export const buildings = {
     },
     'sandwich_shop': {
         name: 'Sandwich Shop',
+        icon: '🏪',
         cost: 5000,
         description: 'Makes delicious sandwiches.',
         input: { 'bread': 2, 'bacon': 1 },
@@ -141,6 +145,7 @@ export const buildings = {
     },
     'breakfast_bar': {
         name: 'Breakfast Bar',
+        icon: '🥣',
         cost: 6000,
         description: 'Makes healthy cereal.',
         input: { 'milk': 1, 'wheat': 2 },
