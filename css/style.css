@@ -56,7 +56,7 @@ h1 {
     min-width: 200px;
 }
 
-#field-container, #warehouse-container, .modal-content {
+#field-container, #warehouse-container, #buildings-container, .modal-content {
     background-color: #c6d5ac; /* New, softer background color */
     padding: 20px;
     border-radius: 12px;
@@ -223,6 +223,54 @@ h1 {
     transform: scale(1.1);
 }
 
+#buildings-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.building {
+    background-color: #f4f1de;
+    padding: 15px;
+    border-radius: 12px;
+    border: 2px solid #3d405b;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.building:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.building-icon {
+    font-size: 40px;
+    line-height: 1;
+}
+
+.building-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #3d405b;
+}
+
+.building-recipe {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.building-timer {
+    margin-top: auto; /* Pushes the button/timer to the bottom */
+    padding-top: 10px;
+    font-weight: 700;
+    color: #e07a5f;
+}
+
 .item {
     cursor: pointer;
     padding: 8px;
@@ -313,3 +361,36 @@ h1 {
 .plot.carrot { background-color: #e07a5f44; }
 .plot.tomato { background-color: #f2848244; }
 .plot.potato { background-color: #a5682a44; }
+
+/* Orders Section */
+#orders-container {
+    background-color: #f4f1de;
+    padding: 15px;
+    border-radius: 12px;
+    margin: 0 auto 20px auto;
+    max-width: 1200px;
+}
+
+#order-items {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.order {
+    padding: 15px;
+    border-radius: 8px;
+    border: 2px solid rgba(0,0,0,0.2);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.order-info {
+    font-size: 14px;
+}
+
+/* Customer-specific Order Colors */
+.order-customer-npc1 { background-color: #f2cc8fcc; } /* Farmer Joe - Wheat-like */
+.order-customer-npc2 { background-color: #a2d2ffcc; } /* Granny Smith - Sky Blue */
+.order-customer-npc3 { background-color: #ffc8ddcc; } /* Chef Pierre - Rosy Pink */
+.order-customer-npc4 { background-color: #cdb4dbcc; } /* Rancher Rick - Lavender */
+.order-customer-npc5 { background-color: #bde0fecc; } /* Baker Betty - Light Blue */

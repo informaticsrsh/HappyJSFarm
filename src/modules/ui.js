@@ -1,6 +1,6 @@
 import { t } from './localization.js';
 import { player, field, warehouse, marketState, customers } from './state.js';
-import { NUM_ROWS, NUM_COLS, store, cropTypes, upgrades, customerConfig } from './config.js';
+import { NUM_ROWS, NUM_COLS, store, cropTypes, upgrades, customerConfig, buildings } from './config.js';
 
 export const DOM = {
     fieldGrid: document.getElementById('field-grid'),
@@ -25,17 +25,23 @@ export const DOM = {
     marketTitle: document.querySelector('#market-modal h2'),
     refTitle: document.querySelector('#ref-modal h2'),
     fieldTitle: document.querySelector('#field-container h2'),
+    buildingsContainer: document.getElementById('buildings-container'),
+    buildingsGrid: document.getElementById('buildings-grid'),
     // Store tabs
     storeTabs: document.querySelector('.store-tabs'),
     seedsContent: document.getElementById('seeds-content'),
+    productionContent: document.getElementById('production-content'),
     upgradesContent: document.getElementById('upgrades-content'),
+    productionItems: document.getElementById('production-items'),
     upgradesItems: document.getElementById('upgrades-items'),
     seedsTabBtn: document.getElementById('seeds-tab-btn'),
+    productionTabBtn: document.getElementById('production-tab-btn'),
     upgradesTabBtn: document.getElementById('upgrades-tab-btn'),
     // Dev elements
     devPanel: document.querySelector('.dev-panel'),
     devMoneyBtn: document.getElementById('dev-money-btn'),
     devOrderBtn: document.getElementById('dev-order-btn'),
+    devAddAllBtn: document.getElementById('dev-add-all-btn'),
     moneyDisplay: document.getElementById('money-display'),
     bonusDisplay: document.getElementById('bonus-display'),
     notificationBanner: document.getElementById('notification-banner')
@@ -144,6 +150,11 @@ function renderReference() {
         const crop = cropTypes[cropName];
         const storeItem = store.find(s => s.name === `${cropName}_seed`);
 
+        // If it's not a seed you can buy, it's not a crop for the reference page.
+        if (!storeItem) {
+            return;
+        }
+
         const cropDiv = document.createElement('div');
         cropDiv.innerHTML = `
             <h3>${crop.icon} ${t(cropName)}</h3>
@@ -188,10 +199,12 @@ function renderStaticUI() {
     DOM.refTitle.textContent = t('reference_title');
     DOM.warehouseTitle.textContent = t('warehouse_title');
     DOM.fieldTitle.textContent = t('field_title');
+    document.querySelector('#buildings-container h2').textContent = t('buildings_title');
     DOM.openStoreBtn.textContent = t('btn_store');
     DOM.openMarketBtn.textContent = t('btn_market');
     DOM.openRefBtn.textContent = t('btn_reference');
     DOM.seedsTabBtn.textContent = t('seeds_tab');
+    DOM.productionTabBtn.textContent = t('production_tab');
     DOM.upgradesTabBtn.textContent = t('upgrades_tab');
     document.querySelector('#orders-container h2').textContent = t('orders_title');
 }
@@ -203,7 +216,7 @@ function renderOrders() {
         const config = customerConfig.customers[customerId];
         if (customer.order) {
             const orderDiv = document.createElement('div');
-            orderDiv.classList.add('order');
+            orderDiv.classList.add('order', `order-customer-${customerId}`);
             orderDiv.dataset.customerId = customerId;
 
             const timeLeft = Math.round((customer.order.expiresAt - Date.now()) / 1000);
@@ -257,6 +270,65 @@ function renderUpgrades() {
             ${buyButton}
         `;
         DOM.upgradesItems.appendChild(itemDiv);
+    }
+}
+
+function renderProduction() {
+    DOM.productionItems.innerHTML = '';
+    for (const buildingId in buildings) {
+        const building = buildings[buildingId];
+        const playerBuilding = player.buildings[buildingId];
+        if (playerBuilding.purchased) {
+            continue; // Skip purchased buildings
+        }
+
+        const itemDiv = document.createElement('div');
+        itemDiv.classList.add('item');
+
+        const inputs = Object.entries(building.input).map(([key, value]) => `${value} ${t(key)}`).join(', ');
+        const outputs = Object.entries(building.output).map(([key, value]) => `${value} ${t(key)}`).join(', ');
+        const actionButton = `<button class="btn buy-building-btn" data-building-id="${buildingId}">${t('btn_buy')} ($${building.cost})</button>`;
+
+        itemDiv.innerHTML = `
+            <strong>${t(building.name)}</strong>
+            <p>${t(building.description)}</p>
+            <p><strong>${t('production_input')}:</strong> ${inputs}</p>
+            <p><strong>${t('production_output')}:</strong> ${outputs}</p>
+            <p><strong>${t('production_time')}:</strong> ${building.productionTime / 1000}s</p>
+            ${actionButton}
+        `;
+        DOM.productionItems.appendChild(itemDiv);
+    }
+}
+
+function renderBuildings() {
+    DOM.buildingsGrid.innerHTML = '';
+    for (const buildingId in player.buildings) {
+        const playerBuilding = player.buildings[buildingId];
+        if (playerBuilding.purchased) {
+            const building = buildings[buildingId];
+            const buildingDiv = document.createElement('div');
+            buildingDiv.classList.add('building');
+
+            const inputs = Object.entries(building.input).map(([key, value]) => `${value} ${t(key)}`).join(', ');
+            const outputs = Object.entries(building.output).map(([key, value]) => `${value} ${t(key)}`).join(', ');
+
+            let status;
+            if (playerBuilding.productionStartTime > 0) {
+                const timeLeft = Math.round((playerBuilding.productionStartTime + building.productionTime - Date.now()) / 1000);
+                status = `<div class="building-status">Producing... (${timeLeft}s left)</div>`;
+            } else {
+                status = `<button class="btn start-production-btn" data-building-id="${buildingId}">${t('btn_start_production')}</button>`;
+            }
+
+            buildingDiv.innerHTML = `
+                <div class="building-icon">${building.icon}</div>
+                <strong class="building-name">${t(building.name)}</strong>
+                <div class="building-recipe">${inputs} → ${outputs}</div>
+                <div class="building-timer">${status}</div>
+            `;
+            DOM.buildingsGrid.appendChild(buildingDiv);
+        }
     }
 }
 
@@ -322,5 +394,19 @@ export function renderAll() {
     renderMarket();
     renderOrders();
     renderUpgrades();
+    renderProduction();
+    renderBuildings();
     renderPlayerState();
 }
+
+// Export DOM elements to be used in main.js for event listeners
+export const {
+    storeTabs,
+    seedsContent,
+    productionContent,
+    upgradesContent,
+    productionItems,
+    upgradesItems,
+    storeModal,
+    buildingsGrid
+} = DOM;

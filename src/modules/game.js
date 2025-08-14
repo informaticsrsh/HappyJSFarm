@@ -1,6 +1,6 @@
 import { t } from './localization.js';
 import { player, field, warehouse, marketState, customers } from './state.js';
-import { cropTypes, upgrades, NUM_ROWS, NUM_COLS, store, customerConfig } from './config.js';
+import { cropTypes, upgrades, NUM_ROWS, NUM_COLS, store, customerConfig, buildings } from './config.js';
 import { showNotification } from './ui.js';
 
 export function plantSeed(r, c) {
@@ -118,6 +118,49 @@ export function buyUpgrade(upgradeId) {
     }
 }
 
+export function buyBuilding(buildingId) {
+    const building = buildings[buildingId];
+    if (!building || player.buildings[buildingId].purchased) {
+        showNotification("Building not available.");
+        return false;
+    }
+
+    if (player.money >= building.cost) {
+        player.money -= building.cost;
+        player.buildings[buildingId].purchased = true;
+        return true;
+    } else {
+        showNotification(t('alert_not_enough_money'));
+        return false;
+    }
+}
+
+export function startProduction(buildingId) {
+    const building = buildings[buildingId];
+    const playerBuilding = player.buildings[buildingId];
+
+    if (!building || !playerBuilding.purchased || playerBuilding.productionStartTime > 0) {
+        showNotification("Cannot start production.");
+        return false;
+    }
+
+    // Check for required ingredients
+    for (const ingredient in building.input) {
+        if ((warehouse[ingredient] || 0) < building.input[ingredient]) {
+            showNotification(t('alert_not_enough_ingredients', { item: t(ingredient) }));
+            return false;
+        }
+    }
+
+    // Consume ingredients
+    for (const ingredient in building.input) {
+        warehouse[ingredient] -= building.input[ingredient];
+    }
+
+    playerBuilding.productionStartTime = Date.now();
+    return true;
+}
+
 function updateCropGrowth(now) {
     let fieldChanged = false;
     for (let r = 0; r < NUM_ROWS; r++) {
@@ -154,6 +197,26 @@ function updateMarketPrices(now) {
         }
     }
     return marketChanged;
+}
+
+function updateProduction(now) {
+    let productionChanged = false;
+    for (const buildingId in player.buildings) {
+        const playerBuilding = player.buildings[buildingId];
+        if (playerBuilding.purchased && playerBuilding.productionStartTime > 0) {
+            const building = buildings[buildingId];
+            if (now - playerBuilding.productionStartTime >= building.productionTime) {
+                // Production finished
+                for (const product in building.output) {
+                    warehouse[product] = (warehouse[product] || 0) + building.output[product];
+                    showNotification(t('alert_production_finished', { item: t(product) }));
+                }
+                playerBuilding.productionStartTime = 0; // Reset for next production
+                productionChanged = true;
+            }
+        }
+    }
+    return productionChanged;
 }
 
 function getCustomerTier(trust) {
@@ -277,7 +340,8 @@ export function gameTick() {
     const growthChanged = updateCropGrowth(now);
     const marketChanged = updateMarketPrices(now);
     const ordersChanged = updateOrders(now);
-    return growthChanged || marketChanged || ordersChanged;
+    const productionChanged = updateProduction(now);
+    return growthChanged || marketChanged || ordersChanged || productionChanged;
 }
 
 export function fulfillOrder(customerId) {
@@ -321,4 +385,11 @@ export function forceGenerateOrder() {
     }
     showNotification("All customers already have orders!");
     return false;
+}
+
+export function devAddAllProducts() {
+    for (const item in warehouse) {
+        warehouse[item] += 100;
+    }
+    return true;
 }
