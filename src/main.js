@@ -1,6 +1,6 @@
 import { setLanguage } from './modules/localization.js';
 import { DOM, renderAll, renderOrderTimers } from './modules/ui.js';
-import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder, forceGenerateOrder, increaseTrust, buyBuilding, startProduction, devAddAllProducts, toggleBuildingAutomation } from './modules/game.js';
+import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder, forceGenerateOrder, increaseTrust, buyBuilding, startProduction, devAddAllProducts, toggleBuildingAutomation, addXp } from './modules/game.js';
 import { player, field, warehouse } from './modules/state.js';
 import { leveling } from './modules/config.js';
 
@@ -62,7 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let stateChanged = false;
         if (e.target.classList.contains('start-production-btn')) {
-            stateChanged = startProduction(buildingId);
+            const recipeIndex = e.target.dataset.recipeIndex;
+            stateChanged = startProduction(buildingId, recipeIndex);
         } else if (e.target.classList.contains('toggle-auto-btn')) {
             stateChanged = toggleBuildingAutomation(buildingId);
         }
@@ -70,6 +71,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (stateChanged) {
             renderAll();
         }
+    });
+
+    DOM.devXpBtn.addEventListener('click', () => {
+        addXp(200);
+        renderAll();
     });
 
     DOM.warehouseItems.addEventListener('click', (e) => {

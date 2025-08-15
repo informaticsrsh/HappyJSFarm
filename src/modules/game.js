@@ -231,29 +231,33 @@ export function buyBuilding(buildingId) {
     }
 }
 
-export function startProduction(buildingId) {
+export function startProduction(buildingId, recipeIndex) {
     const building = buildings[buildingId];
     const playerBuilding = player.buildings[buildingId];
+    const recipe = building.recipes[recipeIndex];
 
-    if (!building || !playerBuilding.purchased || playerBuilding.productionStartTime > 0) {
+    if (!building || !playerBuilding.purchased || playerBuilding.production) {
         showNotification("Cannot start production.");
         return false;
     }
 
     // Check for required ingredients
-    for (const ingredient in building.input) {
-        if ((warehouse[ingredient] || 0) < building.input[ingredient]) {
+    for (const ingredient in recipe.input) {
+        if ((warehouse[ingredient] || 0) < recipe.input[ingredient]) {
             showNotification(t('alert_not_enough_ingredients', { item: t(ingredient) }));
             return false;
         }
     }
 
     // Consume ingredients
-    for (const ingredient in building.input) {
-        warehouse[ingredient] -= building.input[ingredient];
+    for (const ingredient in recipe.input) {
+        warehouse[ingredient] -= recipe.input[ingredient];
     }
 
-    playerBuilding.productionStartTime = Date.now();
+    playerBuilding.production = {
+        recipeIndex,
+        startTime: Date.now()
+    };
     return true;
 }
 
@@ -328,26 +332,29 @@ function updateProduction(now) {
         const building = buildings[buildingId];
 
         // Handle finished production
-        if (playerBuilding.purchased && playerBuilding.productionStartTime > 0) {
-            if (now - playerBuilding.productionStartTime >= building.productionTime) {
-                for (const product in building.output) {
-                    const amount = building.output[product];
+        if (playerBuilding.purchased && playerBuilding.production) {
+            const recipe = building.recipes[playerBuilding.production.recipeIndex];
+            if (now - playerBuilding.production.startTime >= recipe.productionTime) {
+                for (const product in recipe.output) {
+                    const amount = recipe.output[product];
                     warehouse[product] = (warehouse[product] || 0) + amount;
                     addXp(cropTypes[product].xpValue * amount);
                     showNotification(t('alert_production_finished', { item: t(product) }));
                 }
-                playerBuilding.productionStartTime = 0;
+                playerBuilding.production = null;
                 productionChanged = true;
             }
         }
 
         // Handle auto-starting production
-        if (playerBuilding.purchased && playerBuilding.automated && playerBuilding.productionStartTime === 0) {
-            if (canAfford(building.input)) {
-                for (const ingredient in building.input) {
-                    warehouse[ingredient] -= building.input[ingredient];
+        if (playerBuilding.purchased && playerBuilding.automated && !playerBuilding.production) {
+            // Simple auto-production: always try to craft the first recipe
+            const recipe = building.recipes[0];
+            if (canAfford(recipe.input)) {
+                for (const ingredient in recipe.input) {
+                    warehouse[ingredient] -= recipe.input[ingredient];
                 }
-                playerBuilding.productionStartTime = now;
+                playerBuilding.production = { recipeIndex: 0, startTime: now };
                 productionChanged = true;
             }
         }

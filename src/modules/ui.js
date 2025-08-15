@@ -42,6 +42,7 @@ export const DOM = {
     devMoneyBtn: document.getElementById('dev-money-btn'),
     devOrderBtn: document.getElementById('dev-order-btn'),
     devAddAllBtn: document.getElementById('dev-add-all-btn'),
+    devXpBtn: document.getElementById('dev-xp-btn'),
     moneyDisplay: document.getElementById('money-display'),
     levelDisplay: document.getElementById('level-display'),
     xpBarContainer: document.getElementById('xp-bar-container'),
@@ -316,16 +317,18 @@ function renderProduction() {
         const itemDiv = document.createElement('div');
         itemDiv.classList.add('item');
 
-        const inputs = Object.entries(building.input).map(([key, value]) => `${value} ${t(key)}`).join(', ');
-        const outputs = Object.entries(building.output).map(([key, value]) => `${value} ${t(key)}`).join(', ');
+        let recipesHtml = building.recipes.map(recipe => {
+            const inputs = Object.entries(recipe.input).map(([key, value]) => `${value} ${t(key)}`).join(', ');
+            const outputs = Object.entries(recipe.output).map(([key, value]) => `${value} ${t(key)}`).join(', ');
+            return `<div class="recipe-info"><strong>${t('production_recipe')}:</strong> ${inputs} → ${outputs} (${recipe.productionTime / 1000}s)</div>`;
+        }).join('');
+
         const actionButton = `<button class="btn buy-building-btn" data-building-id="${buildingId}">${t('btn_buy')} ($${building.cost})</button>`;
 
         itemDiv.innerHTML = `
             <strong>${t(building.name)}</strong>
             <p>${t(building.description)}</p>
-            <p><strong>${t('production_input')}:</strong> ${inputs}</p>
-            <p><strong>${t('production_output')}:</strong> ${outputs}</p>
-            <p><strong>${t('production_time')}:</strong> ${building.productionTime / 1000}s</p>
+            ${recipesHtml}
             ${actionButton}
         `;
         DOM.productionItems.appendChild(itemDiv);
@@ -344,15 +347,23 @@ function renderBuildings() {
                 buildingDiv.classList.add('automated');
             }
 
-            const inputs = Object.entries(building.input).map(([key, value]) => `${value} ${t(key)}`).join(', ');
-            const outputs = Object.entries(building.output).map(([key, value]) => `${value} ${t(key)}`).join(', ');
-
-            let status;
-            if (playerBuilding.productionStartTime > 0) {
-                const timeLeft = Math.round((playerBuilding.productionStartTime + building.productionTime - Date.now()) / 1000);
-                status = `<div class="building-status">${t('status_producing')} (${t('status_time_left', { time: timeLeft })})</div>`;
+            let statusHtml = '';
+            if (playerBuilding.production) {
+                const recipe = building.recipes[playerBuilding.production.recipeIndex];
+                const timeLeft = Math.round((playerBuilding.production.startTime + recipe.productionTime - Date.now()) / 1000);
+                statusHtml = `<div class="building-status">${t('status_producing')} (${t('status_time_left', { time: timeLeft })})</div>`;
             } else {
-                status = `<button class="btn start-production-btn" data-building-id="${buildingId}">${t('btn_start_production')}</button>`;
+                building.recipes.forEach((recipe, index) => {
+                    const inputs = Object.entries(recipe.input).map(([key, value]) => `${value} ${t(key)}`).join(', ');
+                    const outputs = Object.entries(recipe.output).map(([key, value]) => `${value} ${t(key)}`).join(', ');
+                    statusHtml += `
+                        <div class="recipe">
+                            <div class="recipe-io">${inputs} → ${outputs}</div>
+                            <button class="btn start-production-btn" data-building-id="${buildingId}" data-recipe-index="${index}">
+                                ${t('btn_start_production')}
+                            </button>
+                        </div>`;
+                });
             }
 
             let autoButton = '';
@@ -364,8 +375,7 @@ function renderBuildings() {
             buildingDiv.innerHTML = `
                 <div class="building-icon">${building.icon}</div>
                 <strong class="building-name">${t(building.name)}</strong>
-                <div class="building-recipe">${inputs} → ${outputs}</div>
-                <div class="building-timer">${status}</div>
+                <div class="building-recipes">${statusHtml}</div>
                 <div class="building-automation">${autoButton}</div>
             `;
             DOM.buildingsGrid.appendChild(buildingDiv);

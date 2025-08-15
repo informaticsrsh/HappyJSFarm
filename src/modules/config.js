@@ -11,9 +11,9 @@ export const leveling = [
 
 export const store = [
     { name: 'wheat_seed', price: 10, type: 'seed', requiredLevel: 1 },
-    { name: 'carrot_seed', price: 15, type: 'seed', requiredLevel: 2 },
-    { name: 'tomato_seed', price: 20, type: 'seed', requiredLevel: 4 },
-    { name: 'potato_seed', price: 25, type: 'seed', requiredLevel: 6 }
+    { name: 'carrot_seed', price: 15, type: 'seed', requiredLevel: 1 },
+    { name: 'tomato_seed', price: 20, type: 'seed', requiredLevel: 1 },
+    { name: 'potato_seed', price: 25, type: 'seed', requiredLevel: 1 }
 ];
 
 export const cropTypes = {
@@ -41,7 +41,7 @@ export const cropTypes = {
         priceRecoveryRate: 12000,
         salesVolumeForPriceDrop: 8,
         xpValue: 3,
-        requiredLevel: 2
+        requiredLevel: 1
     },
     'tomato': {
         icon: '🍅',
@@ -54,7 +54,7 @@ export const cropTypes = {
         priceRecoveryRate: 15000,
         salesVolumeForPriceDrop: 5,
         xpValue: 5,
-        requiredLevel: 4
+        requiredLevel: 1
     },
     'potato': {
         icon: '🥔',
@@ -67,7 +67,7 @@ export const cropTypes = {
         priceRecoveryRate: 20000,
         salesVolumeForPriceDrop: 3,
         xpValue: 8,
-        requiredLevel: 6
+        requiredLevel: 1
     },
     'bread': {
         icon: '🍞',
@@ -113,6 +113,24 @@ export const cropTypes = {
         salesVolumeForPriceDrop: 1,
         xpValue: 40,
         requiredLevel: 8
+    },
+    'tomato_juice': {
+        icon: '🥤',
+        maxPrice: 100,
+        minPrice: 40,
+        priceRecoveryRate: 15000,
+        salesVolumeForPriceDrop: 4,
+        xpValue: 20,
+        requiredLevel: 4
+    },
+    'carrot_juice': {
+        icon: '🧃',
+        maxPrice: 80,
+        minPrice: 30,
+        priceRecoveryRate: 12000,
+        salesVolumeForPriceDrop: 5,
+        xpValue: 15,
+        requiredLevel: 4
     }
 };
 
@@ -140,9 +158,13 @@ export const buildings = {
         icon: '🏠',
         cost: 1000,
         description: 'Bakes bread from grain.',
-        input: { 'wheat': 2 },
-        output: { 'bread': 1 },
-        productionTime: 20000, // 20 seconds
+        recipes: [
+            {
+                input: { 'wheat': 2 },
+                output: { 'bread': 1 },
+                productionTime: 20000 // 20 seconds
+            }
+        ],
         purchased: false,
         productionStartTime: 0,
         requiredLevel: 1
@@ -152,9 +174,13 @@ export const buildings = {
         icon: '🐮',
         cost: 1200,
         description: 'Produces milk from wheat.',
-        input: { 'wheat': 3 },
-        output: { 'milk': 1 },
-        productionTime: 30000, // 30 seconds
+        recipes: [
+            {
+                input: { 'wheat': 3 },
+                output: { 'milk': 1 },
+                productionTime: 30000 // 30 seconds
+            }
+        ],
         purchased: false,
         productionStartTime: 0,
         requiredLevel: 3
@@ -164,9 +190,13 @@ export const buildings = {
         icon: '🐷',
         cost: 1500,
         description: 'Produces bacon from potatoes.',
-        input: { 'potato': 5 },
-        output: { 'bacon': 1 },
-        productionTime: 45000, // 45 seconds
+        recipes: [
+            {
+                input: { 'potato': 5 },
+                output: { 'bacon': 1 },
+                productionTime: 45000 // 45 seconds
+            }
+        ],
         purchased: false,
         productionStartTime: 0,
         requiredLevel: 5
@@ -176,9 +206,13 @@ export const buildings = {
         icon: '🏪',
         cost: 5000,
         description: 'Makes delicious sandwiches.',
-        input: { 'bread': 2, 'bacon': 1 },
-        output: { 'sandwich': 1 },
-        productionTime: 60000, // 1 minute
+        recipes: [
+            {
+                input: { 'bread': 2, 'bacon': 1 },
+                output: { 'sandwich': 1 },
+                productionTime: 60000 // 1 minute
+            }
+        ],
         purchased: false,
         productionStartTime: 0,
         requiredLevel: 7
@@ -188,12 +222,37 @@ export const buildings = {
         icon: '🥣',
         cost: 6000,
         description: 'Makes healthy cereal.',
-        input: { 'milk': 1, 'wheat': 2 },
-        output: { 'cereal': 1 },
-        productionTime: 75000, // 1.25 minutes
+        recipes: [
+            {
+                input: { 'milk': 1, 'wheat': 2 },
+                output: { 'cereal': 1 },
+                productionTime: 75000 // 1.25 minutes
+            }
+        ],
         purchased: false,
         productionStartTime: 0,
         requiredLevel: 8
+    },
+    'juicer': {
+        name: 'Juicer',
+        icon: '🍹',
+        cost: 2000,
+        description: 'Extracts juice from fruits and vegetables.',
+        recipes: [
+            {
+                input: { 'tomato': 3 },
+                output: { 'tomato_juice': 1 },
+                productionTime: 25000 // 25 seconds
+            },
+            {
+                input: { 'carrot': 4 },
+                output: { 'carrot_juice': 1 },
+                productionTime: 20000 // 20 seconds
+            }
+        ],
+        purchased: false,
+        productionStartTime: 0,
+        requiredLevel: 4
     }
 };
 
