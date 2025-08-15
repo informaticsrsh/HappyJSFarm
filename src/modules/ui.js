@@ -40,6 +40,9 @@ export const DOM = {
     seedsTabBtn: document.getElementById('seeds-tab-btn'),
     productionTabBtn: document.getElementById('production-tab-btn'),
     upgradesTabBtn: document.getElementById('upgrades-tab-btn'),
+    cropsTabBtn: document.getElementById('crops-tab-btn'),
+    productionRefTabBtn: document.getElementById('production-ref-tab-btn'),
+    customersTabBtn: document.getElementById('customers-tab-btn'),
     // Dev elements
     devPanel: document.querySelector('.dev-panel'),
     devMoneyBtn: document.getElementById('dev-money-btn'),
@@ -290,9 +293,9 @@ function renderStaticUI() {
     DOM.seedsTabBtn.textContent = t('seeds_tab');
     DOM.productionTabBtn.textContent = t('production_tab');
     DOM.upgradesTabBtn.textContent = t('upgrades_tab');
-    document.querySelector('#crops-tab-btn').textContent = t('crops_tab');
-    document.querySelector('#production-ref-tab-btn').textContent = t('production_tab');
-    document.querySelector('#customers-tab-btn').textContent = t('customers_tab');
+    DOM.cropsTabBtn.textContent = t('crops_tab');
+    DOM.productionRefTabBtn.textContent = t('production_tab');
+    DOM.customersTabBtn.textContent = t('customers_tab');
     document.querySelector('#orders-container h2').textContent = t('orders_title');
 }
 
