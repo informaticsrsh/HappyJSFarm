@@ -132,7 +132,8 @@ const locales = {
         "unlocks_upgrades": "New Upgrades Available:",
         "alert_seed_locked": "You have not unlocked this seed yet!",
         "alert_building_locked": "You have not unlocked this building yet!",
-        "alert_upgrade_locked": "You have not unlocked this upgrade yet!"
+        "alert_upgrade_locked": "You have not unlocked this upgrade yet!",
+        "confirm_clear_data": "Are you sure you want to clear all your progress? This cannot be undone."
     },
     "uk": {
         "title": "Моя Ферма",
@@ -267,7 +268,8 @@ const locales = {
         "unlocks_upgrades": "Нові покращення доступні:",
         "alert_seed_locked": "Ви ще не розблокували це насіння!",
         "alert_building_locked": "Ви ще не розблокували цю будівлю!",
-        "alert_upgrade_locked": "Ви ще не розблокували це покращення!"
+        "alert_upgrade_locked": "Ви ще не розблокували це покращення!",
+        "confirm_clear_data": "Ви впевнені, що хочете видалити весь свій прогрес? Цю дію неможливо буде скасувати."
     }
 };
 
