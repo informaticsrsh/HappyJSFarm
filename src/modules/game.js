@@ -387,7 +387,9 @@ function generateOrder(customerId) {
     const customer = customers[customerId];
     if (customer.order) return; // Don't generate if one is active
 
-    const availableCrops = Object.keys(cropTypes);
+    const availableCrops = Object.keys(cropTypes).filter(crop => cropTypes[crop].requiredLevel <= player.level);
+    if (availableCrops.length === 0) return;
+
     const randomCrop = availableCrops[Math.floor(Math.random() * availableCrops.length)];
     const tier = getCustomerTier(customer.trust);
     const [minSize, maxSize] = tier.size;
