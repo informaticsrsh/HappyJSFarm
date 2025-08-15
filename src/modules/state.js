@@ -88,3 +88,35 @@ export let customers = {
         order: null
     }
 };
+
+const SAVE_KEY = 'happyJsFarmState';
+
+export function saveGameState() {
+    const gameState = {
+        player,
+        field,
+        warehouse,
+        marketState,
+        customers
+    };
+    localStorage.setItem(SAVE_KEY, JSON.stringify(gameState));
+}
+
+export function loadGameState() {
+    const savedState = localStorage.getItem(SAVE_KEY);
+    if (savedState) {
+        const restoredState = JSON.parse(savedState);
+
+        // Restore the state
+        Object.assign(player, restoredState.player);
+        Object.assign(field, restoredState.field);
+        Object.assign(warehouse, restoredState.warehouse);
+        Object.assign(marketState, restoredState.marketState);
+        Object.assign(customers, restoredState.customers);
+    }
+}
+
+export function clearGameState() {
+    localStorage.removeItem(SAVE_KEY);
+    window.location.reload();
+}

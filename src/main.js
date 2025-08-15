@@ -1,10 +1,11 @@
 import { setLanguage } from './modules/localization.js';
 import { DOM, renderAll, renderOrderTimers } from './modules/ui.js';
 import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder, forceGenerateOrder, increaseTrust, buyBuilding, startProduction, devAddAllProducts, toggleBuildingAutomation, addXp } from './modules/game.js';
-import { player, field, warehouse } from './modules/state.js';
+import { player, field, warehouse, saveGameState, clearGameState, loadGameState } from './modules/state.js';
 import { leveling } from './modules/config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+    loadGameState();
     // --- Event Listeners ---
     DOM.fieldGrid.addEventListener('click', (e) => {
         if (e.target.classList.contains('plot')) {
@@ -23,7 +24,10 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 stateChanged = plantSeed(r, c);
             }
-            if (stateChanged) renderAll();
+            if (stateChanged) {
+                renderAll();
+                saveGameState();
+            }
         }
     });
 
@@ -31,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target.classList.contains('buy-upgrade-btn')) {
             if (buyUpgrade(e.target.dataset.upgradeId)) {
                 renderAll();
+                saveGameState();
             }
         }
     });
@@ -52,6 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target.classList.contains('buy-building-btn')) {
             if (buyBuilding(e.target.dataset.buildingId)) {
                 renderAll();
+                saveGameState();
             }
         }
     });
@@ -70,12 +76,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (stateChanged) {
             renderAll();
+            saveGameState();
         }
     });
 
     DOM.devXpBtn.addEventListener('click', () => {
         addXp(200);
         renderAll();
+        saveGameState();
     });
 
     DOM.warehouseItems.addEventListener('click', (e) => {
@@ -91,6 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const customerId = e.target.dataset.customerId;
             if (increaseTrust(customerId, 50)) {
                 renderAll();
+                saveGameState();
             }
         }
     });
@@ -104,6 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (buySeed(itemName, amount)) {
             renderAll();
+            saveGameState();
         }
     });
 
@@ -118,15 +128,24 @@ document.addEventListener('DOMContentLoaded', () => {
     DOM.devMoneyBtn.addEventListener('click', () => {
         player.money += 1000;
         renderAll();
+        saveGameState();
     });
     DOM.devOrderBtn.addEventListener('click', () => {
         if (forceGenerateOrder()) {
             renderAll();
+            saveGameState();
         }
     });
     DOM.devAddAllBtn.addEventListener('click', () => {
         if (devAddAllProducts()) {
             renderAll();
+            saveGameState();
+        }
+    });
+
+    document.getElementById('clear-data-btn').addEventListener('click', () => {
+        if (confirm(t('confirm_clear_data'))) {
+            clearGameState();
         }
     });
 
@@ -170,6 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (sellCrop(cropName, amountToSell)) {
             renderAll();
+            saveGameState();
         }
     });
 
@@ -198,6 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const customerId = e.target.dataset.customerId;
             if (fulfillOrder(customerId)) {
                 renderAll();
+                saveGameState();
             }
         }
     });

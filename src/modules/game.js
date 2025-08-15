@@ -1,7 +1,10 @@
 import { t } from './localization.js';
-import { player, field, warehouse, marketState, customers } from './state.js';
+import { player, field, warehouse, marketState, customers, saveGameState } from './state.js';
 import { cropTypes, upgrades, NUM_COLS, store, customerConfig, buildings, leveling } from './config.js';
 import { showNotification, showLevelUpModal } from './ui.js';
+
+let lastSaveTime = 0;
+const SAVE_INTERVAL = 5000; // 5 seconds
 
 export function addXp(amount) {
     player.xp += amount;
@@ -495,6 +498,12 @@ export function gameTick() {
     const marketChanged = updateMarketPrices(now);
     const ordersChanged = updateOrders(now);
     const productionChanged = updateProduction(now);
+
+    if (now - lastSaveTime > SAVE_INTERVAL) {
+        saveGameState();
+        lastSaveTime = now;
+    }
+
     return growthChanged || marketChanged || ordersChanged || productionChanged;
 }
 
