@@ -153,10 +153,10 @@ export const cropTypes = {
         requiredLevel: 5
     },
     'blueberry': {
-        icon: '🫐',
+        icon: '🔵',
         seed_icon: '🌱',
         growthTime: 8000,
-        visuals: ['🌱', '🌿', '🫐'],
+        visuals: ['🌱', '🌿', '🔵'],
         yieldRange: [3, 6],
         maxPrice: 150,
         minPrice: 60,
@@ -175,7 +175,7 @@ export const cropTypes = {
         requiredLevel: 8
     },
     'blueberry_jam': {
-        icon: '🫐🍯',
+        icon: '🔵🍯',
         maxPrice: 350,
         minPrice: 180,
         priceRecoveryRate: 30000,
@@ -197,13 +197,15 @@ export const upgrades = {
     'charm2': { cost: 1200, name: 'upgrade_charm2_name', description: 'upgrade_charm2_desc', effect: { type: 'marketBonus', value: 3 }, purchased: false, requiredLevel: 9 },
 
     // --- Automation Upgrades ---
-    'building_automation': { cost: 5000, name: 'upgrade_building_automation_name', description: 'upgrade_building_automation_desc', effect: { type: 'buildingAutomation', value: true }, purchased: false, requiredLevel: 10 },
+    'building_automation': { cost: 5000, name: 'upgrade_building_automation_name', description: 'upgrade_building_automation_desc', effect: { type: 'buildingAutomation', value: true }, purchased: false, requiredLevel: 5 },
 
     // --- Field Automation Upgrades ---
-    'auto_wheat': { cost: 2500, name: 'upgrade_auto_wheat_name', description: 'upgrade_auto_wheat_desc', effect: { type: 'autoPlot', crop: 'wheat' }, repeatable: true, maxPurchases: 2, purchasedCount: 0, requiredLevel: 8 },
-    'auto_carrot': { cost: 3000, name: 'upgrade_auto_carrot_name', description: 'upgrade_auto_carrot_desc', effect: { type: 'autoPlot', crop: 'carrot' }, repeatable: true, maxPurchases: 2, purchasedCount: 0, requiredLevel: 8 },
-    'auto_tomato': { cost: 3500, name: 'upgrade_auto_tomato_name', description: 'upgrade_auto_tomato_desc', effect: { type: 'autoPlot', crop: 'tomato' }, repeatable: true, maxPurchases: 2, purchasedCount: 0, requiredLevel: 9 },
-    'auto_potato': { cost: 4000, name: 'upgrade_auto_potato_name', description: 'upgrade_auto_potato_desc', effect: { type: 'autoPlot', crop: 'potato' }, repeatable: true, maxPurchases: 2, purchasedCount: 0, requiredLevel: 9 },
+    'auto_wheat': { cost: 2500, name: 'upgrade_auto_wheat_name', description: 'upgrade_auto_wheat_desc', effect: { type: 'autoPlot', crop: 'wheat' }, repeatable: true, maxPurchases: 2, purchasedCount: 0, requiredLevel: 3 },
+    'auto_carrot': { cost: 3000, name: 'upgrade_auto_carrot_name', description: 'upgrade_auto_carrot_desc', effect: { type: 'autoPlot', crop: 'carrot' }, repeatable: true, maxPurchases: 2, purchasedCount: 0, requiredLevel: 4 },
+    'auto_tomato': { cost: 3500, name: 'upgrade_auto_tomato_name', description: 'upgrade_auto_tomato_desc', effect: { type: 'autoPlot', crop: 'tomato' }, repeatable: true, maxPurchases: 2, purchasedCount: 0, requiredLevel: 6 },
+    'auto_potato': { cost: 4000, name: 'upgrade_auto_potato_name', description: 'upgrade_auto_potato_desc', effect: { type: 'autoPlot', crop: 'potato' }, repeatable: true, maxPurchases: 2, purchasedCount: 0, requiredLevel: 7 },
+    'auto_strawberry': { cost: 4500, name: 'upgrade_auto_strawberry_name', description: 'upgrade_auto_strawberry_desc', effect: { type: 'autoPlot', crop: 'strawberry' }, repeatable: true, maxPurchases: 2, purchasedCount: 0, requiredLevel: 8 },
+    'auto_blueberry': { cost: 5000, name: 'upgrade_auto_blueberry_name', description: 'upgrade_auto_blueberry_desc', effect: { type: 'autoPlot', crop: 'blueberry' }, repeatable: true, maxPurchases: 2, purchasedCount: 0, requiredLevel: 9 },
 };
 
 export const buildings = {
