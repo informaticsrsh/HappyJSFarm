@@ -121,6 +121,11 @@ const locales = {
         "level_display": "Level: {level}",
         "alert_level_up": "Congratulations! You've reached level {level}!",
         "alert_farm_expanded": "Your farm has expanded!",
+        "level_up_title": "Level {level}!",
+        "unlock_farm_expanded": "Your farm has expanded!",
+        "unlocks_crops": "New Seeds Unlocked:",
+        "unlocks_buildings": "New Buildings Available:",
+        "unlocks_upgrades": "New Upgrades Available:",
         "alert_seed_locked": "You have not unlocked this seed yet!",
         "alert_building_locked": "You have not unlocked this building yet!",
         "alert_upgrade_locked": "You have not unlocked this upgrade yet!"
@@ -247,6 +252,11 @@ const locales = {
         "level_display": "Рівень: {level}",
         "alert_level_up": "Вітаємо! Ви досягли {level} рівня!",
         "alert_farm_expanded": "Ваша ферма розширилася!",
+        "level_up_title": "Рівень {level}!",
+        "unlock_farm_expanded": "Ваша ферма розширилася!",
+        "unlocks_crops": "Нове насіння розблоковано:",
+        "unlocks_buildings": "Нові будівлі доступні:",
+        "unlocks_upgrades": "Нові покращення доступні:",
         "alert_seed_locked": "Ви ще не розблокували це насіння!",
         "alert_building_locked": "Ви ще не розблокували цю будівлю!",
         "alert_upgrade_locked": "Ви ще не розблокували це покращення!"

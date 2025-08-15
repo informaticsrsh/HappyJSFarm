@@ -173,6 +173,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // --- Modal Closing Logic ---
+    DOM.levelUpCloseBtn.addEventListener('click', () => {
+        DOM.levelUpModal.style.display = 'none';
+    });
+
     window.addEventListener('click', (e) => {
         if (e.target == DOM.storeModal) {
             DOM.storeModal.style.display = 'none';
@@ -182,6 +187,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (e.target == DOM.marketModal) {
             DOM.marketModal.style.display = 'none';
+        }
+        if (e.target == DOM.levelUpModal) {
+            DOM.levelUpModal.style.display = 'none';
         }
     });
 

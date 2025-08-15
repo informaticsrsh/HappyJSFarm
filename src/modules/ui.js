@@ -49,7 +49,11 @@ export const DOM = {
     xpBar: document.getElementById('xp-bar'),
     xpText: document.getElementById('xp-text'),
     bonusDisplay: document.getElementById('bonus-display'),
-    notificationBanner: document.getElementById('notification-banner')
+    notificationBanner: document.getElementById('notification-banner'),
+    levelUpModal: document.getElementById('level-up-modal'),
+    levelUpTitle: document.getElementById('level-up-title'),
+    levelUpUnlocks: document.getElementById('level-up-unlocks'),
+    levelUpCloseBtn: document.querySelector('.level-up-close')
 };
 
 let notificationTimeout;
@@ -469,3 +473,40 @@ export const {
     storeModal,
     buildingsGrid
 } = DOM;
+
+export function showLevelUpModal(level, unlocked, farmExpanded) {
+    DOM.levelUpTitle.textContent = t('level_up_title', { level });
+
+    let unlocksHtml = '';
+
+    if (farmExpanded) {
+        unlocksHtml += `<h3>${t('unlock_farm_expanded')}</h3>`;
+    }
+
+    if (unlocked.crops.length > 0) {
+        unlocksHtml += `<h3>${t('unlocks_crops')}</h3><ul>`;
+        unlocked.crops.forEach(crop => {
+            unlocksHtml += `<li>${t(crop)}</li>`;
+        });
+        unlocksHtml += '</ul>';
+    }
+
+    if (unlocked.buildings.length > 0) {
+        unlocksHtml += `<h3>${t('unlocks_buildings')}</h3><ul>`;
+        unlocked.buildings.forEach(building => {
+            unlocksHtml += `<li>${t(building)}</li>`;
+        });
+        unlocksHtml += '</ul>';
+    }
+
+    if (unlocked.upgrades.length > 0) {
+        unlocksHtml += `<h3>${t('unlocks_upgrades')}</h3><ul>`;
+        unlocked.upgrades.forEach(upgrade => {
+            unlocksHtml += `<li>${t(upgrade)}</li>`;
+        });
+        unlocksHtml += '</ul>';
+    }
+
+    DOM.levelUpUnlocks.innerHTML = unlocksHtml;
+    DOM.levelUpModal.style.display = 'block';
+}

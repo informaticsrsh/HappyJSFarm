@@ -1,7 +1,7 @@
 import { t } from './localization.js';
 import { player, field, warehouse, marketState, customers } from './state.js';
-import { cropTypes, upgrades, NUM_ROWS, NUM_COLS, store, customerConfig, buildings, leveling } from './config.js';
-import { showNotification } from './ui.js';
+import { cropTypes, upgrades, NUM_COLS, store, customerConfig, buildings, leveling } from './config.js';
+import { showNotification, showLevelUpModal } from './ui.js';
 
 export function addXp(amount) {
     player.xp += amount;
@@ -12,24 +12,34 @@ function checkForLevelUp() {
     while (player.xp >= player.xpToNextLevel) {
         player.level++;
         player.xp -= player.xpToNextLevel;
+        const newLevel = player.level;
 
-        const nextLevel = leveling.find(l => l.level === player.level);
-        if (nextLevel) {
-            player.xpToNextLevel = nextLevel.xpRequired;
+        const nextLevelConfig = leveling.find(l => l.level === newLevel);
+        if (nextLevelConfig) {
+            player.xpToNextLevel = nextLevelConfig.xpRequired;
         } else {
-            // Handle max level case
             player.xpToNextLevel = Infinity;
         }
-        showNotification(t('alert_level_up', { level: player.level }));
+        showNotification(t('alert_level_up', { level: newLevel }));
 
-        // Check for field expansion
-        if (player.level > 1 && player.level % 2 === 1) {
-            const newRows = Math.floor((player.level - 1) / 2);
+        const newlyUnlocked = {
+            crops: store.filter(item => item.requiredLevel === newLevel).map(item => item.name),
+            buildings: Object.keys(buildings).filter(id => buildings[id].requiredLevel === newLevel).map(id => buildings[id].name),
+            upgrades: Object.keys(upgrades).filter(id => upgrades[id].requiredLevel === newLevel).map(id => upgrades[id].name)
+        };
+
+        let farmExpanded = false;
+        if (newLevel > 1 && newLevel % 2 === 1) {
+            const newRows = Math.floor((newLevel - 1) / 2);
             const expectedRows = 3 + newRows;
             if (field.length < expectedRows) {
                 field.push(Array(NUM_COLS).fill(null).map(() => ({ crop: null, growthStage: 0, stageStartTime: 0, autoCrop: null })));
-                showNotification(t('alert_farm_expanded'));
+                farmExpanded = true;
             }
+        }
+
+        if (newlyUnlocked.crops.length > 0 || newlyUnlocked.buildings.length > 0 || newlyUnlocked.upgrades.length > 0 || farmExpanded) {
+            showLevelUpModal(newLevel, newlyUnlocked, farmExpanded);
         }
     }
 }
