@@ -2,6 +2,7 @@ import { setLanguage } from './modules/localization.js';
 import { DOM, renderAll, renderOrderTimers } from './modules/ui.js';
 import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder, forceGenerateOrder, increaseTrust, buyBuilding, startProduction, devAddAllProducts, toggleBuildingAutomation } from './modules/game.js';
 import { player, field, warehouse } from './modules/state.js';
+import { leveling } from './modules/config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- Event Listeners ---
@@ -189,6 +190,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --- Initial Game Start ---
+    const initialLevel = leveling.find(l => l.level === player.level);
+    if (initialLevel) {
+        player.xpToNextLevel = initialLevel.xpRequired;
+    }
     renderAll();
     setInterval(() => {
         if (gameTick()) {

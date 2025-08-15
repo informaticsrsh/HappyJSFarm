@@ -98,7 +98,13 @@ const locales = {
         "upgrade_auto_tomato_name": "Automated Tomato Plot",
         "upgrade_auto_tomato_desc": "Converts a free plot to automatically grow tomatoes.",
         "upgrade_auto_potato_name": "Automated Potato Plot",
-        "upgrade_auto_potato_desc": "Converts a free plot to automatically grow potatoes."
+        "upgrade_auto_potato_desc": "Converts a free plot to automatically grow potatoes.",
+        "level_display": "Level: {level}",
+        "alert_level_up": "Congratulations! You've reached level {level}!",
+        "alert_farm_expanded": "Your farm has expanded!",
+        "alert_seed_locked": "You have not unlocked this seed yet!",
+        "alert_building_locked": "You have not unlocked this building yet!",
+        "alert_upgrade_locked": "You have not unlocked this upgrade yet!"
     },
     "uk": {
         "title": "Моя Ферма",
@@ -199,7 +205,13 @@ const locales = {
         "upgrade_auto_tomato_name": "Автоматизована ділянка томатів",
         "upgrade_auto_tomato_desc": "Перетворює вільну ділянку на автоматичну для вирощування томатів.",
         "upgrade_auto_potato_name": "Автоматизована ділянка картоплі",
-        "upgrade_auto_potato_desc": "Перетворює вільну ділянку на автоматичну для вирощування картоплі."
+        "upgrade_auto_potato_desc": "Перетворює вільну ділянку на автоматичну для вирощування картоплі.",
+        "level_display": "Рівень: {level}",
+        "alert_level_up": "Вітаємо! Ви досягли {level} рівня!",
+        "alert_farm_expanded": "Ваша ферма розширилася!",
+        "alert_seed_locked": "Ви ще не розблокували це насіння!",
+        "alert_building_locked": "Ви ще не розблокували цю будівлю!",
+        "alert_upgrade_locked": "Ви ще не розблокували це покращення!"
     }
 };
 

@@ -43,6 +43,10 @@ export const DOM = {
     devOrderBtn: document.getElementById('dev-order-btn'),
     devAddAllBtn: document.getElementById('dev-add-all-btn'),
     moneyDisplay: document.getElementById('money-display'),
+    levelDisplay: document.getElementById('level-display'),
+    xpBarContainer: document.getElementById('xp-bar-container'),
+    xpBar: document.getElementById('xp-bar'),
+    xpText: document.getElementById('xp-text'),
     bonusDisplay: document.getElementById('bonus-display'),
     notificationBanner: document.getElementById('notification-banner')
 };
@@ -73,8 +77,11 @@ function getIconForItem(itemName) {
 
 function renderField() {
     DOM.fieldGrid.innerHTML = '';
-    for (let r = 0; r < NUM_ROWS; r++) {
-        for (let c = 0; c < NUM_COLS; c++) {
+    DOM.fieldGrid.style.gridTemplateRows = `repeat(${field.length}, 50px)`;
+    DOM.fieldGrid.style.gridTemplateColumns = `repeat(${field[0].length}, 50px)`;
+
+    for (let r = 0; r < field.length; r++) {
+        for (let c = 0; c < field[0].length; c++) {
             const plot = document.createElement('div');
             plot.classList.add('plot');
             plot.dataset.row = r;
@@ -125,7 +132,9 @@ function renderWarehouse() {
 
 function renderStore() {
     DOM.storeItems.innerHTML = '';
-    store.forEach(item => {
+    store
+        .filter(item => player.level >= (item.requiredLevel || 1))
+        .forEach(item => {
         const itemDiv = document.createElement('div');
         itemDiv.classList.add('item');
         itemDiv.classList.add(item.name.replace(/_/g, '-'));
@@ -263,6 +272,9 @@ function renderUpgrades() {
     DOM.upgradesItems.innerHTML = '';
     for (const upgradeId in upgrades) {
         const upgrade = upgrades[upgradeId];
+        if (player.level < (upgrade.requiredLevel || 1)) {
+            continue;
+        }
         const itemDiv = document.createElement('div');
         itemDiv.classList.add('item');
 
@@ -292,6 +304,10 @@ function renderProduction() {
     DOM.productionItems.innerHTML = '';
     for (const buildingId in buildings) {
         const building = buildings[buildingId];
+        if (player.level < (building.requiredLevel || 1)) {
+            continue;
+        }
+
         const playerBuilding = player.buildings[buildingId];
         if (playerBuilding.purchased) {
             continue; // Skip purchased buildings
@@ -357,8 +373,16 @@ function renderBuildings() {
     }
 }
 
+function renderXpBar() {
+    DOM.levelDisplay.textContent = t('level_display', { level: player.level });
+    const xpPercentage = (player.xp / player.xpToNextLevel) * 100;
+    DOM.xpBar.style.width = `${xpPercentage}%`;
+    DOM.xpText.textContent = `${player.xp} / ${player.xpToNextLevel} XP`;
+}
+
 function renderPlayerState() {
     DOM.moneyDisplay.textContent = `💰 $${player.money}`;
+    renderXpBar();
 
     let bonusHtml = '';
     if (player.upgrades.growthMultiplier < 1.0) {

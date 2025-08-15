@@ -2,6 +2,9 @@ import { NUM_ROWS, NUM_COLS, cropTypes } from './config.js';
 
 export let player = {
     money: 100,
+    level: 1,
+    xp: 0,
+    xpToNextLevel: 100,
     selectedSeed: null,
     upgrades: {
         growthMultiplier: 1.0,

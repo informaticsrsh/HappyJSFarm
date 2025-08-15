@@ -1,7 +1,39 @@
 import { t } from './localization.js';
 import { player, field, warehouse, marketState, customers } from './state.js';
-import { cropTypes, upgrades, NUM_ROWS, NUM_COLS, store, customerConfig, buildings } from './config.js';
+import { cropTypes, upgrades, NUM_ROWS, NUM_COLS, store, customerConfig, buildings, leveling } from './config.js';
 import { showNotification } from './ui.js';
+
+export function addXp(amount) {
+    player.xp += amount;
+    checkForLevelUp();
+}
+
+function checkForLevelUp() {
+    while (player.xp >= player.xpToNextLevel) {
+        player.level++;
+        player.xp -= player.xpToNextLevel;
+
+        const nextLevel = leveling.find(l => l.level === player.level);
+        if (nextLevel) {
+            player.xpToNextLevel = nextLevel.xpRequired;
+        } else {
+            // Handle max level case
+            player.xpToNextLevel = Infinity;
+        }
+        showNotification(t('alert_level_up', { level: player.level }));
+
+        // Check for field expansion
+        if (player.level > 1 && player.level % 2 === 1) {
+            const newRows = (player.level - 1) / 2;
+            const expectedRows = 3 + newRows;
+            if (NUM_ROWS < expectedRows) {
+                NUM_ROWS++;
+                field.push(Array(NUM_COLS).fill(null).map(() => ({ crop: null, growthStage: 0, stageStartTime: 0, autoCrop: null })));
+                showNotification(t('alert_farm_expanded'));
+            }
+        }
+    }
+}
 
 export function plantSeed(r, c, cropToPlant = null) {
     const isAuto = !!cropToPlant;
@@ -10,6 +42,12 @@ export function plantSeed(r, c, cropToPlant = null) {
 
     if (!seedName) {
         showNotification(t('alert_select_seed'));
+        return false;
+    }
+
+    const crop = cropTypes[cropName];
+    if (player.level < (crop.requiredLevel || 1)) {
+        showNotification(t('alert_seed_locked'));
         return false;
     }
 
@@ -37,6 +75,7 @@ export function harvestCrop(r, c) {
         let yieldAmount = Math.floor(Math.random() * (max - min + 1)) + min;
         yieldAmount += (player.upgrades.yieldBonus + player.npcBonuses.yieldBonus);
         warehouse[cell.crop] = (warehouse[cell.crop] || 0) + yieldAmount;
+        addXp(crop.xpValue * yieldAmount);
         cell.crop = null;
         cell.growthStage = 0;
         cell.stageStartTime = 0;
@@ -100,6 +139,11 @@ export function buySeed(itemName, amount) {
 export function buyUpgrade(upgradeId) {
     const upgrade = upgrades[upgradeId];
     if (!upgrade) return false;
+
+    if (player.level < (upgrade.requiredLevel || 1)) {
+        showNotification(t('alert_upgrade_locked'));
+        return false;
+    }
 
     // Check if max purchases reached
     if (upgrade.repeatable && upgrade.purchasedCount >= upgrade.maxPurchases) {
@@ -169,6 +213,11 @@ export function buyBuilding(buildingId) {
     const building = buildings[buildingId];
     if (!building || player.buildings[buildingId].purchased) {
         showNotification("Building not available.");
+        return false;
+    }
+
+    if (player.level < (building.requiredLevel || 1)) {
+        showNotification(t('alert_building_locked'));
         return false;
     }
 
@@ -282,7 +331,9 @@ function updateProduction(now) {
         if (playerBuilding.purchased && playerBuilding.productionStartTime > 0) {
             if (now - playerBuilding.productionStartTime >= building.productionTime) {
                 for (const product in building.output) {
-                    warehouse[product] = (warehouse[product] || 0) + building.output[product];
+                    const amount = building.output[product];
+                    warehouse[product] = (warehouse[product] || 0) + amount;
+                    addXp(cropTypes[product].xpValue * amount);
                     showNotification(t('alert_production_finished', { item: t(product) }));
                 }
                 playerBuilding.productionStartTime = 0;
@@ -439,6 +490,9 @@ export function fulfillOrder(customerId) {
     }
 
     if (warehouse[order.crop] >= order.amount) {
+        const xpForItems = (cropTypes[order.crop].xpValue || 0) * order.amount;
+        addXp(10 + xpForItems); // Base XP for order + XP for items
+
         warehouse[order.crop] -= order.amount;
         player.money += order.reward;
         customer.trust += 20; // Reward for fulfilling
