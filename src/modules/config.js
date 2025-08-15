@@ -3,15 +3,15 @@ export let NUM_COLS = 5;
 
 export const leveling = [
     { level: 1, xpRequired: 100 },
-    { level: 2, xpRequired: 150 },
-    { level: 3, xpRequired: 220 },
-    { level: 4, xpRequired: 300 },
-    { level: 5, xpRequired: 450 },
-    { level: 6, xpRequired: 600 },
-    { level: 7, xpRequired: 800 },
-    { level: 8, xpRequired: 1000 },
-    { level: 9, xpRequired: 1250 },
-    { level: 10, xpRequired: 1500 },
+    { level: 2, xpRequired: 200 },
+    { level: 3, xpRequired: 350 },
+    { level: 4, xpRequired: 500 },
+    { level: 5, xpRequired: 750 },
+    { level: 6, xpRequired: 1000 },
+    { level: 7, xpRequired: 1300 },
+    { level: 8, xpRequired: 1600 },
+    { level: 9, xpRequired: 2000 },
+    { level: 10, xpRequired: 2500 },
 ];
 
 export const store = [
@@ -30,11 +30,11 @@ export const cropTypes = {
         growthTime: 3000, // ms per stage
         visuals: ['🌱', '🌿', '🌾'],
         yieldRange: [1, 3],
-        maxPrice: 15,
+        maxPrice: 12,
         minPrice: 5,
         priceRecoveryRate: 10000, // ms to recover 1 price point
         salesVolumeForPriceDrop: 10, // amount of sales to drop price by 1
-        xpValue: 2,
+        xpValue: 1,
         requiredLevel: 1
     },
     'carrot': {
@@ -43,11 +43,11 @@ export const cropTypes = {
         growthTime: 4000,
         visuals: ['🌱', '🌿', '🥕'],
         yieldRange: [1, 2],
-        maxPrice: 25,
+        maxPrice: 20,
         minPrice: 10,
         priceRecoveryRate: 12000,
         salesVolumeForPriceDrop: 8,
-        xpValue: 3,
+        xpValue: 2,
         requiredLevel: 1
     },
     'tomato': {
@@ -56,11 +56,11 @@ export const cropTypes = {
         growthTime: 5000,
         visuals: ['🌱', '🌿', '🍅'],
         yieldRange: [2, 4],
-        maxPrice: 50,
+        maxPrice: 40,
         minPrice: 20,
         priceRecoveryRate: 15000,
         salesVolumeForPriceDrop: 5,
-        xpValue: 5,
+        xpValue: 4,
         requiredLevel: 1
     },
     'potato': {
@@ -69,74 +69,74 @@ export const cropTypes = {
         growthTime: 6000,
         visuals: ['🌱', '🌿', '🥔'],
         yieldRange: [3, 6],
-        maxPrice: 80,
+        maxPrice: 60,
         minPrice: 30,
         priceRecoveryRate: 20000,
         salesVolumeForPriceDrop: 3,
-        xpValue: 8,
+        xpValue: 6,
         requiredLevel: 1
     },
     'bread': {
         icon: '🍞',
-        maxPrice: 50,
+        maxPrice: 40,
         minPrice: 20,
         priceRecoveryRate: 10000,
         salesVolumeForPriceDrop: 5,
-        xpValue: 10,
+        xpValue: 8,
         requiredLevel: 1
     },
     'milk': {
         icon: '🥛',
-        maxPrice: 60,
+        maxPrice: 50,
         minPrice: 25,
         priceRecoveryRate: 12000,
         salesVolumeForPriceDrop: 4,
-        xpValue: 12,
+        xpValue: 10,
         requiredLevel: 3
     },
     'bacon': {
         icon: '🥓',
-        maxPrice: 80,
+        maxPrice: 70,
         minPrice: 35,
         priceRecoveryRate: 15000,
         salesVolumeForPriceDrop: 3,
-        xpValue: 15,
+        xpValue: 12,
         requiredLevel: 5
     },
     'sandwich': {
         icon: '🥪',
-        maxPrice: 200,
+        maxPrice: 180,
         minPrice: 100,
         priceRecoveryRate: 20000,
         salesVolumeForPriceDrop: 2,
-        xpValue: 30,
+        xpValue: 25,
         requiredLevel: 7
     },
     'cereal': {
         icon: '🥣',
-        maxPrice: 250,
+        maxPrice: 220,
         minPrice: 120,
         priceRecoveryRate: 25000,
         salesVolumeForPriceDrop: 1,
-        xpValue: 40,
+        xpValue: 35,
         requiredLevel: 8
     },
     'tomato_juice': {
         icon: '🥤',
-        maxPrice: 100,
+        maxPrice: 80,
         minPrice: 40,
         priceRecoveryRate: 15000,
         salesVolumeForPriceDrop: 4,
-        xpValue: 20,
+        xpValue: 15,
         requiredLevel: 4
     },
     'carrot_juice': {
         icon: '🧃',
-        maxPrice: 80,
+        maxPrice: 70,
         minPrice: 30,
         priceRecoveryRate: 12000,
         salesVolumeForPriceDrop: 5,
-        xpValue: 15,
+        xpValue: 12,
         requiredLevel: 4
     },
     'strawberry': {
@@ -145,11 +145,11 @@ export const cropTypes = {
         growthTime: 7000,
         visuals: ['🌱', '🌿', '🍓'],
         yieldRange: [2, 5],
-        maxPrice: 120,
+        maxPrice: 100,
         minPrice: 50,
         priceRecoveryRate: 18000,
         salesVolumeForPriceDrop: 3,
-        xpValue: 18,
+        xpValue: 15,
         requiredLevel: 5
     },
     'blueberry': {
@@ -158,29 +158,29 @@ export const cropTypes = {
         growthTime: 8000,
         visuals: ['🌱', '🌿', '🔵'],
         yieldRange: [3, 6],
-        maxPrice: 150,
+        maxPrice: 130,
         minPrice: 60,
         priceRecoveryRate: 22000,
         salesVolumeForPriceDrop: 2,
-        xpValue: 22,
+        xpValue: 20,
         requiredLevel: 7
     },
     'strawberry_jam': {
         icon: '🍓🍯',
-        maxPrice: 300,
+        maxPrice: 250,
         minPrice: 150,
         priceRecoveryRate: 25000,
         salesVolumeForPriceDrop: 2,
-        xpValue: 50,
+        xpValue: 40,
         requiredLevel: 8
     },
     'blueberry_jam': {
         icon: '🔵🍯',
-        maxPrice: 350,
+        maxPrice: 300,
         minPrice: 180,
         priceRecoveryRate: 30000,
         salesVolumeForPriceDrop: 1,
-        xpValue: 60,
+        xpValue: 50,
         requiredLevel: 8
     }
 };
@@ -336,11 +336,11 @@ export const buildings = {
 export const customerConfig = {
     orderLifetime: 120000, // ms
     trustLevels: [
-        { level: 1, trust: 0, size: [5, 10], reward: 1.2 },
-        { level: 2, trust: 100, size: [10, 20], reward: 1.3 },
-        { level: 3, trust: 200, size: [20, 40], reward: 1.5 },
-        { level: 4, trust: 300, size: [30, 50], reward: 1.7 },
-        { level: 5, trust: 400, size: [40, 60], reward: 2.0 },
+        { level: 1, trust: 0, size: [5, 10], reward: 1.1 },
+        { level: 2, trust: 100, size: [10, 20], reward: 1.15 },
+        { level: 3, trust: 200, size: [20, 40], reward: 1.2 },
+        { level: 4, trust: 300, size: [30, 50], reward: 1.25 },
+        { level: 5, trust: 400, size: [40, 60], reward: 1.3 },
     ],
     customers: {
         'npc1': {
