@@ -90,8 +90,10 @@ export let customers = {
 };
 
 const SAVE_KEY = 'happyJsFarmState';
+let isResetting = false;
 
 export function saveGameState() {
+    if (isResetting) return;
     const gameState = {
         player,
         field,
@@ -109,7 +111,11 @@ export function loadGameState() {
 
         // Restore the state
         Object.assign(player, restoredState.player);
-        Object.assign(field, restoredState.field);
+
+        // Correctly restore array to avoid leaving old data
+        field.length = 0;
+        restoredState.field.forEach(row => field.push(row));
+
         Object.assign(warehouse, restoredState.warehouse);
         Object.assign(marketState, restoredState.marketState);
         Object.assign(customers, restoredState.customers);
@@ -117,6 +123,7 @@ export function loadGameState() {
 }
 
 export function clearGameState() {
+    isResetting = true;
     localStorage.removeItem(SAVE_KEY);
     window.location.reload();
 }
