@@ -194,6 +194,13 @@ h1 {
     display: block;
 }
 
+/* Reference Tab Styles */
+.ref-tabs {
+    display: flex;
+    border-bottom: 2px solid #3d405b;
+    margin-bottom: 15px;
+}
+
 
 /* Modal Styles */
 .modal {
@@ -384,6 +391,8 @@ h1 {
 .carrot-seed { background-color: #e07a5f44; }
 .tomato-seed { background-color: #f2848244; }
 .potato-seed { background-color: #a5682a44; }
+.strawberry-seed { background-color: #ffc0cb44; } /* Pink */
+.blueberry-seed { background-color: #87ceeb44; } /* Sky Blue */
 
 /* Override for selected items to ensure text is readable */
 .item.selected {
@@ -396,6 +405,8 @@ h1 {
 .plot.carrot { background-color: #e07a5f44; }
 .plot.tomato { background-color: #f2848244; }
 .plot.potato { background-color: #a5682a44; }
+.plot.strawberry { background-color: #ffc0cb44; }
+.plot.blueberry { background-color: #87ceeb44; }
 
 .automated-plot {
     border: 3px dashed #81b29a;

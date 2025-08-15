@@ -43,6 +43,15 @@ function checkForLevelUp() {
 
         if (newlyUnlocked.crops.length > 0 || newlyUnlocked.buildings.length > 0 || newlyUnlocked.upgrades.length > 0 || farmExpanded) {
             showLevelUpModal(newLevel, newlyUnlocked, farmExpanded);
+        } else {
+            // Generic congrats if nothing unlocked, except for max level
+            if (newLevel < 11) {
+                showNotification(t('alert_level_up_generic', { level: newLevel }));
+            }
+        }
+
+        if (newLevel === 11) {
+            showNotification(t('alert_max_level'));
         }
     }
 }

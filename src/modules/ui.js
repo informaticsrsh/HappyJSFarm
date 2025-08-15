@@ -13,7 +13,10 @@ export const DOM = {
     refModal: document.getElementById('ref-modal'),
     openRefBtn: document.getElementById('open-ref-btn'),
     refCloseBtn: document.querySelector('.ref-close'),
-    refContent: document.getElementById('ref-content'),
+    refTabs: document.querySelector('.ref-tabs'),
+    cropsRefContent: document.getElementById('crops-ref-content'),
+    productionRefContent: document.getElementById('production-ref-content'),
+    customersRefContent: document.getElementById('customers-ref-content'),
     marketModal: document.getElementById('market-modal'),
     openMarketBtn: document.getElementById('open-market-btn'),
     marketCloseBtn: document.querySelector('.market-close'),
@@ -158,15 +161,18 @@ function renderStore() {
             </div>
             <div class="store-actions">
                 <input type="number" class="buy-amount-input" min="1" value="1">
-                <button class="btn buy-btn" data-item-name="${item.name}">${t('btn_buy')}</button>
+                <button class="btn buy-btn" data-item-name="${item.name}" data-amount-type="custom">${t('btn_buy')}</button>
+                <button class="btn buy-btn" data-item-name="${item.name}" data-amount-type="10">Buy 10</button>
+                <button class="btn buy-btn" data-item-name="${item.name}" data-amount-type="100">Buy 100</button>
+                <button class="btn buy-btn" data-item-name="${item.name}" data-amount-type="max">Buy Max</button>
             </div>
         `;
         DOM.storeItems.appendChild(itemDiv);
     });
 }
 
-function renderReference() {
-    DOM.refContent.innerHTML = '';
+function renderCropsRef() {
+    DOM.cropsRefContent.innerHTML = '';
     Object.keys(cropTypes).forEach(cropName => {
         const crop = cropTypes[cropName];
         const storeItem = store.find(s => s.name === `${cropName}_seed`);
@@ -185,8 +191,65 @@ function renderReference() {
             <p><strong>${t('ref_market_price')}</strong> $${crop.minPrice} - $${crop.maxPrice}</p>
             <p><strong>${t('ref_stages')}</strong> ${crop.visuals.join(' → ')}</p>
         `;
-        DOM.refContent.appendChild(cropDiv);
+        DOM.cropsRefContent.appendChild(cropDiv);
     });
+}
+
+function renderProductionRef() {
+    DOM.productionRefContent.innerHTML = '';
+    for (const buildingId in buildings) {
+        const building = buildings[buildingId];
+        const buildingDiv = document.createElement('div');
+
+        let recipesHtml = building.recipes.map(recipe => {
+            const inputs = Object.entries(recipe.input).map(([key, value]) => `${value} ${t(key)}`).join(', ');
+            const outputs = Object.entries(recipe.output).map(([key, value]) => `${value} ${t(key)}`).join(', ');
+            return `<p>${inputs} → ${outputs} (${recipe.productionTime / 1000}s)</p>`;
+        }).join('');
+
+        buildingDiv.innerHTML = `
+            <h3>${building.icon} ${t(building.name)}</h3>
+            <p><i>${t(building.description)}</i></p>
+            <p><strong>Cost:</strong> $${building.cost}</p>
+            <p><strong>Requires:</strong> Level ${building.requiredLevel}</p>
+            <div><strong>Recipes:</strong> ${recipesHtml}</div>
+        `;
+        DOM.productionRefContent.appendChild(buildingDiv);
+    }
+}
+
+function renderCustomersRef() {
+    DOM.customersRefContent.innerHTML = '';
+    for (const customerId in customerConfig.customers) {
+        const customer = customerConfig.customers[customerId];
+        const customerDiv = document.createElement('div');
+
+        let bonusHtml = '';
+        if (customer.bonus) {
+            bonusHtml += `<h4>Bonuses</h4>`;
+            bonusHtml += '<ul>';
+            for (let i = 1; i <= 5; i++) {
+                const valueKey = `value_l${i}`;
+                if (customer.bonus[valueKey]) {
+                    bonusHtml += `<li>Level ${i}: ${customer.bonus.description.replace('{value}', customer.bonus[valueKey])}</li>`;
+                }
+            }
+            bonusHtml += '</ul>';
+        }
+
+        customerDiv.innerHTML = `
+            <h3>${t(customer.name)}</h3>
+            <p><i>${customer.description}</i></p>
+            ${bonusHtml}
+        `;
+        DOM.customersRefContent.appendChild(customerDiv);
+    }
+}
+
+function renderReference() {
+    renderCropsRef();
+    renderProductionRef();
+    renderCustomersRef();
 }
 
 function renderMarket() {
@@ -227,6 +290,9 @@ function renderStaticUI() {
     DOM.seedsTabBtn.textContent = t('seeds_tab');
     DOM.productionTabBtn.textContent = t('production_tab');
     DOM.upgradesTabBtn.textContent = t('upgrades_tab');
+    document.querySelector('#crops-tab-btn').textContent = t('crops_tab');
+    document.querySelector('#production-ref-tab-btn').textContent = t('production_tab');
+    document.querySelector('#customers-tab-btn').textContent = t('customers_tab');
     document.querySelector('#orders-container h2').textContent = t('orders_title');
 }
 
@@ -453,7 +519,7 @@ export function renderAll() {
     renderField();
     renderWarehouse();
     renderStore();
-    renderReference();
+    renderReference(); // This now calls all three ref functions
     renderMarket();
     renderOrders();
     renderUpgrades();

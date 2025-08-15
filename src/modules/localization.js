@@ -7,6 +7,8 @@ const locales = {
         "production_tab": "Production",
         "market_title": "Market",
         "reference_title": "Reference",
+        "crops_tab": "Crops",
+        "customers_tab": "Customers",
         "warehouse_title": "Warehouse",
         "field_title": "Field",
         "buildings_title": "Buildings",
@@ -133,7 +135,9 @@ const locales = {
         "alert_seed_locked": "You have not unlocked this seed yet!",
         "alert_building_locked": "You have not unlocked this building yet!",
         "alert_upgrade_locked": "You have not unlocked this upgrade yet!",
-        "confirm_clear_data": "Are you sure you want to clear all your progress? This cannot be undone."
+        "confirm_clear_data": "Are you sure you want to clear all your progress? This cannot be undone.",
+        "alert_level_up_generic": "Congratulations! You've reached level {level}!",
+        "alert_max_level": "You have reached level 11, the maximum level for now. More content is coming soon! Thank you for playing."
     },
     "uk": {
         "title": "Моя Ферма",
@@ -143,6 +147,8 @@ const locales = {
         "production_tab": "Виробництво",
         "market_title": "Ринок",
         "reference_title": "Довідник",
+        "crops_tab": "Рослини",
+        "customers_tab": "Клієнти",
         "warehouse_title": "Склад",
         "field_title": "Поле",
         "buildings_title": "Будівлі",
@@ -269,7 +275,9 @@ const locales = {
         "alert_seed_locked": "Ви ще не розблокували це насіння!",
         "alert_building_locked": "Ви ще не розблокували цю будівлю!",
         "alert_upgrade_locked": "Ви ще не розблокували це покращення!",
-        "confirm_clear_data": "Ви впевнені, що хочете видалити весь свій прогрес? Цю дію неможливо буде скасувати."
+        "confirm_clear_data": "Ви впевнені, що хочете видалити весь свій прогрес? Цю дію неможливо буде скасувати.",
+        "alert_level_up_generic": "Вітаємо! Ви досягли {level} рівня!",
+        "alert_max_level": "Ви досягли 11 рівня, максимального на даний момент. Більше контенту з'явиться незабаром! Дякуємо за гру."
     }
 };
 
