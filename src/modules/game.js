@@ -3,21 +3,24 @@ import { player, field, warehouse, marketState, customers } from './state.js';
 import { cropTypes, upgrades, NUM_ROWS, NUM_COLS, store, customerConfig, buildings } from './config.js';
 import { showNotification } from './ui.js';
 
-export function plantSeed(r, c) {
-    if (!player.selectedSeed) {
+export function plantSeed(r, c, cropToPlant = null) {
+    const isAuto = !!cropToPlant;
+    const seedName = isAuto ? `${cropToPlant}_seed` : player.selectedSeed;
+    const cropName = isAuto ? cropToPlant : seedName.replace('_seed', '');
+
+    if (!seedName) {
         showNotification(t('alert_select_seed'));
         return false;
     }
-    if (warehouse[player.selectedSeed] > 0) {
-        warehouse[player.selectedSeed]--;
-        const cropName = player.selectedSeed.replace('_seed', '');
-        field[r][c] = {
-            crop: cropName,
-            growthStage: 0,
-            stageStartTime: Date.now()
-        };
-        if (warehouse[player.selectedSeed] === 0) {
-            player.selectedSeed = null; // Deselect if non left
+
+    if (warehouse[seedName] > 0) {
+        warehouse[seedName]--;
+        field[r][c].crop = cropName;
+        field[r][c].growthStage = 0;
+        field[r][c].stageStartTime = Date.now();
+
+        if (!isAuto && warehouse[seedName] === 0) {
+            player.selectedSeed = null; // Deselect if none left
         }
         return true;
     }
@@ -26,13 +29,17 @@ export function plantSeed(r, c) {
 
 export function harvestCrop(r, c) {
     const cell = field[r][c];
+    if (!cell.crop) return false;
+
     const crop = cropTypes[cell.crop];
     if (cell.growthStage >= crop.visuals.length - 1) {
         const [min, max] = crop.yieldRange;
         let yieldAmount = Math.floor(Math.random() * (max - min + 1)) + min;
-        yieldAmount += (player.upgrades.yieldBonus + player.npcBonuses.yieldBonus); // Add yield bonus
+        yieldAmount += (player.upgrades.yieldBonus + player.npcBonuses.yieldBonus);
         warehouse[cell.crop] = (warehouse[cell.crop] || 0) + yieldAmount;
-        field[r][c] = { crop: null, growthStage: 0, stageStartTime: 0 };
+        cell.crop = null;
+        cell.growthStage = 0;
+        cell.stageStartTime = 0;
         return true;
     } else {
         showNotification(t('alert_not_ready_harvest'));
@@ -92,30 +99,70 @@ export function buySeed(itemName, amount) {
 
 export function buyUpgrade(upgradeId) {
     const upgrade = upgrades[upgradeId];
-    if (!upgrade || upgrade.purchased) {
-        showNotification("Upgrade not available."); // Should not happen in normal gameplay
+    if (!upgrade) return false;
+
+    // Check if max purchases reached
+    if (upgrade.repeatable && upgrade.purchasedCount >= upgrade.maxPurchases) {
+        showNotification(t('alert_max_purchases'));
         return false;
     }
 
-    if (player.money >= upgrade.cost) {
-        player.money -= upgrade.cost;
-        upgrade.purchased = true;
+    // Check if already purchased for non-repeatable upgrades
+    if (!upgrade.repeatable && upgrade.purchased) {
+        showNotification(t('alert_already_purchased'));
+        return false;
+    }
 
-        // Apply the effect to the player's state
-        const { type, value } = upgrade.effect;
-        if (type === 'growthMultiplier') {
-            // Multipliers are set directly, not added
-            player.upgrades[type] = value;
-        } else {
-            // Bonuses are additive
-            player.upgrades[type] += value;
-        }
-
-        return true;
-    } else {
+    if (player.money < upgrade.cost) {
         showNotification(t('alert_not_enough_money'));
         return false;
     }
+
+    const { type, crop } = upgrade.effect;
+
+    // Handle auto plot upgrades
+    if (type === 'autoPlot') {
+        const emptyPlot = field.flat().find(cell => !cell.crop && !cell.autoCrop);
+        if (!emptyPlot) {
+            showNotification(t('alert_no_empty_plots'));
+            return false;
+        }
+        player.money -= upgrade.cost;
+        upgrade.purchasedCount++;
+        emptyPlot.autoCrop = crop;
+        showNotification(t('alert_plot_converted', { crop: t(crop) }));
+        return true;
+    }
+
+    // Handle other upgrade types
+    player.money -= upgrade.cost;
+    if (upgrade.repeatable) {
+        upgrade.purchasedCount = (upgrade.purchasedCount || 0) + 1;
+    } else {
+        upgrade.purchased = true;
+    }
+
+    const { value } = upgrade.effect;
+    if (type === 'growthMultiplier') {
+        player.upgrades[type] = value;
+    } else if (type === 'buildingAutomation') {
+        player.upgrades.buildingAutomation = value;
+    } else {
+        player.upgrades[type] = (player.upgrades[type] || 0) + value;
+    }
+
+    return true;
+}
+
+export function toggleBuildingAutomation(buildingId) {
+    if (player.upgrades.buildingAutomation) {
+        const building = player.buildings[buildingId];
+        if (building && building.purchased) {
+            building.automated = !building.automated;
+            return true;
+        }
+    }
+    return false;
 }
 
 export function buyBuilding(buildingId) {
@@ -166,15 +213,32 @@ function updateCropGrowth(now) {
     for (let r = 0; r < NUM_ROWS; r++) {
         for (let c = 0; c < NUM_COLS; c++) {
             const cell = field[r][c];
-            if (cell.crop) {
-                const crop = cropTypes[cell.crop];
-                if (cell.growthStage < crop.visuals.length - 1) {
-                    const timeToGrow = crop.growthTime * player.upgrades.growthMultiplier * player.npcBonuses.growthMultiplier;
-                    if (now - cell.stageStartTime >= timeToGrow) {
-                        cell.growthStage++;
-                        cell.stageStartTime = now;
+
+            // Handle automated plots
+            if (cell.autoCrop) {
+                if (!cell.crop) {
+                    // If empty, try to plant
+                    if (plantSeed(r, c, cell.autoCrop)) {
                         fieldChanged = true;
                     }
+                } else {
+                    // If crop is mature, harvest it
+                    const crop = cropTypes[cell.crop];
+                    if (cell.growthStage >= crop.visuals.length - 1) {
+                        if (harvestCrop(r, c)) {
+                            fieldChanged = true;
+                        }
+                    }
+                }
+            }
+
+            // Handle growth for all plots (manual and auto)
+            if (cell.crop && cell.growthStage < cropTypes[cell.crop].visuals.length - 1) {
+                const timeToGrow = cropTypes[cell.crop].growthTime * player.upgrades.growthMultiplier * player.npcBonuses.growthMultiplier;
+                if (now - cell.stageStartTime >= timeToGrow) {
+                    cell.growthStage++;
+                    cell.stageStartTime = now;
+                    fieldChanged = true;
                 }
             }
         }
@@ -199,19 +263,40 @@ function updateMarketPrices(now) {
     return marketChanged;
 }
 
+function canAfford(ingredients) {
+    for (const ingredient in ingredients) {
+        if ((warehouse[ingredient] || 0) < ingredients[ingredient]) {
+            return false;
+        }
+    }
+    return true;
+}
+
 function updateProduction(now) {
     let productionChanged = false;
     for (const buildingId in player.buildings) {
         const playerBuilding = player.buildings[buildingId];
+        const building = buildings[buildingId];
+
+        // Handle finished production
         if (playerBuilding.purchased && playerBuilding.productionStartTime > 0) {
-            const building = buildings[buildingId];
             if (now - playerBuilding.productionStartTime >= building.productionTime) {
-                // Production finished
                 for (const product in building.output) {
                     warehouse[product] = (warehouse[product] || 0) + building.output[product];
                     showNotification(t('alert_production_finished', { item: t(product) }));
                 }
-                playerBuilding.productionStartTime = 0; // Reset for next production
+                playerBuilding.productionStartTime = 0;
+                productionChanged = true;
+            }
+        }
+
+        // Handle auto-starting production
+        if (playerBuilding.purchased && playerBuilding.automated && playerBuilding.productionStartTime === 0) {
+            if (canAfford(building.input)) {
+                for (const ingredient in building.input) {
+                    warehouse[ingredient] -= building.input[ingredient];
+                }
+                playerBuilding.productionStartTime = now;
                 productionChanged = true;
             }
         }

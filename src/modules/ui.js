@@ -84,8 +84,15 @@ function renderField() {
             if (cell.crop) {
                 plot.textContent = cropTypes[cell.crop].visuals[cell.growthStage];
                 plot.classList.add(cell.crop); // Add class for crop color
-            } else {
+            } else if (cell.autoCrop) {
+                plot.textContent = cropTypes[cell.autoCrop].icon; // Show icon on empty auto plot
+            }
+            else {
                 plot.textContent = '🟫';
+            }
+
+            if (cell.autoCrop) {
+                plot.classList.add('automated-plot', `automated-${cell.autoCrop}`);
             }
             DOM.fieldGrid.appendChild(plot);
         }
@@ -259,15 +266,23 @@ function renderUpgrades() {
         const itemDiv = document.createElement('div');
         itemDiv.classList.add('item');
 
-        let buyButton = `<button class="btn" data-upgrade-id="${upgradeId}">Buy ($${upgrade.cost})</button>`;
-        if (upgrade.purchased) {
-            buyButton = `<span>Purchased</span>`;
+        let buyButton;
+        if (upgrade.repeatable) {
+            const canPurchase = upgrade.purchasedCount < upgrade.maxPurchases;
+            const purchaseStatus = `(${upgrade.purchasedCount}/${upgrade.maxPurchases})`;
+            buyButton = canPurchase
+                ? `<button class="btn buy-upgrade-btn" data-upgrade-id="${upgradeId}">${t('btn_buy')} ($${upgrade.cost})</button> <span>${purchaseStatus}</span>`
+                : `<span>${t('status_maxed_out')} ${purchaseStatus}</span>`;
+        } else {
+            buyButton = upgrade.purchased
+                ? `<span>${t('status_purchased')}</span>`
+                : `<button class="btn buy-upgrade-btn" data-upgrade-id="${upgradeId}">${t('btn_buy')} ($${upgrade.cost})</button>`;
         }
 
         itemDiv.innerHTML = `
-            <strong>${upgrade.name}</strong>
-            <p>${upgrade.description}</p>
-            ${buyButton}
+            <strong>${t(upgrade.name)}</strong>
+            <p>${t(upgrade.description)}</p>
+            <div class="upgrade-actions">${buyButton}</div>
         `;
         DOM.upgradesItems.appendChild(itemDiv);
     }
@@ -309,6 +324,9 @@ function renderBuildings() {
             const building = buildings[buildingId];
             const buildingDiv = document.createElement('div');
             buildingDiv.classList.add('building');
+            if (playerBuilding.automated) {
+                buildingDiv.classList.add('automated');
+            }
 
             const inputs = Object.entries(building.input).map(([key, value]) => `${value} ${t(key)}`).join(', ');
             const outputs = Object.entries(building.output).map(([key, value]) => `${value} ${t(key)}`).join(', ');
@@ -316,9 +334,15 @@ function renderBuildings() {
             let status;
             if (playerBuilding.productionStartTime > 0) {
                 const timeLeft = Math.round((playerBuilding.productionStartTime + building.productionTime - Date.now()) / 1000);
-                status = `<div class="building-status">Producing... (${timeLeft}s left)</div>`;
+                status = `<div class="building-status">${t('status_producing')} (${t('status_time_left', { time: timeLeft })})</div>`;
             } else {
                 status = `<button class="btn start-production-btn" data-building-id="${buildingId}">${t('btn_start_production')}</button>`;
+            }
+
+            let autoButton = '';
+            if (player.upgrades.buildingAutomation) {
+                const btnTextKey = playerBuilding.automated ? 'btn_deactivate_auto' : 'btn_activate_auto';
+                autoButton = `<button class="btn toggle-auto-btn" data-building-id="${buildingId}">${t(btnTextKey)}</button>`;
             }
 
             buildingDiv.innerHTML = `
@@ -326,6 +350,7 @@ function renderBuildings() {
                 <strong class="building-name">${t(building.name)}</strong>
                 <div class="building-recipe">${inputs} → ${outputs}</div>
                 <div class="building-timer">${status}</div>
+                <div class="building-automation">${autoButton}</div>
             `;
             DOM.buildingsGrid.appendChild(buildingDiv);
         }

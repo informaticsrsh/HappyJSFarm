@@ -1,6 +1,6 @@
 import { setLanguage } from './modules/localization.js';
 import { DOM, renderAll, renderOrderTimers } from './modules/ui.js';
-import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder, forceGenerateOrder, increaseTrust, buyBuilding, startProduction, devAddAllProducts } from './modules/game.js';
+import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder, forceGenerateOrder, increaseTrust, buyBuilding, startProduction, devAddAllProducts, toggleBuildingAutomation } from './modules/game.js';
 import { player, field, warehouse } from './modules/state.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -10,6 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const r = e.target.dataset.row;
             const c = e.target.dataset.col;
             const cell = field[r][c];
+
+            // Prevent interaction with auto-plots
+            if (cell.autoCrop) {
+                return;
+            }
+
             let stateChanged = false;
             if (cell.crop) {
                 stateChanged = harvestCrop(r, c);
@@ -21,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     DOM.upgradesItems.addEventListener('click', (e) => {
-        if (e.target.dataset.upgradeId) {
+        if (e.target.classList.contains('buy-upgrade-btn')) {
             if (buyUpgrade(e.target.dataset.upgradeId)) {
                 renderAll();
             }
@@ -50,10 +56,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     DOM.buildingsGrid.addEventListener('click', (e) => {
+        const buildingId = e.target.dataset.buildingId;
+        if (!buildingId) return;
+
+        let stateChanged = false;
         if (e.target.classList.contains('start-production-btn')) {
-            if (startProduction(e.target.dataset.buildingId)) {
-                renderAll();
-            }
+            stateChanged = startProduction(buildingId);
+        } else if (e.target.classList.contains('toggle-auto-btn')) {
+            stateChanged = toggleBuildingAutomation(buildingId);
+        }
+
+        if (stateChanged) {
+            renderAll();
         }
     });
 
