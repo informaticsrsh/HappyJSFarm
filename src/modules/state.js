@@ -90,10 +90,8 @@ export let customers = {
 };
 
 const SAVE_KEY = 'happyJsFarmState';
-let isResetting = false;
 
 export function saveGameState() {
-    if (isResetting) return;
     const gameState = {
         player,
         field,
@@ -122,8 +120,9 @@ export function loadGameState() {
     }
 }
 
-export function clearGameState() {
-    isResetting = true;
+export function clearGameState(gameLoopInterval, orderTimerInterval) {
+    clearInterval(gameLoopInterval);
+    clearInterval(orderTimerInterval);
     localStorage.removeItem(SAVE_KEY);
     window.location.reload();
 }

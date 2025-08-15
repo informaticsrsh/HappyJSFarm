@@ -5,6 +5,9 @@ import { player, field, warehouse, saveGameState, clearGameState, loadGameState 
 import { leveling } from './modules/config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+    let gameLoopInterval;
+    let orderTimerInterval;
+
     loadGameState();
     // --- Event Listeners ---
     DOM.fieldGrid.addEventListener('click', (e) => {
@@ -145,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('clear-data-btn').addEventListener('click', () => {
         if (confirm(t('confirm_clear_data'))) {
-            clearGameState();
+            clearGameState(gameLoopInterval, orderTimerInterval);
         }
     });
 
@@ -230,10 +233,10 @@ document.addEventListener('DOMContentLoaded', () => {
         player.xpToNextLevel = initialLevel.xpRequired;
     }
     renderAll();
-    setInterval(() => {
+    gameLoopInterval = setInterval(() => {
         if (gameTick()) {
             renderAll();
         }
     }, 100); // Main game loop
-    setInterval(renderOrderTimers, 1000); // Timer-only render loop
+    orderTimerInterval = setInterval(renderOrderTimers, 1000); // Timer-only render loop
 });
