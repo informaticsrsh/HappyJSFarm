@@ -24,10 +24,9 @@ function checkForLevelUp() {
 
         // Check for field expansion
         if (player.level > 1 && player.level % 2 === 1) {
-            const newRows = (player.level - 1) / 2;
+            const newRows = Math.floor((player.level - 1) / 2);
             const expectedRows = 3 + newRows;
-            if (NUM_ROWS < expectedRows) {
-                NUM_ROWS++;
+            if (field.length < expectedRows) {
                 field.push(Array(NUM_COLS).fill(null).map(() => ({ crop: null, growthStage: 0, stageStartTime: 0, autoCrop: null })));
                 showNotification(t('alert_farm_expanded'));
             }
@@ -263,8 +262,8 @@ export function startProduction(buildingId, recipeIndex) {
 
 function updateCropGrowth(now) {
     let fieldChanged = false;
-    for (let r = 0; r < NUM_ROWS; r++) {
-        for (let c = 0; c < NUM_COLS; c++) {
+    for (let r = 0; r < field.length; r++) {
+        for (let c = 0; c < field[r].length; c++) {
             const cell = field[r][c];
 
             // Handle automated plots

@@ -18,7 +18,8 @@ export let player = {
         'dairy': { purchased: false, production: null, automated: false },
         'pig_pen': { purchased: false, production: null, automated: false },
         'sandwich_shop': { purchased: false, production: null, automated: false },
-        'breakfast_bar': { purchased: false, production: null, automated: false }
+        'breakfast_bar': { purchased: false, production: null, automated: false },
+        'juicer': { purchased: false, production: null, automated: false }
     },
     npcBonuses: {
         growthMultiplier: 1.0,
