@@ -512,18 +512,6 @@ export function renderAll() {
     renderPlayerState();
 }
 
-// Export DOM elements to be used in main.js for event listeners
-export const {
-    storeTabs,
-    seedsContent,
-    productionContent,
-    upgradesContent,
-    productionItems,
-    upgradesItems,
-    storeModal,
-    buildingsGrid
-} = DOM;
-
 export function showLevelUpModal(level, unlocked, farmExpanded) {
     DOM.levelUpTitle.textContent = t('level_up_title', { level });
 
