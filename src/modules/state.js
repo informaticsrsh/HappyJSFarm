@@ -19,7 +19,8 @@ export let player = {
         'pig_pen': { purchased: false, production: null, automated: false },
         'sandwich_shop': { purchased: false, production: null, automated: false },
         'breakfast_bar': { purchased: false, production: null, automated: false },
-        'juicer': { purchased: false, production: null, automated: false }
+        'juicer': { purchased: false, production: null, automated: false },
+        'jam_factory': { purchased: false, production: null, automated: false }
     },
     npcBonuses: {
         growthMultiplier: 1.0,
@@ -37,6 +38,8 @@ export let warehouse = {
     'carrot_seed': 3,
     'tomato_seed': 2,
     'potato_seed': 2,
+    'strawberry_seed': 0,
+    'blueberry_seed': 0,
     'wheat': 0,
     'carrot': 0,
     'tomato': 0,
@@ -47,7 +50,11 @@ export let warehouse = {
     'sandwich': 0,
     'cereal': 0,
     'tomato_juice': 0,
-    'carrot_juice': 0
+    'carrot_juice': 0,
+    'strawberry': 0,
+    'blueberry': 0,
+    'strawberry_jam': 0,
+    'blueberry_jam': 0
 };
 
 export let marketState = {};

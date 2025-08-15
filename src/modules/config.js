@@ -7,13 +7,20 @@ export const leveling = [
     { level: 3, xpRequired: 220 },
     { level: 4, xpRequired: 300 },
     { level: 5, xpRequired: 450 },
+    { level: 6, xpRequired: 600 },
+    { level: 7, xpRequired: 800 },
+    { level: 8, xpRequired: 1000 },
+    { level: 9, xpRequired: 1250 },
+    { level: 10, xpRequired: 1500 },
 ];
 
 export const store = [
     { name: 'wheat_seed', price: 10, type: 'seed', requiredLevel: 1 },
     { name: 'carrot_seed', price: 15, type: 'seed', requiredLevel: 1 },
     { name: 'tomato_seed', price: 20, type: 'seed', requiredLevel: 1 },
-    { name: 'potato_seed', price: 25, type: 'seed', requiredLevel: 1 }
+    { name: 'potato_seed', price: 25, type: 'seed', requiredLevel: 1 },
+    { name: 'strawberry_seed', price: 50, type: 'seed', requiredLevel: 5 },
+    { name: 'blueberry_seed', price: 60, type: 'seed', requiredLevel: 7 }
 ];
 
 export const cropTypes = {
@@ -131,16 +138,63 @@ export const cropTypes = {
         salesVolumeForPriceDrop: 5,
         xpValue: 15,
         requiredLevel: 4
+    },
+    'strawberry': {
+        icon: '🍓',
+        seed_icon: '🌱',
+        growthTime: 7000,
+        visuals: ['🌱', '🌿', '🍓'],
+        yieldRange: [2, 5],
+        maxPrice: 120,
+        minPrice: 50,
+        priceRecoveryRate: 18000,
+        salesVolumeForPriceDrop: 3,
+        xpValue: 18,
+        requiredLevel: 5
+    },
+    'blueberry': {
+        icon: '🫐',
+        seed_icon: '🌱',
+        growthTime: 8000,
+        visuals: ['🌱', '🌿', '🫐'],
+        yieldRange: [3, 6],
+        maxPrice: 150,
+        minPrice: 60,
+        priceRecoveryRate: 22000,
+        salesVolumeForPriceDrop: 2,
+        xpValue: 22,
+        requiredLevel: 7
+    },
+    'strawberry_jam': {
+        icon: '🍓🍯',
+        maxPrice: 300,
+        minPrice: 150,
+        priceRecoveryRate: 25000,
+        salesVolumeForPriceDrop: 2,
+        xpValue: 50,
+        requiredLevel: 8
+    },
+    'blueberry_jam': {
+        icon: '🫐🍯',
+        maxPrice: 350,
+        minPrice: 180,
+        priceRecoveryRate: 30000,
+        salesVolumeForPriceDrop: 1,
+        xpValue: 60,
+        requiredLevel: 8
     }
 };
 
 export const upgrades = {
     // --- General Upgrades ---
-    'fertilizer1': { cost: 200, name: 'upgrade_fertilizer1_name', description: 'upgrade_fertilizer1_desc', effect: { type: 'growthMultiplier', value: 0.9 }, purchased: false, requiredLevel: 2 },
+    'fertilizer1': { cost: 200, name: 'upgrade_fertilizer1_name', description: 'upgrade_fertilizer1_desc', effect: { type: 'growthMultiplier', value: 0.9 }, purchased: false, requiredLevel: 1 },
     'fertilizer2': { cost: 500, name: 'upgrade_fertilizer2_name', description: 'upgrade_fertilizer2_desc', effect: { type: 'growthMultiplier', value: 0.75 }, purchased: false, requiredLevel: 5 },
-    'compost1': { cost: 300, name: 'upgrade_compost1_name', description: 'upgrade_compost1_desc', effect: { type: 'yieldBonus', value: 1 }, purchased: false, requiredLevel: 3 },
+    'compost1': { cost: 300, name: 'upgrade_compost1_name', description: 'upgrade_compost1_desc', effect: { type: 'yieldBonus', value: 1 }, purchased: false, requiredLevel: 1 },
+    'compost2': { cost: 600, name: 'upgrade_compost2_name', description: 'upgrade_compost2_desc', effect: { type: 'yieldBonus', value: 1 }, purchased: false, requiredLevel: 6 },
     'negotiation1': { cost: 400, name: 'upgrade_negotiation1_name', description: 'upgrade_negotiation1_desc', effect: { type: 'seedDiscount', value: 0.1 }, purchased: false, requiredLevel: 4 },
+    'negotiation2': { cost: 800, name: 'upgrade_negotiation2_name', description: 'upgrade_negotiation2_desc', effect: { type: 'seedDiscount', value: 0.1 }, purchased: false, requiredLevel: 7 },
     'charm1': { cost: 600, name: 'upgrade_charm1_name', description: 'upgrade_charm1_desc', effect: { type: 'marketBonus', value: 2 }, purchased: false, requiredLevel: 6 },
+    'charm2': { cost: 1200, name: 'upgrade_charm2_name', description: 'upgrade_charm2_desc', effect: { type: 'marketBonus', value: 3 }, purchased: false, requiredLevel: 9 },
 
     // --- Automation Upgrades ---
     'building_automation': { cost: 5000, name: 'upgrade_building_automation_name', description: 'upgrade_building_automation_desc', effect: { type: 'buildingAutomation', value: true }, purchased: false, requiredLevel: 10 },
@@ -253,6 +307,27 @@ export const buildings = {
         purchased: false,
         productionStartTime: 0,
         requiredLevel: 4
+    },
+    'jam_factory': {
+        name: 'Jam Factory',
+        icon: '🏭',
+        cost: 5000,
+        description: 'Makes delicious jams from berries.',
+        recipes: [
+            {
+                input: { 'strawberry': 5 },
+                output: { 'strawberry_jam': 1 },
+                productionTime: 40000 // 40 seconds
+            },
+            {
+                input: { 'blueberry': 5 },
+                output: { 'blueberry_jam': 1 },
+                productionTime: 50000 // 50 seconds
+            }
+        ],
+        purchased: false,
+        productionStartTime: 0,
+        requiredLevel: 8
     }
 };
 
