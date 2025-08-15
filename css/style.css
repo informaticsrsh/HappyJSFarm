@@ -101,6 +101,41 @@ h1 {
     font-weight: 700;
 }
 
+#level-display {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+#xp-bar-container {
+    width: 100%;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    position: relative;
+    height: 20px;
+    border: 1px solid #3d405b;
+}
+
+#xp-bar {
+    width: 0%;
+    height: 100%;
+    background-color: #81b29a;
+    border-radius: 4px;
+    transition: width 0.3s ease-in-out;
+}
+
+#xp-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #3d405b;
+    font-size: 14px;
+    font-weight: 700;
+    text-shadow: 1px 1px 2px #f4f1de;
+}
+
 #bonus-display {
     font-size: 14px;
     font-weight: 400;
@@ -412,3 +447,37 @@ h1 {
 .order-customer-npc3 { background-color: #ffc8ddcc; } /* Chef Pierre - Rosy Pink */
 .order-customer-npc4 { background-color: #cdb4dbcc; } /* Rancher Rick - Lavender */
 .order-customer-npc5 { background-color: #bde0fecc; } /* Baker Betty - Light Blue */
+
+/* Level Up Modal Styles */
+#level-up-modal .modal-content {
+    text-align: center;
+    background: linear-gradient(135deg, #f2cc8f, #e07a5f);
+    border-color: #3d405b;
+}
+
+#level-up-title {
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    font-size: 2.5em;
+}
+
+#level-up-unlocks h3 {
+    color: #3d405b;
+    border-bottom: 2px solid #3d405b;
+    padding-bottom: 5px;
+    margin-top: 20px;
+}
+
+#level-up-unlocks ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#level-up-unlocks li {
+    background-color: #f4f1de;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 5px 0;
+    font-weight: 700;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}

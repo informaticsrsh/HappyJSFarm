@@ -2,6 +2,9 @@ import { NUM_ROWS, NUM_COLS, cropTypes } from './config.js';
 
 export let player = {
     money: 100,
+    level: 1,
+    xp: 0,
+    xpToNextLevel: 100,
     selectedSeed: null,
     upgrades: {
         growthMultiplier: 1.0,
@@ -11,11 +14,13 @@ export let player = {
         buildingAutomation: false
     },
     buildings: {
-        'bakery': { purchased: false, productionStartTime: 0, automated: false },
-        'dairy': { purchased: false, productionStartTime: 0, automated: false },
-        'pig_pen': { purchased: false, productionStartTime: 0, automated: false },
-        'sandwich_shop': { purchased: false, productionStartTime: 0, automated: false },
-        'breakfast_bar': { purchased: false, productionStartTime: 0, automated: false }
+        'bakery': { purchased: false, production: null, automated: false },
+        'dairy': { purchased: false, production: null, automated: false },
+        'pig_pen': { purchased: false, production: null, automated: false },
+        'sandwich_shop': { purchased: false, production: null, automated: false },
+        'breakfast_bar': { purchased: false, production: null, automated: false },
+        'juicer': { purchased: false, production: null, automated: false },
+        'jam_factory': { purchased: false, production: null, automated: false }
     },
     npcBonuses: {
         growthMultiplier: 1.0,
@@ -33,6 +38,8 @@ export let warehouse = {
     'carrot_seed': 3,
     'tomato_seed': 2,
     'potato_seed': 2,
+    'strawberry_seed': 0,
+    'blueberry_seed': 0,
     'wheat': 0,
     'carrot': 0,
     'tomato': 0,
@@ -41,7 +48,13 @@ export let warehouse = {
     'milk': 0,
     'bacon': 0,
     'sandwich': 0,
-    'cereal': 0
+    'cereal': 0,
+    'tomato_juice': 0,
+    'carrot_juice': 0,
+    'strawberry': 0,
+    'blueberry': 0,
+    'strawberry_jam': 0,
+    'blueberry_jam': 0
 };
 
 export let marketState = {};

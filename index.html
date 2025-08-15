@@ -12,6 +12,7 @@
         <button id="dev-money-btn" class="btn">+1000 Money (Dev)</button>
         <button id="dev-order-btn" class="btn">New Order (Dev)</button>
         <button id="dev-add-all-btn" class="btn">+100 All Products (Dev)</button>
+        <button id="dev-xp-btn" class="btn">+200 XP (Dev)</button>
         <div id="dev-trust-buttons">
             <span>Trust+50:</span>
             <button class="btn dev-trust-btn" data-customer-id="npc1">Joe</button>
@@ -34,6 +35,11 @@
         <div id="left-panel">
             <div id="player-stats">
                 <div id="money-display"></div>
+                <div id="level-display"></div>
+                <div id="xp-bar-container">
+                    <div id="xp-bar"></div>
+                    <div id="xp-text"></div>
+                </div>
                 <div id="bonus-display"></div>
             </div>
             <div class="button-group">
@@ -92,6 +98,15 @@
             <span class="close-btn ref-close">&times;</span>
             <h2>Crop Reference</h2>
             <div id="ref-content"></div>
+        </div>
+    </div>
+
+    <!-- Level Up Modal -->
+    <div id="level-up-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn level-up-close">&times;</span>
+            <h2 id="level-up-title"></h2>
+            <div id="level-up-unlocks"></div>
         </div>
     </div>
 

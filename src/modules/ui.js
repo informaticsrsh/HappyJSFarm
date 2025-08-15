@@ -42,9 +42,18 @@ export const DOM = {
     devMoneyBtn: document.getElementById('dev-money-btn'),
     devOrderBtn: document.getElementById('dev-order-btn'),
     devAddAllBtn: document.getElementById('dev-add-all-btn'),
+    devXpBtn: document.getElementById('dev-xp-btn'),
     moneyDisplay: document.getElementById('money-display'),
+    levelDisplay: document.getElementById('level-display'),
+    xpBarContainer: document.getElementById('xp-bar-container'),
+    xpBar: document.getElementById('xp-bar'),
+    xpText: document.getElementById('xp-text'),
     bonusDisplay: document.getElementById('bonus-display'),
-    notificationBanner: document.getElementById('notification-banner')
+    notificationBanner: document.getElementById('notification-banner'),
+    levelUpModal: document.getElementById('level-up-modal'),
+    levelUpTitle: document.getElementById('level-up-title'),
+    levelUpUnlocks: document.getElementById('level-up-unlocks'),
+    levelUpCloseBtn: document.querySelector('.level-up-close')
 };
 
 let notificationTimeout;
@@ -73,8 +82,11 @@ function getIconForItem(itemName) {
 
 function renderField() {
     DOM.fieldGrid.innerHTML = '';
-    for (let r = 0; r < NUM_ROWS; r++) {
-        for (let c = 0; c < NUM_COLS; c++) {
+    DOM.fieldGrid.style.gridTemplateRows = `repeat(${field.length}, 50px)`;
+    DOM.fieldGrid.style.gridTemplateColumns = `repeat(${field[0].length}, 50px)`;
+
+    for (let r = 0; r < field.length; r++) {
+        for (let c = 0; c < field[0].length; c++) {
             const plot = document.createElement('div');
             plot.classList.add('plot');
             plot.dataset.row = r;
@@ -125,7 +137,9 @@ function renderWarehouse() {
 
 function renderStore() {
     DOM.storeItems.innerHTML = '';
-    store.forEach(item => {
+    store
+        .filter(item => player.level >= (item.requiredLevel || 1))
+        .forEach(item => {
         const itemDiv = document.createElement('div');
         itemDiv.classList.add('item');
         itemDiv.classList.add(item.name.replace(/_/g, '-'));
@@ -263,6 +277,9 @@ function renderUpgrades() {
     DOM.upgradesItems.innerHTML = '';
     for (const upgradeId in upgrades) {
         const upgrade = upgrades[upgradeId];
+        if (player.level < (upgrade.requiredLevel || 1)) {
+            continue;
+        }
         const itemDiv = document.createElement('div');
         itemDiv.classList.add('item');
 
@@ -292,6 +309,10 @@ function renderProduction() {
     DOM.productionItems.innerHTML = '';
     for (const buildingId in buildings) {
         const building = buildings[buildingId];
+        if (player.level < (building.requiredLevel || 1)) {
+            continue;
+        }
+
         const playerBuilding = player.buildings[buildingId];
         if (playerBuilding.purchased) {
             continue; // Skip purchased buildings
@@ -300,16 +321,18 @@ function renderProduction() {
         const itemDiv = document.createElement('div');
         itemDiv.classList.add('item');
 
-        const inputs = Object.entries(building.input).map(([key, value]) => `${value} ${t(key)}`).join(', ');
-        const outputs = Object.entries(building.output).map(([key, value]) => `${value} ${t(key)}`).join(', ');
+        let recipesHtml = building.recipes.map(recipe => {
+            const inputs = Object.entries(recipe.input).map(([key, value]) => `${value} ${t(key)}`).join(', ');
+            const outputs = Object.entries(recipe.output).map(([key, value]) => `${value} ${t(key)}`).join(', ');
+            return `<div class="recipe-info"><strong>${t('production_recipe')}:</strong> ${inputs} → ${outputs} (${recipe.productionTime / 1000}s)</div>`;
+        }).join('');
+
         const actionButton = `<button class="btn buy-building-btn" data-building-id="${buildingId}">${t('btn_buy')} ($${building.cost})</button>`;
 
         itemDiv.innerHTML = `
             <strong>${t(building.name)}</strong>
             <p>${t(building.description)}</p>
-            <p><strong>${t('production_input')}:</strong> ${inputs}</p>
-            <p><strong>${t('production_output')}:</strong> ${outputs}</p>
-            <p><strong>${t('production_time')}:</strong> ${building.productionTime / 1000}s</p>
+            ${recipesHtml}
             ${actionButton}
         `;
         DOM.productionItems.appendChild(itemDiv);
@@ -328,15 +351,23 @@ function renderBuildings() {
                 buildingDiv.classList.add('automated');
             }
 
-            const inputs = Object.entries(building.input).map(([key, value]) => `${value} ${t(key)}`).join(', ');
-            const outputs = Object.entries(building.output).map(([key, value]) => `${value} ${t(key)}`).join(', ');
-
-            let status;
-            if (playerBuilding.productionStartTime > 0) {
-                const timeLeft = Math.round((playerBuilding.productionStartTime + building.productionTime - Date.now()) / 1000);
-                status = `<div class="building-status">${t('status_producing')} (${t('status_time_left', { time: timeLeft })})</div>`;
+            let statusHtml = '';
+            if (playerBuilding.production) {
+                const recipe = building.recipes[playerBuilding.production.recipeIndex];
+                const timeLeft = Math.round((playerBuilding.production.startTime + recipe.productionTime - Date.now()) / 1000);
+                statusHtml = `<div class="building-status">${t('status_producing')} (${t('status_time_left', { time: timeLeft })})</div>`;
             } else {
-                status = `<button class="btn start-production-btn" data-building-id="${buildingId}">${t('btn_start_production')}</button>`;
+                building.recipes.forEach((recipe, index) => {
+                    const inputs = Object.entries(recipe.input).map(([key, value]) => `${value} ${t(key)}`).join(', ');
+                    const outputs = Object.entries(recipe.output).map(([key, value]) => `${value} ${t(key)}`).join(', ');
+                    statusHtml += `
+                        <div class="recipe">
+                            <div class="recipe-io">${inputs} → ${outputs}</div>
+                            <button class="btn start-production-btn" data-building-id="${buildingId}" data-recipe-index="${index}">
+                                ${t('btn_start_production')}
+                            </button>
+                        </div>`;
+                });
             }
 
             let autoButton = '';
@@ -348,8 +379,7 @@ function renderBuildings() {
             buildingDiv.innerHTML = `
                 <div class="building-icon">${building.icon}</div>
                 <strong class="building-name">${t(building.name)}</strong>
-                <div class="building-recipe">${inputs} → ${outputs}</div>
-                <div class="building-timer">${status}</div>
+                <div class="building-recipes">${statusHtml}</div>
                 <div class="building-automation">${autoButton}</div>
             `;
             DOM.buildingsGrid.appendChild(buildingDiv);
@@ -357,8 +387,16 @@ function renderBuildings() {
     }
 }
 
+function renderXpBar() {
+    DOM.levelDisplay.textContent = t('level_display', { level: player.level });
+    const xpPercentage = (player.xp / player.xpToNextLevel) * 100;
+    DOM.xpBar.style.width = `${xpPercentage}%`;
+    DOM.xpText.textContent = `${player.xp} / ${player.xpToNextLevel} XP`;
+}
+
 function renderPlayerState() {
     DOM.moneyDisplay.textContent = `💰 $${player.money}`;
+    renderXpBar();
 
     let bonusHtml = '';
     if (player.upgrades.growthMultiplier < 1.0) {
@@ -435,3 +473,40 @@ export const {
     storeModal,
     buildingsGrid
 } = DOM;
+
+export function showLevelUpModal(level, unlocked, farmExpanded) {
+    DOM.levelUpTitle.textContent = t('level_up_title', { level });
+
+    let unlocksHtml = '';
+
+    if (farmExpanded) {
+        unlocksHtml += `<h3>${t('unlock_farm_expanded')}</h3>`;
+    }
+
+    if (unlocked.crops.length > 0) {
+        unlocksHtml += `<h3>${t('unlocks_crops')}</h3><ul>`;
+        unlocked.crops.forEach(crop => {
+            unlocksHtml += `<li>${t(crop)}</li>`;
+        });
+        unlocksHtml += '</ul>';
+    }
+
+    if (unlocked.buildings.length > 0) {
+        unlocksHtml += `<h3>${t('unlocks_buildings')}</h3><ul>`;
+        unlocked.buildings.forEach(building => {
+            unlocksHtml += `<li>${t(building)}</li>`;
+        });
+        unlocksHtml += '</ul>';
+    }
+
+    if (unlocked.upgrades.length > 0) {
+        unlocksHtml += `<h3>${t('unlocks_upgrades')}</h3><ul>`;
+        unlocked.upgrades.forEach(upgrade => {
+            unlocksHtml += `<li>${t(upgrade)}</li>`;
+        });
+        unlocksHtml += '</ul>';
+    }
+
+    DOM.levelUpUnlocks.innerHTML = unlocksHtml;
+    DOM.levelUpModal.style.display = 'block';
+}

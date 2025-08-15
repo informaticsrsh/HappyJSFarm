@@ -1,7 +1,48 @@
 import { t } from './localization.js';
 import { player, field, warehouse, marketState, customers } from './state.js';
-import { cropTypes, upgrades, NUM_ROWS, NUM_COLS, store, customerConfig, buildings } from './config.js';
-import { showNotification } from './ui.js';
+import { cropTypes, upgrades, NUM_COLS, store, customerConfig, buildings, leveling } from './config.js';
+import { showNotification, showLevelUpModal } from './ui.js';
+
+export function addXp(amount) {
+    player.xp += amount;
+    checkForLevelUp();
+}
+
+function checkForLevelUp() {
+    while (player.xp >= player.xpToNextLevel) {
+        player.level++;
+        player.xp -= player.xpToNextLevel;
+        const newLevel = player.level;
+
+        const nextLevelConfig = leveling.find(l => l.level === newLevel);
+        if (nextLevelConfig) {
+            player.xpToNextLevel = nextLevelConfig.xpRequired;
+        } else {
+            player.xpToNextLevel = Infinity;
+        }
+        showNotification(t('alert_level_up', { level: newLevel }));
+
+        const newlyUnlocked = {
+            crops: store.filter(item => item.requiredLevel === newLevel).map(item => item.name),
+            buildings: Object.keys(buildings).filter(id => buildings[id].requiredLevel === newLevel).map(id => buildings[id].name),
+            upgrades: Object.keys(upgrades).filter(id => upgrades[id].requiredLevel === newLevel).map(id => upgrades[id].name)
+        };
+
+        let farmExpanded = false;
+        if (newLevel > 1 && newLevel % 2 === 1) {
+            const newRows = Math.floor((newLevel - 1) / 2);
+            const expectedRows = 3 + newRows;
+            if (field.length < expectedRows) {
+                field.push(Array(NUM_COLS).fill(null).map(() => ({ crop: null, growthStage: 0, stageStartTime: 0, autoCrop: null })));
+                farmExpanded = true;
+            }
+        }
+
+        if (newlyUnlocked.crops.length > 0 || newlyUnlocked.buildings.length > 0 || newlyUnlocked.upgrades.length > 0 || farmExpanded) {
+            showLevelUpModal(newLevel, newlyUnlocked, farmExpanded);
+        }
+    }
+}
 
 export function plantSeed(r, c, cropToPlant = null) {
     const isAuto = !!cropToPlant;
@@ -10,6 +51,12 @@ export function plantSeed(r, c, cropToPlant = null) {
 
     if (!seedName) {
         showNotification(t('alert_select_seed'));
+        return false;
+    }
+
+    const crop = cropTypes[cropName];
+    if (player.level < (crop.requiredLevel || 1)) {
+        showNotification(t('alert_seed_locked'));
         return false;
     }
 
@@ -37,6 +84,7 @@ export function harvestCrop(r, c) {
         let yieldAmount = Math.floor(Math.random() * (max - min + 1)) + min;
         yieldAmount += (player.upgrades.yieldBonus + player.npcBonuses.yieldBonus);
         warehouse[cell.crop] = (warehouse[cell.crop] || 0) + yieldAmount;
+        addXp(crop.xpValue * yieldAmount);
         cell.crop = null;
         cell.growthStage = 0;
         cell.stageStartTime = 0;
@@ -100,6 +148,11 @@ export function buySeed(itemName, amount) {
 export function buyUpgrade(upgradeId) {
     const upgrade = upgrades[upgradeId];
     if (!upgrade) return false;
+
+    if (player.level < (upgrade.requiredLevel || 1)) {
+        showNotification(t('alert_upgrade_locked'));
+        return false;
+    }
 
     // Check if max purchases reached
     if (upgrade.repeatable && upgrade.purchasedCount >= upgrade.maxPurchases) {
@@ -172,6 +225,11 @@ export function buyBuilding(buildingId) {
         return false;
     }
 
+    if (player.level < (building.requiredLevel || 1)) {
+        showNotification(t('alert_building_locked'));
+        return false;
+    }
+
     if (player.money >= building.cost) {
         player.money -= building.cost;
         player.buildings[buildingId].purchased = true;
@@ -182,36 +240,40 @@ export function buyBuilding(buildingId) {
     }
 }
 
-export function startProduction(buildingId) {
+export function startProduction(buildingId, recipeIndex) {
     const building = buildings[buildingId];
     const playerBuilding = player.buildings[buildingId];
+    const recipe = building.recipes[recipeIndex];
 
-    if (!building || !playerBuilding.purchased || playerBuilding.productionStartTime > 0) {
+    if (!building || !playerBuilding.purchased || playerBuilding.production) {
         showNotification("Cannot start production.");
         return false;
     }
 
     // Check for required ingredients
-    for (const ingredient in building.input) {
-        if ((warehouse[ingredient] || 0) < building.input[ingredient]) {
+    for (const ingredient in recipe.input) {
+        if ((warehouse[ingredient] || 0) < recipe.input[ingredient]) {
             showNotification(t('alert_not_enough_ingredients', { item: t(ingredient) }));
             return false;
         }
     }
 
     // Consume ingredients
-    for (const ingredient in building.input) {
-        warehouse[ingredient] -= building.input[ingredient];
+    for (const ingredient in recipe.input) {
+        warehouse[ingredient] -= recipe.input[ingredient];
     }
 
-    playerBuilding.productionStartTime = Date.now();
+    playerBuilding.production = {
+        recipeIndex,
+        startTime: Date.now()
+    };
     return true;
 }
 
 function updateCropGrowth(now) {
     let fieldChanged = false;
-    for (let r = 0; r < NUM_ROWS; r++) {
-        for (let c = 0; c < NUM_COLS; c++) {
+    for (let r = 0; r < field.length; r++) {
+        for (let c = 0; c < field[r].length; c++) {
             const cell = field[r][c];
 
             // Handle automated plots
@@ -279,24 +341,29 @@ function updateProduction(now) {
         const building = buildings[buildingId];
 
         // Handle finished production
-        if (playerBuilding.purchased && playerBuilding.productionStartTime > 0) {
-            if (now - playerBuilding.productionStartTime >= building.productionTime) {
-                for (const product in building.output) {
-                    warehouse[product] = (warehouse[product] || 0) + building.output[product];
+        if (playerBuilding.purchased && playerBuilding.production) {
+            const recipe = building.recipes[playerBuilding.production.recipeIndex];
+            if (now - playerBuilding.production.startTime >= recipe.productionTime) {
+                for (const product in recipe.output) {
+                    const amount = recipe.output[product];
+                    warehouse[product] = (warehouse[product] || 0) + amount;
+                    addXp(cropTypes[product].xpValue * amount);
                     showNotification(t('alert_production_finished', { item: t(product) }));
                 }
-                playerBuilding.productionStartTime = 0;
+                playerBuilding.production = null;
                 productionChanged = true;
             }
         }
 
         // Handle auto-starting production
-        if (playerBuilding.purchased && playerBuilding.automated && playerBuilding.productionStartTime === 0) {
-            if (canAfford(building.input)) {
-                for (const ingredient in building.input) {
-                    warehouse[ingredient] -= building.input[ingredient];
+        if (playerBuilding.purchased && playerBuilding.automated && !playerBuilding.production) {
+            // Simple auto-production: always try to craft the first recipe
+            const recipe = building.recipes[0];
+            if (canAfford(recipe.input)) {
+                for (const ingredient in recipe.input) {
+                    warehouse[ingredient] -= recipe.input[ingredient];
                 }
-                playerBuilding.productionStartTime = now;
+                playerBuilding.production = { recipeIndex: 0, startTime: now };
                 productionChanged = true;
             }
         }
@@ -439,6 +506,9 @@ export function fulfillOrder(customerId) {
     }
 
     if (warehouse[order.crop] >= order.amount) {
+        const xpForItems = (cropTypes[order.crop].xpValue || 0) * order.amount;
+        addXp(10 + xpForItems); // Base XP for order + XP for items
+
         warehouse[order.crop] -= order.amount;
         player.money += order.reward;
         customer.trust += 20; // Reward for fulfilling
