@@ -2,65 +2,46 @@ import { t } from './localization.js';
 import { player, field, warehouse, marketState, customers } from './state.js';
 import { NUM_ROWS, NUM_COLS, store, cropTypes, upgrades, customerConfig, buildings } from './config.js';
 
-export const DOM = {
-    fieldGrid: document.getElementById('field-grid'),
-    warehouseItems: document.getElementById('warehouse-items'),
-    orderItems: document.getElementById('order-items'),
-    storeItems: document.getElementById('store-items'),
-    storeModal: document.getElementById('store-modal'),
-    openStoreBtn: document.getElementById('open-store-btn'),
-    storeCloseBtn: document.querySelector('.store-close'),
-    refModal: document.getElementById('ref-modal'),
-    openRefBtn: document.getElementById('open-ref-btn'),
-    refCloseBtn: document.querySelector('.ref-close'),
-    refTabs: document.querySelector('.ref-tabs'),
-    cropsRefContent: document.getElementById('crops-ref-content'),
-    productionRefContent: document.getElementById('production-ref-content'),
-    customersRefContent: document.getElementById('customers-ref-content'),
-    marketModal: document.getElementById('market-modal'),
-    openMarketBtn: document.getElementById('open-market-btn'),
-    marketCloseBtn: document.querySelector('.market-close'),
-    marketItems: document.getElementById('market-items'),
-    langEnBtn: document.getElementById('lang-en'),
-    langUkBtn: document.getElementById('lang-uk'),
-    mainTitle: document.getElementById('main-title'),
-    warehouseTitle: document.querySelector('#warehouse-container h2'),
-    marketTitle: document.querySelector('#market-modal h2'),
-    refTitle: document.querySelector('#ref-modal h2'),
-    fieldTitle: document.querySelector('#field-container h2'),
-    buildingsContainer: document.getElementById('buildings-container'),
-    buildingsGrid: document.getElementById('buildings-grid'),
-    // Store tabs
-    storeTabs: document.querySelector('.store-tabs'),
-    seedsContent: document.getElementById('seeds-content'),
-    productionContent: document.getElementById('production-content'),
-    upgradesContent: document.getElementById('upgrades-content'),
-    productionItems: document.getElementById('production-items'),
-    upgradesItems: document.getElementById('upgrades-items'),
-    seedsTabBtn: document.getElementById('seeds-tab-btn'),
-    productionTabBtn: document.getElementById('production-tab-btn'),
-    upgradesTabBtn: document.getElementById('upgrades-tab-btn'),
-    cropsTabBtn: document.getElementById('crops-tab-btn'),
-    productionRefTabBtn: document.getElementById('production-ref-tab-btn'),
-    customersTabBtn: document.getElementById('customers-tab-btn'),
-    // Dev elements
-    devPanel: document.querySelector('.dev-panel'),
-    devMoneyBtn: document.getElementById('dev-money-btn'),
-    devOrderBtn: document.getElementById('dev-order-btn'),
-    devAddAllBtn: document.getElementById('dev-add-all-btn'),
-    devXpBtn: document.getElementById('dev-xp-btn'),
-    moneyDisplay: document.getElementById('money-display'),
-    levelDisplay: document.getElementById('level-display'),
-    xpBarContainer: document.getElementById('xp-bar-container'),
-    xpBar: document.getElementById('xp-bar'),
-    xpText: document.getElementById('xp-text'),
-    bonusDisplay: document.getElementById('bonus-display'),
-    notificationBanner: document.getElementById('notification-banner'),
-    levelUpModal: document.getElementById('level-up-modal'),
-    levelUpTitle: document.getElementById('level-up-title'),
-    levelUpUnlocks: document.getElementById('level-up-unlocks'),
-    levelUpCloseBtn: document.querySelector('.level-up-close')
-};
+export const DOM = {};
+
+export function initUI() {
+    const ids = [
+        'field-grid', 'warehouse-items', 'order-items', 'store-items',
+        'store-modal', 'open-store-btn', 'ref-modal', 'open-ref-btn',
+        'crops-ref-content', 'production-ref-content', 'customers-ref-content',
+        'market-modal', 'open-market-btn', 'market-items', 'lang-en', 'lang-uk',
+        'main-title', 'buildings-container', 'buildings-grid', 'seeds-content',
+        'production-content', 'upgrades-content', 'production-items', 'upgrades-items',
+        'seeds-tab-btn', 'production-tab-btn', 'upgrades-tab-btn', 'crops-tab-btn',
+        'production-ref-tab-btn', 'customers-tab-btn', 'dev-money-btn', 'dev-order-btn',
+        'dev-add-all-btn', 'dev-xp-btn', 'money-display', 'level-display',
+        'xp-bar-container', 'xp-bar', 'xp-text', 'bonus-display', 'notification-banner',
+        'level-up-modal', 'level-up-title', 'level-up-unlocks'
+    ];
+    const selectors = {
+        storeCloseBtn: '.store-close',
+        refCloseBtn: '.ref-close',
+        refTabs: '.ref-tabs',
+        marketCloseBtn: '.market-close',
+        warehouseTitle: '#warehouse-container h2',
+        marketTitle: '#market-modal h2',
+        refTitle: '#ref-modal h2',
+        fieldTitle: '#field-container h2',
+        storeTabs: '.store-tabs',
+        devPanel: '.dev-panel',
+        levelUpCloseBtn: '.level-up-close'
+    };
+
+    ids.forEach(id => {
+        const camelCaseId = id.replace(/-./g, c => c.substring(1).toUpperCase());
+        DOM[camelCaseId] = document.getElementById(id);
+    });
+
+    for (const key in selectors) {
+        DOM[key] = document.querySelector(selectors[key]);
+    }
+}
+
 
 let notificationTimeout;
 

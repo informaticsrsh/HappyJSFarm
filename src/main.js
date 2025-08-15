@@ -1,10 +1,11 @@
 import { setLanguage, t } from './modules/localization.js';
-import { DOM, renderAll, renderOrderTimers } from './modules/ui.js';
+import { DOM, renderAll, renderOrderTimers, initUI } from './modules/ui.js';
 import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder, forceGenerateOrder, increaseTrust, buyBuilding, startProduction, devAddAllProducts, toggleBuildingAutomation, addXp } from './modules/game.js';
 import { player, field, warehouse, saveGameState, clearGameState, loadGameState } from './modules/state.js';
 import { leveling, store } from './modules/config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+    initUI();
     let gameLoopInterval;
     let orderTimerInterval;
 
