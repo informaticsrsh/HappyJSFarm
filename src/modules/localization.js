@@ -133,7 +133,9 @@ const locales = {
         "alert_seed_locked": "You have not unlocked this seed yet!",
         "alert_building_locked": "You have not unlocked this building yet!",
         "alert_upgrade_locked": "You have not unlocked this upgrade yet!",
-        "confirm_clear_data": "Are you sure you want to clear all your progress? This cannot be undone."
+        "confirm_clear_data": "Are you sure you want to clear all your progress? This cannot be undone.",
+        "level_up_congrats": "Congratulations! You've reached level {level}.",
+        "level_up_max_level": "You've reached level 11, the highest level currently available. Congratulations on mastering the game!"
     },
     "uk": {
         "title": "Моя Ферма",
@@ -269,7 +271,9 @@ const locales = {
         "alert_seed_locked": "Ви ще не розблокували це насіння!",
         "alert_building_locked": "Ви ще не розблокували цю будівлю!",
         "alert_upgrade_locked": "Ви ще не розблокували це покращення!",
-        "confirm_clear_data": "Ви впевнені, що хочете видалити весь свій прогрес? Цю дію неможливо буде скасувати."
+        "confirm_clear_data": "Ви впевнені, що хочете видалити весь свій прогрес? Цю дію неможливо буде скасувати.",
+        "level_up_congrats": "Вітаємо! Ви досягли {level} рівня.",
+        "level_up_max_level": "Ви досягли 11 рівня, найвищого на даний момент. Вітаємо з освоєнням гри!"
     }
 };
 
