@@ -254,6 +254,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (gameTick()) {
             renderAll();
         }
-    }, 100); // Main game loop
+    }, 1000); // Main game loop
     orderTimerInterval = setInterval(renderOrderTimers, 1000); // Timer-only render loop
 });
