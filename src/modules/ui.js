@@ -513,3 +513,9 @@ export function showLevelUpModal(level, unlocked, farmExpanded) {
     DOM.levelUpUnlocks.innerHTML = unlocksHtml;
     DOM.levelUpModal.style.display = 'block';
 }
+
+export function showSimpleLevelUpModal(level, message) {
+    DOM.levelUpTitle.textContent = t('level_up_title', { level });
+    DOM.levelUpUnlocks.innerHTML = `<p>${message}</p>`;
+    DOM.levelUpModal.style.display = 'block';
+}

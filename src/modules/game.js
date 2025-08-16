@@ -1,7 +1,7 @@
 import { t } from './localization.js';
 import { player, field, warehouse, marketState, customers, saveGameState } from './state.js';
 import { cropTypes, upgrades, NUM_COLS, store, customerConfig, buildings, leveling } from './config.js';
-import { showNotification, showLevelUpModal } from './ui.js';
+import { showNotification, showLevelUpModal, showSimpleLevelUpModal } from './ui.js';
 
 let lastSaveTime = 0;
 const SAVE_INTERVAL = 5000; // 5 seconds
@@ -43,6 +43,10 @@ function checkForLevelUp() {
 
         if (newlyUnlocked.crops.length > 0 || newlyUnlocked.buildings.length > 0 || newlyUnlocked.upgrades.length > 0 || farmExpanded) {
             showLevelUpModal(newLevel, newlyUnlocked, farmExpanded);
+        } else if (newLevel === 11) {
+            showSimpleLevelUpModal(newLevel, t('level_up_max_level'));
+        } else {
+            showSimpleLevelUpModal(newLevel, t('level_up_congrats', { level: newLevel }));
         }
     }
 }
