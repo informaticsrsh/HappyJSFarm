@@ -32,8 +32,8 @@ function checkForLevelUp() {
         };
 
         let farmExpanded = false;
-        if (newLevel > 1 && newLevel % 2 === 1) {
-            const newRows = Math.floor((newLevel - 1) / 2);
+        if (newLevel % 2 === 0 && newLevel <= 10) {
+            const newRows = newLevel / 2;
             const expectedRows = 3 + newRows;
             if (field.length < expectedRows) {
                 field.push(Array(NUM_COLS).fill(null).map(() => ({ crop: null, growthStage: 0, stageStartTime: 0, autoCrop: null })));
