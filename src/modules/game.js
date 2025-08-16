@@ -54,13 +54,13 @@ function checkForLevelUp() {
 export function plantSeed(r, c, cropToPlant = null) {
     const isAuto = !!cropToPlant;
     const seedName = isAuto ? `${cropToPlant}_seed` : player.selectedSeed;
-    const cropName = isAuto ? cropToPlant : seedName.replace('_seed', '');
 
     if (!seedName) {
         showNotification(t('alert_select_seed'));
         return false;
     }
 
+    const cropName = isAuto ? cropToPlant : seedName.replace('_seed', '');
     const crop = cropTypes[cropName];
     if (player.level < (crop.requiredLevel || 1)) {
         showNotification(t('alert_seed_locked'));
