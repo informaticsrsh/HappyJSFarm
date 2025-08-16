@@ -91,23 +91,32 @@ function renderField() {
             plot.classList.add('plot');
             plot.dataset.row = r;
             plot.dataset.col = c;
-
-            const cell = field[r][c];
-            if (cell.crop) {
-                plot.textContent = cropTypes[cell.crop].visuals[cell.growthStage];
-                plot.classList.add(cell.crop); // Add class for crop color
-            } else if (cell.autoCrop) {
-                plot.textContent = cropTypes[cell.autoCrop].icon; // Show icon on empty auto plot
-            }
-            else {
-                plot.textContent = '🟫';
-            }
-
-            if (cell.autoCrop) {
-                plot.classList.add('automated-plot', `automated-${cell.autoCrop}`);
-            }
             DOM.fieldGrid.appendChild(plot);
+            updateCell(r, c);
         }
+    }
+}
+
+export function updateCell(r, c) {
+    const plot = DOM.fieldGrid.querySelector(`[data-row='${r}'][data-col='${c}']`);
+    if (!plot) return;
+
+    // Reset classes
+    plot.className = 'plot';
+
+    const cell = field[r][c];
+    if (cell.crop) {
+        plot.textContent = cropTypes[cell.crop].visuals[cell.growthStage];
+        plot.classList.add(cell.crop);
+    } else if (cell.autoCrop) {
+        plot.textContent = cropTypes[cell.autoCrop].icon;
+    }
+    else {
+        plot.textContent = '🟫';
+    }
+
+    if (cell.autoCrop) {
+        plot.classList.add('automated-plot', `automated-${cell.autoCrop}`);
     }
 }
 

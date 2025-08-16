@@ -1,5 +1,5 @@
 import { setLanguage, t } from './modules/localization.js';
-import { DOM, renderAll, renderOrderTimers } from './modules/ui.js';
+import { DOM, renderAll, renderOrderTimers, updateCell, renderWarehouse, renderPlayerState } from './modules/ui.js';
 import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder, forceGenerateOrder, increaseTrust, buyBuilding, startProduction, devAddAllProducts, toggleBuildingAutomation, addXp } from './modules/game.js';
 import { player, field, warehouse, saveGameState, clearGameState, loadGameState } from './modules/state.js';
 import { leveling, store } from './modules/config.js';
@@ -28,7 +28,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 stateChanged = plantSeed(r, c);
             }
             if (stateChanged) {
-                renderAll();
+                updateCell(r, c);
+                renderWarehouse();
+                renderPlayerState();
                 saveGameState();
             }
         }
@@ -250,10 +252,6 @@ document.addEventListener('DOMContentLoaded', () => {
         player.xpToNextLevel = initialLevel.xpRequired;
     }
     renderAll();
-    gameLoopInterval = setInterval(() => {
-        if (gameTick()) {
-            renderAll();
-        }
-    }, 100); // Main game loop
+    gameLoopInterval = setInterval(gameTick, 100);
     orderTimerInterval = setInterval(renderOrderTimers, 1000); // Timer-only render loop
 });

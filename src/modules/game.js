@@ -1,7 +1,7 @@
 import { t } from './localization.js';
 import { player, field, warehouse, marketState, customers, saveGameState } from './state.js';
 import { cropTypes, upgrades, NUM_COLS, store, customerConfig, buildings, leveling } from './config.js';
-import { showNotification, showLevelUpModal, showSimpleLevelUpModal } from './ui.js';
+import { showNotification, showLevelUpModal, showSimpleLevelUpModal, updateCell } from './ui.js';
 
 let lastSaveTime = 0;
 const SAVE_INTERVAL = 5000; // 5 seconds
@@ -278,24 +278,24 @@ export function startProduction(buildingId, recipeIndex) {
 }
 
 function updateCropGrowth(now) {
-    let fieldChanged = false;
     for (let r = 0; r < field.length; r++) {
         for (let c = 0; c < field[r].length; c++) {
             const cell = field[r][c];
+            let changed = false;
 
             // Handle automated plots
             if (cell.autoCrop) {
                 if (!cell.crop) {
                     // If empty, try to plant
                     if (plantSeed(r, c, cell.autoCrop)) {
-                        fieldChanged = true;
+                        changed = true;
                     }
                 } else {
                     // If crop is mature, harvest it
                     const crop = cropTypes[cell.crop];
                     if (cell.growthStage >= crop.visuals.length - 1) {
                         if (harvestCrop(r, c)) {
-                            fieldChanged = true;
+                            changed = true;
                         }
                     }
                 }
@@ -307,12 +307,14 @@ function updateCropGrowth(now) {
                 if (now - cell.stageStartTime >= timeToGrow) {
                     cell.growthStage++;
                     cell.stageStartTime = now;
-                    fieldChanged = true;
+                    changed = true;
                 }
+            }
+            if (changed) {
+                updateCell(r, c);
             }
         }
     }
-    return fieldChanged;
 }
 
 function updateMarketPrices(now) {
@@ -498,7 +500,7 @@ function updateNpcBonuses() {
 
 export function gameTick() {
     const now = Date.now();
-    const growthChanged = updateCropGrowth(now);
+    updateCropGrowth(now);
     const marketChanged = updateMarketPrices(now);
     const ordersChanged = updateOrders(now);
     const productionChanged = updateProduction(now);
@@ -508,7 +510,7 @@ export function gameTick() {
         lastSaveTime = now;
     }
 
-    return growthChanged || marketChanged || ordersChanged || productionChanged;
+    return marketChanged || ordersChanged || productionChanged;
 }
 
 export function fulfillOrder(customerId) {
