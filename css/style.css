@@ -384,6 +384,8 @@ h1 {
 .carrot-seed { background-color: #e07a5f44; }
 .tomato-seed { background-color: #f2848244; }
 .potato-seed { background-color: #a5682a44; }
+.strawberry-seed { background-color: #ffc0cb44; }
+.blueberry-seed { background-color: #add8e644; }
 
 /* Override for selected items to ensure text is readable */
 .item.selected {
@@ -396,6 +398,8 @@ h1 {
 .plot.carrot { background-color: #e07a5f44; }
 .plot.tomato { background-color: #f2848244; }
 .plot.potato { background-color: #a5682a44; }
+.plot.strawberry { background-color: #ffc0cb44; }
+.plot.blueberry { background-color: #add8e644; }
 
 .automated-plot {
     border: 3px dashed #81b29a;

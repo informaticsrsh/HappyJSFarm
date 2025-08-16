@@ -41,9 +41,7 @@ function checkForLevelUp() {
             }
         }
 
-        if (newlyUnlocked.crops.length > 0 || newlyUnlocked.buildings.length > 0 || newlyUnlocked.upgrades.length > 0 || farmExpanded) {
-            showLevelUpModal(newLevel, newlyUnlocked, farmExpanded);
-        }
+        showLevelUpModal(newLevel, newlyUnlocked, farmExpanded);
     }
 }
 

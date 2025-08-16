@@ -13,7 +13,8 @@ export const DOM = {
     refModal: document.getElementById('ref-modal'),
     openRefBtn: document.getElementById('open-ref-btn'),
     refCloseBtn: document.querySelector('.ref-close'),
-    refContent: document.getElementById('ref-content'),
+    refContent: document.getElementById('ref-crops-content'),
+    refModal: document.getElementById('ref-modal'),
     marketModal: document.getElementById('market-modal'),
     openMarketBtn: document.getElementById('open-market-btn'),
     marketCloseBtn: document.querySelector('.market-close'),
@@ -157,21 +158,22 @@ function renderStore() {
                 <span>${priceHtml}</span>
             </div>
             <div class="store-actions">
-                <input type="number" class="buy-amount-input" min="1" value="1">
-                <button class="btn buy-btn" data-item-name="${item.name}">${t('btn_buy')}</button>
+                <button class="btn buy-btn" data-item-name="${item.name}" data-amount="1">${t('btn_buy')}</button>
+                <button class="btn buy-btn" data-item-name="${item.name}" data-amount="10">${t('btn_buy_10')}</button>
+                <button class="btn buy-btn" data-item-name="${item.name}" data-amount="100">${t('btn_buy_100')}</button>
+                <button class="btn buy-btn" data-item-name="${item.name}" data-amount="max">${t('btn_buy_max')}</button>
             </div>
         `;
         DOM.storeItems.appendChild(itemDiv);
     });
 }
 
-function renderReference() {
+function renderCropReference() {
     DOM.refContent.innerHTML = '';
     Object.keys(cropTypes).forEach(cropName => {
         const crop = cropTypes[cropName];
         const storeItem = store.find(s => s.name === `${cropName}_seed`);
 
-        // If it's not a seed you can buy, it's not a crop for the reference page.
         if (!storeItem) {
             return;
         }
@@ -187,6 +189,41 @@ function renderReference() {
         `;
         DOM.refContent.appendChild(cropDiv);
     });
+}
+
+function renderProductionReference() {
+    const content = document.getElementById('ref-production-content');
+    content.innerHTML = `<h2>${t('ref_production_title')}</h2><p>${t('ref_production_desc')}</p>`;
+    for (const buildingId in buildings) {
+        const building = buildings[buildingId];
+        const buildingDiv = document.createElement('div');
+        buildingDiv.innerHTML = `
+            <h3>${building.icon} ${t(building.name)}</h3>
+            <p>${t(building.description)}</p>
+            <p><strong>Cost:</strong> $${building.cost}</p>
+        `;
+        content.appendChild(buildingDiv);
+    }
+}
+
+function renderCustomerReference() {
+    const content = document.getElementById('ref-customers-content');
+    content.innerHTML = `<h2>${t('ref_customers_title')}</h2><p>${t('ref_customers_desc')}</p>`;
+    for (const customerId in customerConfig.customers) {
+        const customer = customerConfig.customers[customerId];
+        const customerDiv = document.createElement('div');
+        customerDiv.innerHTML = `
+            <h3>${t(customer.name)}</h3>
+            <p>${customer.bonus.description}</p>
+        `;
+        content.appendChild(customerDiv);
+    }
+}
+
+function renderReference() {
+    renderCropReference();
+    renderProductionReference();
+    renderCustomerReference();
 }
 
 function renderMarket() {
@@ -478,33 +515,40 @@ export function showLevelUpModal(level, unlocked, farmExpanded) {
     DOM.levelUpTitle.textContent = t('level_up_title', { level });
 
     let unlocksHtml = '';
+    const hasUnlocks = unlocked.crops.length > 0 || unlocked.buildings.length > 0 || unlocked.upgrades.length > 0 || farmExpanded;
 
-    if (farmExpanded) {
-        unlocksHtml += `<h3>${t('unlock_farm_expanded')}</h3>`;
-    }
+    if (level === 11) {
+        unlocksHtml = `<p>${t('level_up_max_level')}</p>`;
+    } else if (hasUnlocks) {
+        if (farmExpanded) {
+            unlocksHtml += `<h3>${t('unlock_farm_expanded')}</h3>`;
+        }
 
-    if (unlocked.crops.length > 0) {
-        unlocksHtml += `<h3>${t('unlocks_crops')}</h3><ul>`;
-        unlocked.crops.forEach(crop => {
-            unlocksHtml += `<li>${t(crop)}</li>`;
-        });
-        unlocksHtml += '</ul>';
-    }
+        if (unlocked.crops.length > 0) {
+            unlocksHtml += `<h3>${t('unlocks_crops')}</h3><ul>`;
+            unlocked.crops.forEach(crop => {
+                unlocksHtml += `<li>${t(crop)}</li>`;
+            });
+            unlocksHtml += '</ul>';
+        }
 
-    if (unlocked.buildings.length > 0) {
-        unlocksHtml += `<h3>${t('unlocks_buildings')}</h3><ul>`;
-        unlocked.buildings.forEach(building => {
-            unlocksHtml += `<li>${t(building)}</li>`;
-        });
-        unlocksHtml += '</ul>';
-    }
+        if (unlocked.buildings.length > 0) {
+            unlocksHtml += `<h3>${t('unlocks_buildings')}</h3><ul>`;
+            unlocked.buildings.forEach(building => {
+                unlocksHtml += `<li>${t(building)}</li>`;
+            });
+            unlocksHtml += '</ul>';
+        }
 
-    if (unlocked.upgrades.length > 0) {
-        unlocksHtml += `<h3>${t('unlocks_upgrades')}</h3><ul>`;
-        unlocked.upgrades.forEach(upgrade => {
-            unlocksHtml += `<li>${t(upgrade)}</li>`;
-        });
-        unlocksHtml += '</ul>';
+        if (unlocked.upgrades.length > 0) {
+            unlocksHtml += `<h3>${t('unlocks_upgrades')}</h3><ul>`;
+            unlocked.upgrades.forEach(upgrade => {
+                unlocksHtml += `<li>${t(upgrade)}</li>`;
+            });
+            unlocksHtml += '</ul>';
+        }
+    } else {
+        unlocksHtml = `<p>${t('level_up_no_unlocks')}</p>`;
     }
 
     DOM.levelUpUnlocks.innerHTML = unlocksHtml;
