@@ -2,16 +2,16 @@ export let NUM_ROWS = 3;
 export let NUM_COLS = 5;
 
 export const leveling = [
-    { level: 1, xpRequired: 100 },
-    { level: 2, xpRequired: 200 },
-    { level: 3, xpRequired: 350 },
-    { level: 4, xpRequired: 500 },
-    { level: 5, xpRequired: 750 },
-    { level: 6, xpRequired: 1000 },
-    { level: 7, xpRequired: 1300 },
-    { level: 8, xpRequired: 1600 },
-    { level: 9, xpRequired: 2000 },
-    { level: 10, xpRequired: 2500 },
+    { level: 1, xpRequired: 200 },
+    { level: 2, xpRequired: 350 },
+    { level: 3, xpRequired: 650 },
+    { level: 4, xpRequired: 1200 },
+    { level: 5, xpRequired: 2200 },
+    { level: 6, xpRequired: 4000 },
+    { level: 7, xpRequired: 7200 },
+    { level: 8, xpRequired: 13000 },
+    { level: 9, xpRequired: 23500 },
+    { level: 10, xpRequired: 42500 },
 ];
 
 export const store = [
