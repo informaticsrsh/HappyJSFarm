@@ -157,8 +157,11 @@ function renderStore() {
                 <span>${priceHtml}</span>
             </div>
             <div class="store-actions">
-                <input type="number" class="buy-amount-input" min="1" value="1">
-                <button class="btn buy-btn" data-item-name="${item.name}">${t('btn_buy')}</button>
+                <input type="number" class="buy-amount-input" min="1" value="1" style="width: 50px;">
+                <button class="btn buy-btn" data-item-name="${item.name}" data-amount="custom">${t('btn_buy')}</button>
+                <button class="btn buy-btn" data-item-name="${item.name}" data-amount="10">10</button>
+                <button class="btn buy-btn" data-item-name="${item.name}" data-amount="100">100</button>
+                <button class="btn buy-btn" data-item-name="${item.name}" data-amount="max">${t('btn_max')}</button>
             </div>
         `;
         DOM.storeItems.appendChild(itemDiv);

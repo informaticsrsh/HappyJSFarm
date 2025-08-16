@@ -2,7 +2,7 @@ import { setLanguage, t } from './modules/localization.js';
 import { DOM, renderAll, renderOrderTimers } from './modules/ui.js';
 import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder, forceGenerateOrder, increaseTrust, buyBuilding, startProduction, devAddAllProducts, toggleBuildingAutomation, addXp } from './modules/game.js';
 import { player, field, warehouse, saveGameState, clearGameState, loadGameState } from './modules/state.js';
-import { leveling } from './modules/config.js';
+import { leveling, store } from './modules/config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     let gameLoopInterval;
@@ -111,8 +111,25 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!e.target.classList.contains('buy-btn')) return;
 
         const itemName = e.target.dataset.itemName;
-        const input = e.target.previousElementSibling;
-        const amount = parseInt(input.value, 10);
+        const amountType = e.target.dataset.amount;
+        let amount = 0;
+
+        if (amountType === 'custom') {
+            const input = e.target.parentElement.querySelector('.buy-amount-input');
+            amount = parseInt(input.value, 10);
+        } else if (amountType === 'max') {
+            const item = store.find(i => i.name === itemName);
+            if (!item) return;
+            const finalPrice = Math.round(item.price * (1 - (player.upgrades.seedDiscount + player.npcBonuses.seedDiscount)));
+            if (finalPrice <= 0) {
+                amount = 9999; // Or some other large number if price is free
+            } else {
+                amount = Math.floor(player.money / finalPrice);
+            }
+        } else {
+            amount = parseInt(amountType, 10);
+        }
+
 
         if (buySeed(itemName, amount)) {
             renderAll();
