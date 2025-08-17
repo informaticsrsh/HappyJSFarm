@@ -307,12 +307,12 @@ function renderOrders() {
 
             orderDiv.innerHTML = `
                 <div class="order-info">
-                    <strong>${t(config.name)}</strong> (Trust: ${customer.trust})<br>
-                    Wants: ${icon} ${customer.order.amount} ${t(customer.order.crop)} (Have: ${haveAmount}/${customer.order.amount})<br>
-                    Reward: $${customer.order.reward}<br>
-                    Time left: <span class="order-timer">${timeLeft}s</span>
+                    <strong>${t(config.name)}</strong> (${t('order_trust')}: ${customer.trust})<br>
+                    ${t('order_wants')}: ${icon} ${customer.order.amount} ${t(customer.order.crop)} (${t('order_have')}: ${haveAmount}/${customer.order.amount})<br>
+                    ${t('order_reward')}: $${customer.order.reward}<br>
+                    ${t('order_time_left')}: <span class="order-timer">${timeLeft}s</span>
                 </div>
-                <button class="btn fulfill-btn" data-customer-id="${customerId}" ${haveAmount >= customer.order.amount ? '' : 'disabled'}>Fulfill</button>
+                <button class="btn fulfill-btn" data-customer-id="${customerId}" ${haveAmount >= customer.order.amount ? '' : 'disabled'}>${t('btn_fulfill')}</button>
             `;
             DOM.orderItems.appendChild(orderDiv);
         }
@@ -462,17 +462,17 @@ function renderPlayerState() {
     let bonusHtml = '';
     if (player.upgrades.growthMultiplier < 1.0) {
         const percentage = (1 - player.upgrades.growthMultiplier) * 100;
-        bonusHtml += `<div>Growth: +${percentage.toFixed(0)}%</div>`;
+        bonusHtml += `<div>${t('bonus_growth')}: +${percentage.toFixed(0)}%</div>`;
     }
     if (player.upgrades.yieldBonus > 0) {
-        bonusHtml += `<div>Yield: +${player.upgrades.yieldBonus}</div>`;
+        bonusHtml += `<div>${t('bonus_yield')}: +${player.upgrades.yieldBonus}</div>`;
     }
     if (player.upgrades.seedDiscount > 0) {
         const percentage = player.upgrades.seedDiscount * 100;
-        bonusHtml += `<div>Seed Discount: ${percentage.toFixed(0)}%</div>`;
+        bonusHtml += `<div>${t('bonus_seed_discount')}: ${percentage.toFixed(0)}%</div>`;
     }
     if (player.upgrades.marketBonus > 0) {
-        bonusHtml += `<div>Market Bonus: +$${player.upgrades.marketBonus}</div>`;
+        bonusHtml += `<div>${t('bonus_market_bonus')}: +$${player.upgrades.marketBonus}</div>`;
     }
 
     // Display NPC Bonuses
@@ -485,24 +485,24 @@ function renderPlayerState() {
         Object.keys(npcBonuses.priceBonus).length > 0;
 
     if (hasNpcBonus) {
-        bonusHtml += `<div class="bonus-section-title">NPC Bonuses:</div>`;
+        bonusHtml += `<div class="bonus-section-title">${t('bonus_npc_bonuses')}:</div>`;
         if (npcBonuses.growthMultiplier < 1.0) {
             const percentage = Math.round((1 - npcBonuses.growthMultiplier) * 100);
-            bonusHtml += `<div>- Growth Speed: +${percentage}%</div>`;
+            bonusHtml += `<div>- ${t('bonus_growth_speed')}: +${percentage}%</div>`;
         }
         if (npcBonuses.yieldBonus > 0) {
-            bonusHtml += `<div>- Yield: +${npcBonuses.yieldBonus}</div>`;
+            bonusHtml += `<div>- ${t('bonus_yield')}: +${npcBonuses.yieldBonus}</div>`;
         }
         if (npcBonuses.seedDiscount > 0) {
             const percentage = Math.round(npcBonuses.seedDiscount * 100);
-            bonusHtml += `<div>- Seed Discount: ${percentage}%</div>`;
+            bonusHtml += `<div>- ${t('bonus_seed_discount')}: ${percentage}%</div>`;
         }
         if (npcBonuses.marketBonus > 0) {
-            bonusHtml += `<div>- Market Prices: +$${npcBonuses.marketBonus}</div>`;
+            bonusHtml += `<div>- ${t('bonus_market_prices')}: +$${npcBonuses.marketBonus}</div>`;
         }
         for (const cropName in npcBonuses.priceBonus) {
             const bonus = npcBonuses.priceBonus[cropName];
-            bonusHtml += `<div>- ${t(cropName)} Price: +$${bonus}</div>`;
+            bonusHtml += `<div>- ${t(cropName)} ${t('bonus_price')}: +$${bonus}</div>`;
         }
     }
 
