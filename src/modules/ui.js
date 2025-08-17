@@ -14,6 +14,13 @@ export const DOM = {
     openRefBtn: document.getElementById('open-ref-btn'),
     refCloseBtn: document.querySelector('.ref-close'),
     refContent: document.getElementById('ref-content'),
+    refTabs: document.querySelector('.ref-tabs'),
+    refCropsTabBtn: document.getElementById('ref-crops-tab-btn'),
+    refProductionTabBtn: document.getElementById('ref-production-tab-btn'),
+    refCustomersTabBtn: document.getElementById('ref-customers-tab-btn'),
+    refCropsContent: document.getElementById('ref-crops-content'),
+    refProductionContent: document.getElementById('ref-production-content'),
+    refCustomersContent: document.getElementById('ref-customers-content'),
     marketModal: document.getElementById('market-modal'),
     openMarketBtn: document.getElementById('open-market-btn'),
     marketCloseBtn: document.querySelector('.market-close'),
@@ -168,28 +175,76 @@ function renderStore() {
     });
 }
 
-function renderReference() {
-    DOM.refContent.innerHTML = '';
+function renderCropReference() {
+    const content = DOM.refContent;
+    content.innerHTML = '';
     Object.keys(cropTypes).forEach(cropName => {
         const crop = cropTypes[cropName];
         const storeItem = store.find(s => s.name === `${cropName}_seed`);
 
-        // If it's not a seed you can buy, it's not a crop for the reference page.
-        if (!storeItem) {
-            return;
-        }
+        if (!storeItem) return;
 
         const cropDiv = document.createElement('div');
         cropDiv.innerHTML = `
             <h3>${crop.icon} ${t(cropName)}</h3>
-            <p><strong>${t('ref_seed_price')}</strong> $${storeItem.price}</p>
-            <p><strong>${t('ref_growth_time')}</strong> ${t('ref_per_stage', { time: crop.growthTime / 1000 })}</p>
-            <p><strong>${t('ref_yield')}</strong> ${t('ref_yield_range', { min: crop.yieldRange[0], max: crop.yieldRange[1] })}</p>
-            <p><strong>${t('ref_market_price')}</strong> $${crop.minPrice} - $${crop.maxPrice}</p>
-            <p><strong>${t('ref_stages')}</strong> ${crop.visuals.join(' → ')}</p>
+            <p><strong>${t('ref_seed_price')}:</strong> $${storeItem.price}</p>
+            <p><strong>${t('ref_growth_time')}:</strong> ${t('ref_per_stage', { time: crop.growthTime / 1000 })}</p>
+            <p><strong>${t('ref_yield')}:</strong> ${t('ref_yield_range', { min: crop.yieldRange[0], max: crop.yieldRange[1] })}</p>
+            <p><strong>${t('ref_market_price')}:</strong> $${crop.minPrice} - $${crop.maxPrice}</p>
+            <p><strong>${t('ref_stages')}:</strong> ${crop.visuals.join(' → ')}</p>
         `;
-        DOM.refContent.appendChild(cropDiv);
+        content.appendChild(cropDiv);
     });
+}
+
+function renderProductionReference() {
+    const content = DOM.refProductionContent;
+    content.innerHTML = '';
+    for (const buildingId in buildings) {
+        const building = buildings[buildingId];
+        const itemDiv = document.createElement('div');
+
+        let recipesHtml = building.recipes.map(recipe => {
+            const inputs = Object.entries(recipe.input).map(([key, value]) => `${value} ${t(key)}`).join(', ');
+            const outputs = Object.entries(recipe.output).map(([key, value]) => `${value} ${t(key)}`).join(', ');
+            return `<div class="recipe-info"><strong>${t('production_recipe')}:</strong> ${inputs} → ${outputs} (${recipe.productionTime / 1000}s)</div>`;
+        }).join('');
+
+        itemDiv.innerHTML = `
+            <h3>${building.icon} ${t(building.name)}</h3>
+            <p>${t(building.description)}</p>
+            <p><strong>${t('ref_cost')}:</strong> $${building.cost}</p>
+            <p><strong>${t('ref_required_level')}:</strong> ${building.requiredLevel}</p>
+            ${recipesHtml}
+        `;
+        content.appendChild(itemDiv);
+    }
+}
+
+function renderCustomerReference() {
+    const content = DOM.refCustomersContent;
+    content.innerHTML = '';
+    for (const customerId in customerConfig.customers) {
+        const customer = customerConfig.customers[customerId];
+        const playerCustomer = customers[customerId];
+        const itemDiv = document.createElement('div');
+
+        const trustLevel = customerConfig.trustLevels.find(tl => playerCustomer.trust >= tl.trust);
+        const nextLevel = customerConfig.trustLevels.find(tl => playerCustomer.trust < tl.trust);
+
+        itemDiv.innerHTML = `
+            <h3>${t(customer.name)}</h3>
+            <p><strong>${t('ref_current_trust')}:</strong> ${playerCustomer.trust}</p>
+            <p>${t(customer.bonus.description)}</p>
+        `;
+        content.appendChild(itemDiv);
+    }
+}
+
+function renderReference() {
+    renderCropReference();
+    renderProductionReference();
+    renderCustomerReference();
 }
 
 function renderMarket() {
@@ -221,6 +276,9 @@ function renderStaticUI() {
     DOM.mainTitle.textContent = t('title');
     DOM.marketTitle.textContent = t('market_title');
     DOM.refTitle.textContent = t('reference_title');
+    DOM.refCropsTabBtn.textContent = t('ref_crops_tab');
+    DOM.refProductionTabBtn.textContent = t('ref_production_tab');
+    DOM.refCustomersTabBtn.textContent = t('ref_customers_tab');
     DOM.warehouseTitle.textContent = t('warehouse_title');
     DOM.fieldTitle.textContent = t('field_title');
     document.querySelector('#buildings-container h2').textContent = t('buildings_title');
