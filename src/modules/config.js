@@ -345,23 +345,23 @@ export const customerConfig = {
     customers: {
         'npc1': {
             name: 'Farmer Joe',
-            bonus: { description: "Increases all crop yields.", type: 'yieldBonus', value_l4: 1, value_l5: 2 }
+            bonus: { description: 'customer_bonus_yield', type: 'yieldBonus', value_l4: 1, value_l5: 2 }
         },
         'npc2': {
             name: 'Granny Smith',
-            bonus: { description: "All crops grow faster.", type: 'growthMultiplier', value_l4: 0.95, value_l5: 0.9 }
+            bonus: { description: 'customer_bonus_growth', type: 'growthMultiplier', value_l4: 0.95, value_l5: 0.9 }
         },
         'npc3': {
             name: 'Chef Pierre',
-            bonus: { description: "Increases all market sale prices.", type: 'marketBonus', value_l4: 2, value_l5: 5 }
+            bonus: { description: 'customer_bonus_market', type: 'marketBonus', value_l4: 2, value_l5: 5 }
         },
         'npc4': {
             name: 'Rancher Rick',
-            bonus: { description: "Get a discount on all seeds.", type: 'seedDiscount', value_l4: 0.05, value_l5: 0.1 }
+            bonus: { description: 'customer_bonus_seeds', type: 'seedDiscount', value_l4: 0.05, value_l5: 0.1 }
         },
         'npc5': {
             name: 'Baker Betty',
-            bonus: { description: "Increases sale price of wheat.", type: 'priceBonus', crop: 'wheat', value_l4: 5, value_l5: 10 }
+            bonus: { description: 'customer_bonus_wheat', type: 'priceBonus', crop: 'wheat', value_l4: 5, value_l5: 10 }
         }
     }
 };

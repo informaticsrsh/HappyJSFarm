@@ -227,15 +227,49 @@ function renderCustomerReference() {
     for (const customerId in customerConfig.customers) {
         const customer = customerConfig.customers[customerId];
         const playerCustomer = customers[customerId];
+        const bonus = customer.bonus;
         const itemDiv = document.createElement('div');
+        itemDiv.classList.add('customer-reference');
 
-        const trustLevel = customerConfig.trustLevels.find(tl => playerCustomer.trust >= tl.trust);
-        const nextLevel = customerConfig.trustLevels.find(tl => playerCustomer.trust < tl.trust);
+        let bonusHtml = `<h4>${t('ref_bonus_effect')}</h4><p>${t(bonus.description)}</p>`;
+        bonusHtml += '<table>';
+        bonusHtml += `<tr><th>${t('ref_trust_level')}</th><th>${t('ref_bonus')}</th></tr>`;
+
+        // Assuming bonus levels are l4 and l5, corresponding to trust levels 300 and 400
+        const trustTiers = [
+            { trust: 300, value: bonus.value_l4 },
+            { trust: 400, value: bonus.value_l5 }
+        ];
+
+        trustTiers.forEach(tier => {
+            if (tier.value) {
+                let bonusValueText = '';
+                switch (bonus.type) {
+                    case 'yieldBonus':
+                    case 'marketBonus':
+                        bonusValueText = `+${tier.value}`;
+                        break;
+                    case 'growthMultiplier':
+                        bonusValueText = `+${Math.round((1 - tier.value) * 100)}%`;
+                        break;
+                    case 'seedDiscount':
+                        bonusValueText = `${tier.value * 100}%`;
+                        break;
+                    case 'priceBonus':
+                        bonusValueText = `+$${tier.value} for ${t(bonus.crop)}`;
+                        break;
+                    default:
+                        bonusValueText = tier.value;
+                }
+                bonusHtml += `<tr><td>${tier.trust}+</td><td>${bonusValueText}</td></tr>`;
+            }
+        });
+        bonusHtml += '</table>';
 
         itemDiv.innerHTML = `
             <h3>${t(customer.name)}</h3>
             <p><strong>${t('ref_current_trust')}:</strong> ${playerCustomer.trust}</p>
-            <p>${t(customer.bonus.description)}</p>
+            ${bonusHtml}
         `;
         content.appendChild(itemDiv);
     }
@@ -307,12 +341,12 @@ function renderOrders() {
 
             orderDiv.innerHTML = `
                 <div class="order-info">
-                    <strong>${t(config.name)}</strong> (Trust: ${customer.trust})<br>
-                    Wants: ${icon} ${customer.order.amount} ${t(customer.order.crop)} (Have: ${haveAmount}/${customer.order.amount})<br>
-                    Reward: $${customer.order.reward}<br>
-                    Time left: <span class="order-timer">${timeLeft}s</span>
+                    <strong>${t(config.name)}</strong> (${t('order_trust')}: ${customer.trust})<br>
+                    ${t('order_wants')}: ${icon} ${customer.order.amount} ${t(customer.order.crop)} (${t('order_have')}: ${haveAmount}/${customer.order.amount})<br>
+                    ${t('order_reward')}: $${customer.order.reward}<br>
+                    ${t('order_time_left')}: <span class="order-timer">${timeLeft}s</span>
                 </div>
-                <button class="btn fulfill-btn" data-customer-id="${customerId}" ${haveAmount >= customer.order.amount ? '' : 'disabled'}>Fulfill</button>
+                <button class="btn fulfill-btn" data-customer-id="${customerId}" ${haveAmount >= customer.order.amount ? '' : 'disabled'}>${t('btn_fulfill')}</button>
             `;
             DOM.orderItems.appendChild(orderDiv);
         }
@@ -462,17 +496,17 @@ function renderPlayerState() {
     let bonusHtml = '';
     if (player.upgrades.growthMultiplier < 1.0) {
         const percentage = (1 - player.upgrades.growthMultiplier) * 100;
-        bonusHtml += `<div>Growth: +${percentage.toFixed(0)}%</div>`;
+        bonusHtml += `<div>${t('bonus_growth')}: +${percentage.toFixed(0)}%</div>`;
     }
     if (player.upgrades.yieldBonus > 0) {
-        bonusHtml += `<div>Yield: +${player.upgrades.yieldBonus}</div>`;
+        bonusHtml += `<div>${t('bonus_yield')}: +${player.upgrades.yieldBonus}</div>`;
     }
     if (player.upgrades.seedDiscount > 0) {
         const percentage = player.upgrades.seedDiscount * 100;
-        bonusHtml += `<div>Seed Discount: ${percentage.toFixed(0)}%</div>`;
+        bonusHtml += `<div>${t('bonus_seed_discount')}: ${percentage.toFixed(0)}%</div>`;
     }
     if (player.upgrades.marketBonus > 0) {
-        bonusHtml += `<div>Market Bonus: +$${player.upgrades.marketBonus}</div>`;
+        bonusHtml += `<div>${t('bonus_market_bonus')}: +$${player.upgrades.marketBonus}</div>`;
     }
 
     // Display NPC Bonuses
@@ -485,24 +519,24 @@ function renderPlayerState() {
         Object.keys(npcBonuses.priceBonus).length > 0;
 
     if (hasNpcBonus) {
-        bonusHtml += `<div class="bonus-section-title">NPC Bonuses:</div>`;
+        bonusHtml += `<div class="bonus-section-title">${t('bonus_npc_bonuses')}:</div>`;
         if (npcBonuses.growthMultiplier < 1.0) {
             const percentage = Math.round((1 - npcBonuses.growthMultiplier) * 100);
-            bonusHtml += `<div>- Growth Speed: +${percentage}%</div>`;
+            bonusHtml += `<div>- ${t('bonus_growth_speed')}: +${percentage}%</div>`;
         }
         if (npcBonuses.yieldBonus > 0) {
-            bonusHtml += `<div>- Yield: +${npcBonuses.yieldBonus}</div>`;
+            bonusHtml += `<div>- ${t('bonus_yield')}: +${npcBonuses.yieldBonus}</div>`;
         }
         if (npcBonuses.seedDiscount > 0) {
             const percentage = Math.round(npcBonuses.seedDiscount * 100);
-            bonusHtml += `<div>- Seed Discount: ${percentage}%</div>`;
+            bonusHtml += `<div>- ${t('bonus_seed_discount')}: ${percentage}%</div>`;
         }
         if (npcBonuses.marketBonus > 0) {
-            bonusHtml += `<div>- Market Prices: +$${npcBonuses.marketBonus}</div>`;
+            bonusHtml += `<div>- ${t('bonus_market_prices')}: +$${npcBonuses.marketBonus}</div>`;
         }
         for (const cropName in npcBonuses.priceBonus) {
             const bonus = npcBonuses.priceBonus[cropName];
-            bonusHtml += `<div>- ${t(cropName)} Price: +$${bonus}</div>`;
+            bonusHtml += `<div>- ${t(cropName)} ${t('bonus_price')}: +$${bonus}</div>`;
         }
     }
 
