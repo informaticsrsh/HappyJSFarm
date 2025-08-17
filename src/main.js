@@ -51,7 +51,20 @@ document.addEventListener('DOMContentLoaded', () => {
             e.target.classList.add('active');
 
             // Toggle active content
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('#store-modal .tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(`${tab}-content`).classList.add('active');
+        }
+    });
+
+    DOM.refTabs.addEventListener('click', (e) => {
+        if (e.target.classList.contains('tab-btn')) {
+            const tab = e.target.dataset.tab;
+            // Toggle active button
+            DOM.refTabs.querySelector('.active').classList.remove('active');
+            e.target.classList.add('active');
+
+            // Toggle active content
+            document.querySelectorAll('#ref-modal .tab-content').forEach(c => c.classList.remove('active'));
             document.getElementById(`${tab}-content`).classList.add('active');
         }
     });

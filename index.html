@@ -100,8 +100,17 @@
     <div id="ref-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn ref-close">&times;</span>
-            <h2>Crop Reference</h2>
-            <div id="ref-content"></div>
+            <h2 id="ref-title">Reference</h2>
+            <div class="ref-tabs">
+                <button id="ref-crops-tab-btn" class="tab-btn active" data-tab="ref-crops">Crops</button>
+                <button id="ref-production-tab-btn" class="tab-btn" data-tab="ref-production">Production</button>
+                <button id="ref-customers-tab-btn" class="tab-btn" data-tab="ref-customers">Customers</button>
+            </div>
+            <div id="ref-crops-content" class="tab-content active">
+                <div id="ref-content"></div>
+            </div>
+            <div id="ref-production-content" class="tab-content"></div>
+            <div id="ref-customers-content" class="tab-content"></div>
         </div>
     </div>
 
