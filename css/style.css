@@ -512,7 +512,7 @@ h1 {
 
 .reset-container {
     position: fixed;
-    bottom: 10px;
+    top: 10px;
     left: 10px;
     z-index: 1000;
 }
