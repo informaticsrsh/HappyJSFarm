@@ -227,15 +227,49 @@ function renderCustomerReference() {
     for (const customerId in customerConfig.customers) {
         const customer = customerConfig.customers[customerId];
         const playerCustomer = customers[customerId];
+        const bonus = customer.bonus;
         const itemDiv = document.createElement('div');
+        itemDiv.classList.add('customer-reference');
 
-        const trustLevel = customerConfig.trustLevels.find(tl => playerCustomer.trust >= tl.trust);
-        const nextLevel = customerConfig.trustLevels.find(tl => playerCustomer.trust < tl.trust);
+        let bonusHtml = `<h4>${t('ref_bonus_effect')}</h4><p>${t(bonus.description)}</p>`;
+        bonusHtml += '<table>';
+        bonusHtml += `<tr><th>${t('ref_trust_level')}</th><th>${t('ref_bonus')}</th></tr>`;
+
+        // Assuming bonus levels are l4 and l5, corresponding to trust levels 300 and 400
+        const trustTiers = [
+            { trust: 300, value: bonus.value_l4 },
+            { trust: 400, value: bonus.value_l5 }
+        ];
+
+        trustTiers.forEach(tier => {
+            if (tier.value) {
+                let bonusValueText = '';
+                switch (bonus.type) {
+                    case 'yieldBonus':
+                    case 'marketBonus':
+                        bonusValueText = `+${tier.value}`;
+                        break;
+                    case 'growthMultiplier':
+                        bonusValueText = `+${Math.round((1 - tier.value) * 100)}%`;
+                        break;
+                    case 'seedDiscount':
+                        bonusValueText = `${tier.value * 100}%`;
+                        break;
+                    case 'priceBonus':
+                        bonusValueText = `+$${tier.value} for ${t(bonus.crop)}`;
+                        break;
+                    default:
+                        bonusValueText = tier.value;
+                }
+                bonusHtml += `<tr><td>${tier.trust}+</td><td>${bonusValueText}</td></tr>`;
+            }
+        });
+        bonusHtml += '</table>';
 
         itemDiv.innerHTML = `
             <h3>${t(customer.name)}</h3>
             <p><strong>${t('ref_current_trust')}:</strong> ${playerCustomer.trust}</p>
-            <p>${t(customer.bonus.description)}</p>
+            ${bonusHtml}
         `;
         content.appendChild(itemDiv);
     }
