@@ -44,12 +44,6 @@ export const DOM = {
     seedsTabBtn: document.getElementById('seeds-tab-btn'),
     productionTabBtn: document.getElementById('production-tab-btn'),
     upgradesTabBtn: document.getElementById('upgrades-tab-btn'),
-    // Dev elements
-    devPanel: document.querySelector('.dev-panel'),
-    devMoneyBtn: document.getElementById('dev-money-btn'),
-    devOrderBtn: document.getElementById('dev-order-btn'),
-    devAddAllBtn: document.getElementById('dev-add-all-btn'),
-    devXpBtn: document.getElementById('dev-xp-btn'),
     moneyDisplay: document.getElementById('money-display'),
     levelDisplay: document.getElementById('level-display'),
     xpBarContainer: document.getElementById('xp-bar-container'),

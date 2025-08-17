@@ -96,27 +96,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    DOM.devXpBtn.addEventListener('click', () => {
-        addXp(200);
-        renderAll();
-        saveGameState();
-    });
-
     DOM.warehouseItems.addEventListener('click', (e) => {
         const seed = e.target.closest('[data-seed]');
         if (seed) {
             player.selectedSeed = seed.dataset.seed;
             renderAll();
-        }
-    });
-
-    DOM.devPanel.addEventListener('click', (e) => {
-        if (e.target.classList.contains('dev-trust-btn')) {
-            const customerId = e.target.dataset.customerId;
-            if (increaseTrust(customerId, 50)) {
-                renderAll();
-                saveGameState();
-            }
         }
     });
 
@@ -157,23 +141,6 @@ document.addEventListener('DOMContentLoaded', () => {
     DOM.langUkBtn.addEventListener('click', () => {
         setLanguage('uk');
         renderAll();
-    });
-    DOM.devMoneyBtn.addEventListener('click', () => {
-        player.money += 1000;
-        renderAll();
-        saveGameState();
-    });
-    DOM.devOrderBtn.addEventListener('click', () => {
-        if (forceGenerateOrder()) {
-            renderAll();
-            saveGameState();
-        }
-    });
-    DOM.devAddAllBtn.addEventListener('click', () => {
-        if (devAddAllProducts()) {
-            renderAll();
-            saveGameState();
-        }
     });
 
     document.getElementById('clear-data-btn').addEventListener('click', () => {
