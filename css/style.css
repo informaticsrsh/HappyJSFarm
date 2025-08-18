@@ -182,8 +182,6 @@ h1 {
 
 .sell-btn {
     background-color: #f28482;
-    padding: 2px 8px;
-    font-size: 14px;
     margin-left: 10px;
 }
 
@@ -256,24 +254,26 @@ h1 {
 
 #field-grid {
     display: grid;
-    grid-template-columns: repeat(5, 50px);
-    grid-template-rows: repeat(5, 50px);
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
     gap: 8px;
     background-color: #f2cc8f;
     padding: 10px;
     border-radius: 8px;
+    max-width: 500px; /* Prevent oversized plots on large screens */
+    margin: auto; /* Center the grid */
+    flex-grow: 1; /* Allow grid to grow */
 }
 
 .plot {
-    width: 50px;
-    height: 50px;
+    aspect-ratio: 1 / 1; /* Maintain square shape, width/height set by grid */
     background-color: #a5682a;
     border: 2px solid #654321;
     border-radius: 4px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 30px;
+    font-size: 2em; /* Responsive font size */
     cursor: pointer;
     transition: transform 0.2s;
 }
@@ -547,16 +547,14 @@ h1 {
     }
 
     #field-grid {
-        grid-template-columns: repeat(auto-fit, minmax(35px, 1fr));
-        grid-template-rows: repeat(auto-fit, minmax(35px, 1fr));
+        grid-template-columns: repeat(5, 1fr);
+        grid-template-rows: repeat(5, 1fr);
         gap: 5px;
         padding: 5px;
     }
 
     .plot {
-        width: 35px;
-        height: 35px;
-        font-size: 20px;
+        font-size: 1.5em; /* Adjust font size for smaller plots */
     }
 
     #buildings-grid {
