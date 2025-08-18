@@ -10,28 +10,30 @@ body {
     font-family: 'Karla', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
     background-color: #333; /* Dark background for the letterbox */
     color: #3d405b;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 #game-wrapper {
-    width: 1280px;
-    height: 720px;
+    width: 100vw;
+    height: 100vh;
     background-color: #f4f1de;
     overflow-y: auto; /* Allow scrolling within the game */
     position: relative;
-    box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    padding: 20px;
+    padding: 10px;
     box-sizing: border-box;
 }
 
-/* Responsive scaling for smaller screens */
-@media (max-width: 1320px) or (max-height: 760px) {
+/* Letterbox on larger screens */
+@media (min-width: 1280px) and (min-height: 720px) {
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
     #game-wrapper {
-        width: 100vw;
-        height: 100vh;
-        border-radius: 0;
+        width: 1280px;
+        height: 720px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        border-radius: 12px;
     }
 }
 
@@ -515,4 +517,82 @@ h1 {
     top: 10px;
     left: 10px;
     z-index: 1000;
+}
+
+/* Mobile Landscape */
+@media (max-height: 480px) and (orientation: landscape) {
+    h1 {
+        font-size: 1.2em;
+        margin-top: 10px;
+        margin-bottom: 5px;
+    }
+
+    #game-container {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    #left-panel {
+        min-width: 180px;
+        gap: 10px;
+    }
+
+    #field-container, #warehouse-container, #buildings-container, .modal-content {
+        padding: 10px;
+    }
+
+    #field-container, #buildings-container {
+        flex-grow: 1;
+    }
+
+    #field-grid {
+        grid-template-columns: repeat(auto-fit, minmax(35px, 1fr));
+        grid-template-rows: repeat(auto-fit, minmax(35px, 1fr));
+        gap: 5px;
+        padding: 5px;
+    }
+
+    .plot {
+        width: 35px;
+        height: 35px;
+        font-size: 20px;
+    }
+
+    #buildings-grid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    }
+
+    #orders-container {
+        padding: 5px;
+        margin-bottom: 10px;
+    }
+
+    #order-items {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 10px;
+    }
+
+    .btn {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+
+    .modal-content {
+        width: 90%;
+        max-width: none;
+        margin: 2% auto;
+        padding: 15px;
+    }
+
+    .tab-btn {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+
+    .close-btn {
+        font-size: 24px;
+        top: 5px;
+        right: 10px;
+    }
 }
