@@ -2,12 +2,10 @@ import { setLanguage, t } from './modules/localization.js';
 import { DOM, renderAll, renderOrderTimers } from './modules/ui.js';
 import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder, forceGenerateOrder, increaseTrust, buyBuilding, startProduction, devAddAllProducts, toggleBuildingAutomation, addXp } from './modules/game.js';
 import { player, field, warehouse, saveGameState, clearGameState, loadGameState } from './modules/state.js';
-import { leveling, store, uiIcons } from './modules/config.js';
+import { leveling, store } from './modules/config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('clear-data-btn').innerHTML = uiIcons.clear;
-    DOM.langEnBtn.innerHTML = uiIcons.en;
-    DOM.langUkBtn.innerHTML = uiIcons.uk;
+    document.getElementById('clear-data-btn').textContent = t('btn_clear_data');
     let gameLoopInterval;
     let orderTimerInterval;
 
