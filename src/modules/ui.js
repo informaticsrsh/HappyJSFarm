@@ -161,6 +161,8 @@ function renderStore() {
                 <button class="btn buy-btn" data-item-name="${item.name}" data-amount="1">1</button>
                 <button class="btn buy-btn" data-item-name="${item.name}" data-amount="10">10</button>
                 <button class="btn buy-btn" data-item-name="${item.name}" data-amount="100">100</button>
+                <button class="btn buy-btn" data-item-name="${item.name}" data-amount="10%">10%</button>
+                <button class="btn buy-btn" data-item-name="${item.name}" data-amount="50%">50%</button>
                 <button class="btn buy-btn" data-item-name="${item.name}" data-amount="max">${t('btn_max')}</button>
             </div>
         `;
@@ -291,6 +293,8 @@ function renderMarket() {
                     <button class="btn sell-btn" data-crop-name="${itemName}" data-amount="1">1</button>
                     <button class="btn sell-btn" data-crop-name="${itemName}" data-amount="10">10</button>
                     <button class="btn sell-btn" data-crop-name="${itemName}" data-amount="100">100</button>
+                    <button class="btn sell-btn" data-crop-name="${itemName}" data-amount="10%">10%</button>
+                    <button class="btn sell-btn" data-crop-name="${itemName}" data-amount="50%">50%</button>
                     <button class="btn sell-btn" data-crop-name="${itemName}" data-amount="max">${t('btn_sell_all')}</button>
                 </div>
             `;
