@@ -20,7 +20,8 @@ export let player = {
         'sandwich_shop': { purchased: false, production: null, automated: false },
         'breakfast_bar': { purchased: false, production: null, automated: false },
         'juicer': { purchased: false, production: null, automated: false },
-        'jam_factory': { purchased: false, production: null, automated: false }
+        'jam_factory': { purchased: false, production: null, automated: false },
+        'research_lab': { purchased: false, production: null, automated: false }
     },
     npcBonuses: {
         growthMultiplier: 1.0,

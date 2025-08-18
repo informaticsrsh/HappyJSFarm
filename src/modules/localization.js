@@ -165,7 +165,22 @@ const locales = {
         "alert_upgrade_locked": "You have not unlocked this upgrade yet!",
         "confirm_clear_data": "Are you sure you want to clear all your progress? This cannot be undone.",
         "level_up_congrats": "Congratulations! You've reached level {level}.",
-        "level_up_max_level": "You've reached level 11, the highest level currently available. Congratulations on mastering the game!"
+        "level_up_max_level": "You've reached level 11, the highest level currently available. Congratulations on mastering the game!",
+        "upgrade_negotiation3_name": "Master Negotiator",
+        "upgrade_negotiation3_desc": "Get a further 15% discount on all seeds (35% total).",
+        "upgrade_charm3_name": "Legendary Charisma",
+        "upgrade_charm3_desc": "Increase all market sale prices by a further $5 ($10 total).",
+        "upgrade_fertilizer3_name": "Miracle-Gro",
+        "upgrade_fertilizer3_desc": "Crops grow 30% faster in total.",
+        "Research Lab": "Research Lab",
+        "Unlocks powerful, repeatable upgrades.": "Unlocks powerful, repeatable upgrades.",
+        "upgrade_research_yield_name": "Advanced Yield Research",
+        "upgrade_research_yield_desc": "Permanently increases all crop yields by 1.",
+        "upgrade_research_growth_name": "Growth Hormone Research",
+        "upgrade_research_growth_desc": "Permanently increases crop growth speed by 5%.",
+        "upgrade_research_market_name": "Market Analysis Research",
+        "upgrade_research_market_desc": "Permanently increases all market sale prices by $1.",
+        "alert_building_required": "You must construct the {building} to purchase this upgrade."
     },
     "uk": {
         "title": "Моя Ферма",
@@ -333,7 +348,22 @@ const locales = {
         "alert_upgrade_locked": "Ви ще не розблокували це покращення!",
         "confirm_clear_data": "Ви впевнені, що хочете видалити весь свій прогрес? Цю дію неможливо буде скасувати.",
         "level_up_congrats": "Вітаємо! Ви досягли {level} рівня.",
-        "level_up_max_level": "Ви досягли 11 рівня, найвищого на даний момент. Вітаємо з освоєнням гри!"
+        "level_up_max_level": "Ви досягли 11 рівня, найвищого на даний момент. Вітаємо з освоєнням гри!",
+        "upgrade_negotiation3_name": "Майстер-переговорник",
+        "upgrade_negotiation3_desc": "Отримайте додаткову знижку 15% на все насіння (всього 35%).",
+        "upgrade_charm3_name": "Легендарна харизма",
+        "upgrade_charm3_desc": "Збільште всі ринкові ціни продажу ще на $5 (всього $10).",
+        "upgrade_fertilizer3_name": "Диво-ріст",
+        "upgrade_fertilizer3_desc": "Врожай росте на 30% швидше.",
+        "Research Lab": "Дослідницька лабораторія",
+        "Unlocks powerful, repeatable upgrades.": "Розблоковує потужні, повторювані покращення.",
+        "upgrade_research_yield_name": "Дослідження врожайності",
+        "upgrade_research_yield_desc": "Постійно збільшує врожайність усіх культур на 1.",
+        "upgrade_research_growth_name": "Дослідження гормонів росту",
+        "upgrade_research_growth_desc": "Постійно збільшує швидкість росту врожаю на 5%.",
+        "upgrade_research_market_name": "Дослідження аналізу ринку",
+        "upgrade_research_market_desc": "Постійно збільшує всі ринкові ціни продажу на $1.",
+        "alert_building_required": "Ви повинні побудувати {building}, щоб придбати це покращення."
     }
 };
 
