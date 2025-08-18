@@ -112,18 +112,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const amountType = e.target.dataset.amount;
         let amount = 0;
 
-        if (amountType === 'custom') {
-            const input = e.target.parentElement.querySelector('.buy-amount-input');
-            amount = parseInt(input.value, 10);
-        } else if (amountType === 'max') {
-            const item = store.find(i => i.name === itemName);
-            if (!item) return;
-            const finalPrice = Math.round(item.price * (1 - (player.upgrades.seedDiscount + player.npcBonuses.seedDiscount)));
-            if (finalPrice <= 0) {
-                amount = 9999; // Or some other large number if price is free
-            } else {
-                amount = Math.floor(player.money / finalPrice);
-            }
+    const item = store.find(i => i.name === itemName);
+    if (!item) return;
+    const finalPrice = Math.round(item.price * (1 - (player.upgrades.seedDiscount + player.npcBonuses.seedDiscount)));
+
+    let maxAmount;
+    if (finalPrice <= 0) {
+        maxAmount = 9999; // A large number for free items
+    } else {
+        maxAmount = Math.floor(player.money / finalPrice);
+    }
+
+    if (amountType === 'max') {
+        amount = maxAmount;
+    } else if (amountType.endsWith('%')) {
+        const percentage = parseInt(amountType.slice(0, -1), 10) / 100;
+        amount = Math.ceil(maxAmount * percentage);
         } else {
             amount = parseInt(amountType, 10);
         }
@@ -179,13 +183,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const amountType = e.target.dataset.amount;
         let amountToSell = 0;
 
-        if (amountType === '1') {
-            amountToSell = 1;
-        } else if (amountType === 'all') {
-            amountToSell = warehouse[cropName];
-        } else if (amountType === 'custom') {
-            const input = e.target.previousElementSibling;
-            amountToSell = parseInt(input.value, 10);
+    const availableAmount = warehouse[cropName];
+
+    if (amountType === 'max') {
+        amountToSell = availableAmount;
+    } else if (amountType.endsWith('%')) {
+        const percentage = parseInt(amountType.slice(0, -1), 10) / 100;
+        amountToSell = Math.ceil(availableAmount * percentage);
+    } else {
+        amountToSell = parseInt(amountType, 10);
         }
 
         if (sellCrop(cropName, amountToSell)) {

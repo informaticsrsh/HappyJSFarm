@@ -158,10 +158,11 @@ function renderStore() {
                 <span>${priceHtml}</span>
             </div>
             <div class="store-actions">
-                <input type="number" class="buy-amount-input" min="1" value="1" style="width: 50px;">
-                <button class="btn buy-btn" data-item-name="${item.name}" data-amount="custom">${t('btn_buy')}</button>
+                <button class="btn buy-btn" data-item-name="${item.name}" data-amount="1">1</button>
                 <button class="btn buy-btn" data-item-name="${item.name}" data-amount="10">10</button>
                 <button class="btn buy-btn" data-item-name="${item.name}" data-amount="100">100</button>
+                <button class="btn buy-btn" data-item-name="${item.name}" data-amount="10%">10%</button>
+                <button class="btn buy-btn" data-item-name="${item.name}" data-amount="50%">50%</button>
                 <button class="btn buy-btn" data-item-name="${item.name}" data-amount="max">${t('btn_max')}</button>
             </div>
         `;
@@ -289,10 +290,12 @@ function renderMarket() {
                     <span>${t('market_item_price', { price })}</span>
                 </div>
                 <div class="market-actions">
-                    <button class="btn sell-btn" data-crop-name="${itemName}" data-amount="1">${t('btn_sell_one')}</button>
-                    <button class="btn sell-btn" data-crop-name="${itemName}" data-amount="all">${t('btn_sell_all')}</button>
-                    <input type="number" class="sell-amount-input" min="1" max="${warehouse[itemName]}" placeholder="Amount">
-                    <button class="btn sell-btn" data-crop-name="${itemName}" data-amount="custom">${t('btn_sell_amount')}</button>
+                    <button class="btn sell-btn" data-crop-name="${itemName}" data-amount="1">1</button>
+                    <button class="btn sell-btn" data-crop-name="${itemName}" data-amount="10">10</button>
+                    <button class="btn sell-btn" data-crop-name="${itemName}" data-amount="100">100</button>
+                    <button class="btn sell-btn" data-crop-name="${itemName}" data-amount="10%">10%</button>
+                    <button class="btn sell-btn" data-crop-name="${itemName}" data-amount="50%">50%</button>
+                    <button class="btn sell-btn" data-crop-name="${itemName}" data-amount="max">${t('btn_sell_all')}</button>
                 </div>
             `;
             DOM.marketItems.appendChild(itemDiv);
