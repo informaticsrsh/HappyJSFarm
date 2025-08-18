@@ -187,32 +187,40 @@ export const cropTypes = {
 
 export const upgrades = {
     // --- General Upgrades ---
-    'fertilizer1': { cost: 200, name: 'upgrade_fertilizer1_name', description: 'upgrade_fertilizer1_desc', effect: { type: 'growthMultiplier', value: 0.9 }, purchased: false, requiredLevel: 1 },
-    'fertilizer2': { cost: 500, name: 'upgrade_fertilizer2_name', description: 'upgrade_fertilizer2_desc', effect: { type: 'growthMultiplier', value: 0.75 }, purchased: false, requiredLevel: 5 },
-    'compost1': { cost: 300, name: 'upgrade_compost1_name', description: 'upgrade_compost1_desc', effect: { type: 'yieldBonus', value: 1 }, purchased: false, requiredLevel: 1 },
-    'compost2': { cost: 600, name: 'upgrade_compost2_name', description: 'upgrade_compost2_desc', effect: { type: 'yieldBonus', value: 1 }, purchased: false, requiredLevel: 6 },
-    'negotiation1': { cost: 400, name: 'upgrade_negotiation1_name', description: 'upgrade_negotiation1_desc', effect: { type: 'seedDiscount', value: 0.1 }, purchased: false, requiredLevel: 4 },
-    'negotiation2': { cost: 800, name: 'upgrade_negotiation2_name', description: 'upgrade_negotiation2_desc', effect: { type: 'seedDiscount', value: 0.1 }, purchased: false, requiredLevel: 7 },
-    'charm1': { cost: 600, name: 'upgrade_charm1_name', description: 'upgrade_charm1_desc', effect: { type: 'marketBonus', value: 2 }, purchased: false, requiredLevel: 6 },
-    'charm2': { cost: 1200, name: 'upgrade_charm2_name', description: 'upgrade_charm2_desc', effect: { type: 'marketBonus', value: 3 }, purchased: false, requiredLevel: 9 },
+    'fertilizer1': { cost: 500, name: 'upgrade_fertilizer1_name', description: 'upgrade_fertilizer1_desc', effect: { type: 'growthMultiplier', value: 0.9 }, purchased: false, requiredLevel: 2 },
+    'fertilizer2': { cost: 2500, name: 'upgrade_fertilizer2_name', description: 'upgrade_fertilizer2_desc', effect: { type: 'growthMultiplier', value: 0.8 }, purchased: false, requiredLevel: 6 },
+    'compost1': { cost: 800, name: 'upgrade_compost1_name', description: 'upgrade_compost1_desc', effect: { type: 'yieldBonus', value: 1 }, purchased: false, requiredLevel: 2 },
+    'compost2': { cost: 3000, name: 'upgrade_compost2_name', description: 'upgrade_compost2_desc', effect: { type: 'yieldBonus', value: 1 }, purchased: false, requiredLevel: 7 },
+    'negotiation1': { cost: 1000, name: 'upgrade_negotiation1_name', description: 'upgrade_negotiation1_desc', effect: { type: 'seedDiscount', value: 0.1 }, purchased: false, requiredLevel: 3 },
+    'negotiation2': { cost: 5000, name: 'upgrade_negotiation2_name', description: 'upgrade_negotiation2_desc', effect: { type: 'seedDiscount', value: 0.1 }, purchased: false, requiredLevel: 6 },
+    'charm1': { cost: 3000, name: 'upgrade_charm1_name', description: 'upgrade_charm1_desc', effect: { type: 'marketBonus', value: 2 }, purchased: false, requiredLevel: 5 },
+    'charm2': { cost: 8000, name: 'upgrade_charm2_name', description: 'upgrade_charm2_desc', effect: { type: 'marketBonus', value: 3 }, purchased: false, requiredLevel: 9 },
+    'negotiation3': { cost: 15000, name: 'upgrade_negotiation3_name', description: 'upgrade_negotiation3_desc', effect: { type: 'seedDiscount', value: 0.15 }, purchased: false, requiredLevel: 8 },
+    'charm3': { cost: 20000, name: 'upgrade_charm3_name', description: 'upgrade_charm3_desc', effect: { type: 'marketBonus', value: 5 }, purchased: false, requiredLevel: 10 },
+    'fertilizer3': { cost: 10000, name: 'upgrade_fertilizer3_name', description: 'upgrade_fertilizer3_desc', effect: { type: 'growthMultiplier', value: 0.7 }, purchased: false, requiredLevel: 8 },
 
     // --- Automation Upgrades ---
-    'building_automation': { cost: 5000, name: 'upgrade_building_automation_name', description: 'upgrade_building_automation_desc', effect: { type: 'buildingAutomation', value: true }, purchased: false, requiredLevel: 5 },
+    'building_automation': { cost: 10000, name: 'upgrade_building_automation_name', description: 'upgrade_building_automation_desc', effect: { type: 'buildingAutomation', value: true }, purchased: false, requiredLevel: 8 },
 
     // --- Field Automation Upgrades ---
-    'auto_wheat': { cost: 2500, name: 'upgrade_auto_wheat_name', description: 'upgrade_auto_wheat_desc', effect: { type: 'autoPlot', crop: 'wheat' }, repeatable: true, maxPurchases: 2, purchasedCount: 0, requiredLevel: 3 },
-    'auto_carrot': { cost: 3000, name: 'upgrade_auto_carrot_name', description: 'upgrade_auto_carrot_desc', effect: { type: 'autoPlot', crop: 'carrot' }, repeatable: true, maxPurchases: 2, purchasedCount: 0, requiredLevel: 4 },
-    'auto_tomato': { cost: 3500, name: 'upgrade_auto_tomato_name', description: 'upgrade_auto_tomato_desc', effect: { type: 'autoPlot', crop: 'tomato' }, repeatable: true, maxPurchases: 2, purchasedCount: 0, requiredLevel: 6 },
-    'auto_potato': { cost: 4000, name: 'upgrade_auto_potato_name', description: 'upgrade_auto_potato_desc', effect: { type: 'autoPlot', crop: 'potato' }, repeatable: true, maxPurchases: 2, purchasedCount: 0, requiredLevel: 7 },
-    'auto_strawberry': { cost: 4500, name: 'upgrade_auto_strawberry_name', description: 'upgrade_auto_strawberry_desc', effect: { type: 'autoPlot', crop: 'strawberry' }, repeatable: true, maxPurchases: 2, purchasedCount: 0, requiredLevel: 8 },
-    'auto_blueberry': { cost: 5000, name: 'upgrade_auto_blueberry_name', description: 'upgrade_auto_blueberry_desc', effect: { type: 'autoPlot', crop: 'blueberry' }, repeatable: true, maxPurchases: 2, purchasedCount: 0, requiredLevel: 9 },
+    'auto_wheat': { cost: 3000, name: 'upgrade_auto_wheat_name', description: 'upgrade_auto_wheat_desc', effect: { type: 'autoPlot', crop: 'wheat' }, repeatable: true, maxPurchases: 2, purchasedCount: 0, requiredLevel: 3 },
+    'auto_carrot': { cost: 4000, name: 'upgrade_auto_carrot_name', description: 'upgrade_auto_carrot_desc', effect: { type: 'autoPlot', crop: 'carrot' }, repeatable: true, maxPurchases: 2, purchasedCount: 0, requiredLevel: 4 },
+    'auto_tomato': { cost: 5000, name: 'upgrade_auto_tomato_name', description: 'upgrade_auto_tomato_desc', effect: { type: 'autoPlot', crop: 'tomato' }, repeatable: true, maxPurchases: 2, purchasedCount: 0, requiredLevel: 6 },
+    'auto_potato': { cost: 6000, name: 'upgrade_auto_potato_name', description: 'upgrade_auto_potato_desc', effect: { type: 'autoPlot', crop: 'potato' }, repeatable: true, maxPurchases: 2, purchasedCount: 0, requiredLevel: 7 },
+    'auto_strawberry': { cost: 7000, name: 'upgrade_auto_strawberry_name', description: 'upgrade_auto_strawberry_desc', effect: { type: 'autoPlot', crop: 'strawberry' }, repeatable: true, maxPurchases: 2, purchasedCount: 0, requiredLevel: 8 },
+    'auto_blueberry': { cost: 8000, name: 'upgrade_auto_blueberry_name', description: 'upgrade_auto_blueberry_desc', effect: { type: 'autoPlot', crop: 'blueberry' }, repeatable: true, maxPurchases: 2, purchasedCount: 0, requiredLevel: 9 },
+
+    // --- Research Upgrades (unlocked by Research Lab) ---
+    'research_yield': { cost: 25000, name: 'upgrade_research_yield_name', description: 'upgrade_research_yield_desc', effect: { type: 'yieldBonus', value: 1 }, repeatable: true, purchasedCount: 0, requiredLevel: 10, requiresBuilding: 'research_lab' },
+    'research_growth': { cost: 30000, name: 'upgrade_research_growth_name', description: 'upgrade_research_growth_desc', effect: { type: 'growthMultiplier', value: 0.95 }, repeatable: true, purchasedCount: 0, requiredLevel: 10, requiresBuilding: 'research_lab' },
+    'research_market': { cost: 35000, name: 'upgrade_research_market_name', description: 'upgrade_research_market_desc', effect: { type: 'marketBonus', value: 1 }, repeatable: true, purchasedCount: 0, requiredLevel: 10, requiresBuilding: 'research_lab' },
 };
 
 export const buildings = {
     'bakery': {
         name: 'Bakery',
         icon: '🏠',
-        cost: 1000,
+        cost: 1500,
         description: 'Bakes bread from grain.',
         recipes: [
             {
@@ -228,7 +236,7 @@ export const buildings = {
     'dairy': {
         name: 'Dairy',
         icon: '🐮',
-        cost: 1200,
+        cost: 2500,
         description: 'Produces milk from wheat.',
         recipes: [
             {
@@ -244,7 +252,7 @@ export const buildings = {
     'pig_pen': {
         name: 'Pig Pen',
         icon: '🐷',
-        cost: 1500,
+        cost: 5000,
         description: 'Produces bacon from potatoes.',
         recipes: [
             {
@@ -260,7 +268,7 @@ export const buildings = {
     'sandwich_shop': {
         name: 'Sandwich Shop',
         icon: '🏪',
-        cost: 5000,
+        cost: 10000,
         description: 'Makes delicious sandwiches.',
         recipes: [
             {
@@ -276,7 +284,7 @@ export const buildings = {
     'breakfast_bar': {
         name: 'Breakfast Bar',
         icon: '🥣',
-        cost: 6000,
+        cost: 12000,
         description: 'Makes healthy cereal.',
         recipes: [
             {
@@ -292,7 +300,7 @@ export const buildings = {
     'juicer': {
         name: 'Juicer',
         icon: '🍹',
-        cost: 2000,
+        cost: 4000,
         description: 'Extracts juice from fruits and vegetables.',
         recipes: [
             {
@@ -313,7 +321,7 @@ export const buildings = {
     'jam_factory': {
         name: 'Jam Factory',
         icon: '🏭',
-        cost: 5000,
+        cost: 15000,
         description: 'Makes delicious jams from berries.',
         recipes: [
             {
@@ -330,6 +338,16 @@ export const buildings = {
         purchased: false,
         productionStartTime: 0,
         requiredLevel: 8
+    },
+    'research_lab': {
+        name: 'Research Lab',
+        icon: '🔬',
+        cost: 50000,
+        description: 'Unlocks powerful, repeatable upgrades.',
+        recipes: [],
+        purchased: false,
+        productionStartTime: 0,
+        requiredLevel: 10
     }
 };
 

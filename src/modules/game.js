@@ -161,6 +161,11 @@ export function buyUpgrade(upgradeId) {
         return false;
     }
 
+    if (upgrade.requiresBuilding && !player.buildings[upgrade.requiresBuilding]?.purchased) {
+        showNotification(t('alert_building_required', { building: t(buildings[upgrade.requiresBuilding].name) }));
+        return false;
+    }
+
     // Check if max purchases reached
     if (upgrade.repeatable && upgrade.purchasedCount >= upgrade.maxPurchases) {
         showNotification(t('alert_max_purchases'));
