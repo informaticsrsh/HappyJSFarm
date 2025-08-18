@@ -23,6 +23,15 @@ export const store = [
     { name: 'blueberry_seed', price: 60, type: 'seed', requiredLevel: 7 }
 ];
 
+export const uiIcons = {
+    clear: '🗑️',
+    store: '🛍️',
+    market: '💹',
+    reference: '❓',
+    en: '🇬🇧',
+    uk: '🇺🇦'
+};
+
 export const cropTypes = {
     'wheat': {
         icon: '🌾',

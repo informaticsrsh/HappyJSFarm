@@ -489,8 +489,8 @@ h1 {
 }
 
 .reset-container {
-    position: fixed;
-    bottom: 10px;
-    left: 10px;
+    position: absolute;
+    top: 10px;
+    left: 350px;
     z-index: 1000;
 }

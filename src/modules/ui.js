@@ -1,6 +1,6 @@
 import { t } from './localization.js';
 import { player, field, warehouse, marketState, customers } from './state.js';
-import { NUM_ROWS, NUM_COLS, store, cropTypes, upgrades, customerConfig, buildings } from './config.js';
+import { NUM_ROWS, NUM_COLS, store, cropTypes, upgrades, customerConfig, buildings, uiIcons } from './config.js';
 
 export const DOM = {
     fieldGrid: document.getElementById('field-grid'),
@@ -316,9 +316,9 @@ function renderStaticUI() {
     DOM.warehouseTitle.textContent = t('warehouse_title');
     DOM.fieldTitle.textContent = t('field_title');
     document.querySelector('#buildings-container h2').textContent = t('buildings_title');
-    DOM.openStoreBtn.textContent = t('btn_store');
-    DOM.openMarketBtn.textContent = t('btn_market');
-    DOM.openRefBtn.textContent = t('btn_reference');
+    DOM.openStoreBtn.innerHTML = uiIcons.store;
+    DOM.openMarketBtn.innerHTML = uiIcons.market;
+    DOM.openRefBtn.innerHTML = uiIcons.reference;
     DOM.seedsTabBtn.textContent = t('seeds_tab');
     DOM.productionTabBtn.textContent = t('production_tab');
     DOM.upgradesTabBtn.textContent = t('upgrades_tab');
