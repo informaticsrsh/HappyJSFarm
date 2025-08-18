@@ -1,12 +1,40 @@
 @import url('https://fonts.googleapis.com/css2?family=Karla:wght@400;700&display=swap');
 
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden; /* Prevent scrollbars on the body */
+}
+
 body {
     font-family: 'Karla', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-    background-color: #f4f1de;
+    background-color: #333; /* Dark background for the letterbox */
     color: #3d405b;
-    margin: 0;
-    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
+
+#game-wrapper {
+    width: 1280px;
+    height: 720px;
+    background-color: #f4f1de;
+    overflow-y: auto; /* Allow scrolling within the game */
+    position: relative;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Responsive scaling for smaller screens */
+@media (max-width: 1320px) or (max-height: 760px) {
+    #game-wrapper {
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+    }
+}
+
 
 .notification {
     position: fixed;
@@ -44,16 +72,16 @@ h1 {
 
 #game-container {
     display: flex;
-    justify-content: center;
-    gap: 30px;
-    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 20px;
 }
 
 #left-panel {
     display: flex;
     flex-direction: column;
-    gap: 30px;
-    min-width: 200px;
+    gap: 20px;
+    min-width: 250px;
+    flex-shrink: 0;
 }
 
 #field-container, #warehouse-container, #buildings-container, .modal-content {
@@ -84,12 +112,6 @@ h1 {
 .button-group {
     display: flex;
     gap: 10px;
-}
-
-.dev-panel {
-    position: absolute;
-    top: 10px;
-    left: 10px;
 }
 
 #player-stats {
@@ -427,12 +449,12 @@ h1 {
     padding: 15px;
     border-radius: 12px;
     margin: 0 auto 20px auto;
-    max-width: 1200px;
+    max-width: 1000px;
 }
 
 #order-items {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 15px;
 }
 
@@ -489,8 +511,8 @@ h1 {
 }
 
 .reset-container {
-    position: absolute;
+    position: fixed;
     top: 10px;
-    left: 350px;
+    left: 10px;
     z-index: 1000;
 }
