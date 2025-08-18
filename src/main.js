@@ -112,10 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const amountType = e.target.dataset.amount;
         let amount = 0;
 
-        if (amountType === 'custom') {
-            const input = e.target.parentElement.querySelector('.buy-amount-input');
-            amount = parseInt(input.value, 10);
-        } else if (amountType === 'max') {
+    if (amountType === 'max') {
             const item = store.find(i => i.name === itemName);
             if (!item) return;
             const finalPrice = Math.round(item.price * (1 - (player.upgrades.seedDiscount + player.npcBonuses.seedDiscount)));
@@ -179,13 +176,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const amountType = e.target.dataset.amount;
         let amountToSell = 0;
 
-        if (amountType === '1') {
-            amountToSell = 1;
-        } else if (amountType === 'all') {
+    if (amountType === 'max') {
             amountToSell = warehouse[cropName];
-        } else if (amountType === 'custom') {
-            const input = e.target.previousElementSibling;
-            amountToSell = parseInt(input.value, 10);
+    } else {
+        amountToSell = parseInt(amountType, 10);
         }
 
         if (sellCrop(cropName, amountToSell)) {
