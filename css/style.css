@@ -276,6 +276,8 @@ h1 {
     font-size: 2em; /* Responsive font size */
     cursor: pointer;
     transition: transform 0.2s;
+    position: relative;
+    overflow: hidden;
 }
 
 .plot:hover {
@@ -428,6 +430,22 @@ h1 {
 .automated-plot {
     border: 3px dashed #81b29a;
     box-sizing: border-box;
+}
+
+.product-icon {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    font-size: 0.5em;
+    z-index: 1;
+}
+
+.automation-icon {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    font-size: 0.5em;
+    z-index: 1;
 }
 .automated-plot.automated-wheat { border-color: #f2cc8f; }
 .automated-plot.automated-carrot { border-color: #e07a5f; }
