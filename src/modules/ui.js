@@ -97,15 +97,17 @@ function renderField() {
             if (cell.crop) {
                 plot.textContent = cropTypes[cell.crop].visuals[cell.growthStage];
                 plot.classList.add(cell.crop); // Add class for crop color
-            } else if (cell.autoCrop) {
-                plot.textContent = cropTypes[cell.autoCrop].icon; // Show icon on empty auto plot
-            }
-            else {
+            } else {
                 plot.textContent = '🟫';
             }
 
             if (cell.autoCrop) {
                 plot.classList.add('automated-plot', `automated-${cell.autoCrop}`);
+                // For idle auto-plots, show the product icon in the corner
+                const productIcon = document.createElement('div');
+                productIcon.classList.add('product-icon');
+                productIcon.textContent = cropTypes[cell.autoCrop].icon;
+                plot.appendChild(productIcon);
             }
             DOM.fieldGrid.appendChild(plot);
         }
