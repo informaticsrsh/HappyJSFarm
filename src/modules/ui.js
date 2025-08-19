@@ -96,16 +96,35 @@ function renderField() {
             const cell = field[r][c];
             if (cell.crop) {
                 plot.textContent = cropTypes[cell.crop].visuals[cell.growthStage];
-                plot.classList.add(cell.crop); // Add class for crop color
-            } else if (cell.autoCrop) {
-                plot.textContent = cropTypes[cell.autoCrop].icon; // Show icon on empty auto plot
-            }
-            else {
+                plot.classList.add(cell.crop);
+            } else {
                 plot.textContent = '🟫';
             }
 
             if (cell.autoCrop) {
                 plot.classList.add('automated-plot', `automated-${cell.autoCrop}`);
+
+                const overlay = document.createElement('div');
+                overlay.classList.add('automated-cell-overlay');
+                plot.appendChild(overlay);
+
+                const autoIcon = document.createElement('div');
+                autoIcon.classList.add('automated-icon');
+                autoIcon.textContent = '⚙️';
+                plot.appendChild(autoIcon);
+
+                const productIcon = document.createElement('div');
+                productIcon.classList.add('automated-product-icon');
+                productIcon.textContent = cropTypes[cell.autoCrop].icon;
+                plot.appendChild(productIcon);
+
+                if (!cell.crop) {
+                    plot.textContent = '';
+                    productIcon.style.fontSize = '2em';
+                    productIcon.style.top = '50%';
+                    productIcon.style.left = '50%';
+                    productIcon.style.transform = 'translate(-50%, -50%)';
+                }
             }
             DOM.fieldGrid.appendChild(plot);
         }
@@ -439,9 +458,6 @@ function renderBuildings() {
             const building = buildings[buildingId];
             const buildingDiv = document.createElement('div');
             buildingDiv.classList.add('building');
-            if (playerBuilding.automated) {
-                buildingDiv.classList.add('automated');
-            }
 
             let statusHtml = '';
             if (playerBuilding.production) {
@@ -468,11 +484,29 @@ function renderBuildings() {
                 autoButton = `<button class="btn toggle-auto-btn" data-building-id="${buildingId}">${t(btnTextKey)}</button>`;
             }
 
+            let automationHtml = '';
+            if (playerBuilding.automated) {
+                buildingDiv.classList.add('automated');
+
+                let productIconHtml = '';
+                if (building.recipes.length > 0) {
+                    const firstProduct = Object.keys(building.recipes[0].output)[0];
+                    productIconHtml = `<div class="automated-product-icon">${getIconForItem(firstProduct)}</div>`;
+                }
+
+                automationHtml = `
+                    <div class="automated-cell-overlay"></div>
+                    <div class="automated-icon">⚙️</div>
+                    ${productIconHtml}
+                `;
+            }
+
             buildingDiv.innerHTML = `
                 <div class="building-icon">${building.icon}</div>
                 <strong class="building-name">${t(building.name)}</strong>
                 <div class="building-recipes">${statusHtml}</div>
                 <div class="building-automation">${autoButton}</div>
+                ${automationHtml}
             `;
             DOM.buildingsGrid.appendChild(buildingDiv);
         }

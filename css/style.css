@@ -266,6 +266,7 @@ h1 {
 }
 
 .plot {
+    position: relative;
     aspect-ratio: 1 / 1; /* Maintain square shape, width/height set by grid */
     background-color: #a5682a;
     border: 2px solid #654321;
@@ -426,8 +427,8 @@ h1 {
 .plot.blueberry { background-color: #8cb9ff44; }
 
 .automated-plot {
-    border: 3px dashed #81b29a;
     box-sizing: border-box;
+    /* Dashed border replaced with overlay */
 }
 .automated-plot.automated-wheat { border-color: #f2cc8f; }
 .automated-plot.automated-carrot { border-color: #e07a5f; }
@@ -436,9 +437,62 @@ h1 {
 .automated-plot.automated-strawberry { border-color: #ffb3ba; }
 .automated-plot.automated-blueberry { border-color: #a2d2ff; }
 
+/* Styles for automation visuals */
+.automated-cell-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 4px; /* Match plot */
+    pointer-events: none; /* Allow clicks to pass through */
+    background:
+        repeating-linear-gradient(
+            45deg,
+            rgba(255,255,255,0.08),
+            rgba(255,255,255,0.08) 10px,
+            rgba(0,0,0,0) 10px,
+            rgba(0,0,0,0) 20px
+        );
+}
+
+.automated-icon {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    font-size: 1.2rem;
+    opacity: 0.8;
+    text-shadow: 1px 1px 2px #000;
+}
+
+.automated-product-icon {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
 .building.automated {
+    position: relative; /* Ensure positioning context */
     border-color: #81b29a;
     box-shadow: 0 0 10px #81b29a;
+}
+
+.building .automated-cell-overlay {
+    border-radius: 12px; /* Match building */
+}
+
+.building .automated-icon {
+    font-size: 1.5rem;
+    bottom: 5px;
+    right: 5px;
+}
+
+.building .automated-product-icon {
+    font-size: 1.5rem;
+    top: 5px;
+    left: 5px;
 }
 
 .building-automation {
