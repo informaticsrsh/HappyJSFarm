@@ -444,10 +444,18 @@ function renderBuildings() {
             }
 
             let statusHtml = '';
-            if (playerBuilding.production) {
-                const recipe = building.recipes[playerBuilding.production.recipeIndex];
-                const timeLeft = Math.round((playerBuilding.production.startTime + recipe.productionTime - Date.now()) / 1000);
-                statusHtml = `<div class="building-status">${t('status_producing')} (${t('status_time_left', { time: timeLeft })})</div>`;
+            if (playerBuilding.production.length > 0) {
+                const job = playerBuilding.production[0];
+                const recipe = building.recipes[job.recipeIndex];
+                const effectiveTime = recipe.productionTime * (1 - (player.upgrades.productionSpeed || 0));
+                const timeLeft = Math.round((job.startTime + effectiveTime - Date.now()) / 1000);
+
+                let queueStatus = '';
+                if (playerBuilding.production.length > 1) {
+                    queueStatus = ` (+${playerBuilding.production.length - 1} in queue)`;
+                }
+
+                statusHtml = `<div class="building-status">${t('status_producing')} (${t('status_time_left', { time: Math.max(0, timeLeft) })}) ${queueStatus}</div>`;
             } else {
                 building.recipes.forEach((recipe, index) => {
                     const inputs = Object.entries(recipe.input).map(([key, value]) => `${value} ${t(key)}`).join(', ');
