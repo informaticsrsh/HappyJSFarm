@@ -279,6 +279,9 @@ export function startProduction(buildingId, recipeIndex) {
         warehouse[ingredient] -= recipe.input[ingredient] * batchSize;
     }
 
+    if (!playerBuilding.production) {
+        playerBuilding.production = [];
+    }
     playerBuilding.production.push({
         recipeIndex,
         startTime: Date.now(),
@@ -351,7 +354,7 @@ function updateProduction(now) {
         const building = buildings[buildingId];
 
         // --- Handle finished production ---
-        if (playerBuilding.production.length > 0) {
+        if (playerBuilding.production && playerBuilding.production.length > 0) {
             const job = playerBuilding.production[0];
             const recipe = building.recipes[job.recipeIndex];
             const effectiveTime = recipe.productionTime * (1 - (player.upgrades.productionSpeed || 0));
