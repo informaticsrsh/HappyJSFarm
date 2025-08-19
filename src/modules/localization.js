@@ -180,7 +180,43 @@ const locales = {
         "upgrade_research_growth_desc": "Permanently increases crop growth speed by 5%.",
         "upgrade_research_market_name": "Market Analysis Research",
         "upgrade_research_market_desc": "Permanently increases all market sale prices by $1.",
-        "alert_building_required": "You must construct the {building} to purchase this upgrade."
+        "alert_building_required": "You must construct the {building} to purchase this upgrade.",
+
+        "upgrade_prod_speed1_name": "Efficient Machinery",
+        "upgrade_prod_speed1_desc": "Increases production speed by 10%.",
+        "upgrade_prod_speed2_name": "Assembly Lines",
+        "upgrade_prod_speed2_desc": "Increases production speed by a further 15% (25% total).",
+        "upgrade_prod_speed3_name": "Automation",
+        "upgrade_prod_speed3_desc": "Increases production speed by a further 20% (45% total).",
+        "upgrade_prod_speed4_name": "Robotics",
+        "upgrade_prod_speed4_desc": "Increases production speed by a further 25% (70% total).",
+
+        "upgrade_prod_eff1_name": "Better Tools",
+        "upgrade_prod_eff1_desc": "Increases production efficiency by 10%.",
+        "upgrade_prod_eff2_name": "Skilled Labor",
+        "upgrade_prod_eff2_desc": "Increases production efficiency by a further 15% (25% total).",
+        "upgrade_prod_eff3_name": "Master Craftsmen",
+        "upgrade_prod_eff3_desc": "Increases production efficiency by a further 20% (45% total).",
+        "upgrade_prod_eff4_name": "Total Quality Management",
+        "upgrade_prod_eff4_desc": "Increases production efficiency by a further 25% (70% total).",
+
+        "upgrade_prod_luck1_name": "Good Omen",
+        "upgrade_prod_luck1_desc": "Grants a 5% chance for a lucky production outcome (2x items).",
+        "upgrade_prod_luck2_name": "Lucky Charm",
+        "upgrade_prod_luck2_desc": "Increases lucky chance by a further 10% (15% total).",
+        "upgrade_prod_luck3_name": "Leprechaun's Hat",
+        "upgrade_prod_luck3_desc": "Increases lucky chance by a further 15% (30% total).",
+        "upgrade_prod_luck4_name": "Four-Leaf Clover",
+        "upgrade_prod_luck4_desc": "Increases lucky chance by a further 20% (50% total).",
+
+        "upgrade_prod_vol1_name": "Bigger Crates",
+        "upgrade_prod_vol1_desc": "Increases production volume by 1.",
+        "upgrade_prod_vol2_name": "Expanded Workspace",
+        "upgrade_prod_vol2_desc": "Increases production volume by a further 1 (2 total).",
+        "upgrade_prod_vol3_name": "Industrial Plant",
+        "upgrade_prod_vol3_desc": "Increases production volume by a further 1 (3 total).",
+        "upgrade_prod_vol4_name": "Mega Factory",
+        "upgrade_prod_vol4_desc": "Increases production volume by a further 1 (4 total)."
     },
     "uk": {
         "title": "Моя Ферма",
@@ -363,7 +399,43 @@ const locales = {
         "upgrade_research_growth_desc": "Постійно збільшує швидкість росту врожаю на 5%.",
         "upgrade_research_market_name": "Дослідження аналізу ринку",
         "upgrade_research_market_desc": "Постійно збільшує всі ринкові ціни продажу на $1.",
-        "alert_building_required": "Ви повинні побудувати {building}, щоб придбати це покращення."
+        "alert_building_required": "Ви повинні побудувати {building}, щоб придбати це покращення.",
+
+        "upgrade_prod_speed1_name": "Ефективне обладнання",
+        "upgrade_prod_speed1_desc": "Збільшує швидкість виробництва на 10%.",
+        "upgrade_prod_speed2_name": "Складальні лінії",
+        "upgrade_prod_speed2_desc": "Збільшує швидкість виробництва ще на 15% (всього 25%).",
+        "upgrade_prod_speed3_name": "Автоматизація",
+        "upgrade_prod_speed3_desc": "Збільшує швидкість виробництва ще на 20% (всього 45%).",
+        "upgrade_prod_speed4_name": "Робототехніка",
+        "upgrade_prod_speed4_desc": "Збільшує швидкість виробництва ще на 25% (всього 70%).",
+
+        "upgrade_prod_eff1_name": "Кращі інструменти",
+        "upgrade_prod_eff1_desc": "Збільшує ефективність виробництва на 10%.",
+        "upgrade_prod_eff2_name": "Кваліфікована праця",
+        "upgrade_prod_eff2_desc": "Збільшує ефективність виробництва ще на 15% (всього 25%).",
+        "upgrade_prod_eff3_name": "Майстри-ремісники",
+        "upgrade_prod_eff3_desc": "Збільшує ефективність виробництва ще на 20% (всього 45%).",
+        "upgrade_prod_eff4_name": "Тотальне управління якістю",
+        "upgrade_prod_eff4_desc": "Збільшує ефективність виробництва ще на 25% (всього 70%).",
+
+        "upgrade_prod_luck1_name": "Добра прикмета",
+        "upgrade_prod_luck1_desc": "Дає 5% шанс на вдалий результат виробництва (x2 предмети).",
+        "upgrade_prod_luck2_name": "Щасливий талісман",
+        "upgrade_prod_luck2_desc": "Збільшує шанс на удачу ще на 10% (всього 15%).",
+        "upgrade_prod_luck3_name": "Капелюх лепрекона",
+        "upgrade_prod_luck3_desc": "Збільшує шанс на удачу ще на 15% (всього 30%).",
+        "upgrade_prod_luck4_name": "Чотирилисник",
+        "upgrade_prod_luck4_desc": "Збільшує шанс на удачу ще на 20% (всього 50%).",
+
+        "upgrade_prod_vol1_name": "Більші ящики",
+        "upgrade_prod_vol1_desc": "Збільшує обсяг виробництва на 1.",
+        "upgrade_prod_vol2_name": "Розширений робочий простір",
+        "upgrade_prod_vol2_desc": "Збільшує обсяг виробництва ще на 1 (всього 2).",
+        "upgrade_prod_vol3_name": "Промисловий завод",
+        "upgrade_prod_vol3_desc": "Збільшує обсяг виробництва ще на 1 (всього 3).",
+        "upgrade_prod_vol4_name": "Мегафабрика",
+        "upgrade_prod_vol4_desc": "Збільшує обсяг виробництва ще на 1 (всього 4)."
     }
 };
 

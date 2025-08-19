@@ -11,17 +11,21 @@ export let player = {
         yieldBonus: 0,
         seedDiscount: 0,
         marketBonus: 0,
-        buildingAutomation: false
+        buildingAutomation: false,
+        productionSpeed: 0,
+        productionEfficiency: 0,
+        productionVolume: 0,
+        productionLuck: 0,
     },
     buildings: {
-        'bakery': { purchased: false, production: null, automated: false },
-        'dairy': { purchased: false, production: null, automated: false },
-        'pig_pen': { purchased: false, production: null, automated: false },
-        'sandwich_shop': { purchased: false, production: null, automated: false },
-        'breakfast_bar': { purchased: false, production: null, automated: false },
-        'juicer': { purchased: false, production: null, automated: false },
-        'jam_factory': { purchased: false, production: null, automated: false },
-        'research_lab': { purchased: false, production: null, automated: false }
+        'bakery': { purchased: false, production: [], automated: false },
+        'dairy': { purchased: false, production: [], automated: false },
+        'pig_pen': { purchased: false, production: [], automated: false },
+        'sandwich_shop': { purchased: false, production: [], automated:false },
+        'breakfast_bar': { purchased: false, production: [], automated: false },
+        'juicer': { purchased: false, production: [], automated: false },
+        'jam_factory': { purchased: false, production: [], automated: false },
+        'research_lab': { purchased: false, production: [], automated: false }
     },
     npcBonuses: {
         growthMultiplier: 1.0,
