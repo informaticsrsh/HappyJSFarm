@@ -214,6 +214,28 @@ export const upgrades = {
     'research_yield': { cost: 25000, name: 'upgrade_research_yield_name', description: 'upgrade_research_yield_desc', effect: { type: 'yieldBonus', value: 1 }, repeatable: true, purchasedCount: 0, requiredLevel: 10, requiresBuilding: 'research_lab' },
     'research_growth': { cost: 30000, name: 'upgrade_research_growth_name', description: 'upgrade_research_growth_desc', effect: { type: 'growthMultiplier', value: 0.95 }, repeatable: true, purchasedCount: 0, requiredLevel: 10, requiresBuilding: 'research_lab' },
     'research_market': { cost: 35000, name: 'upgrade_research_market_name', description: 'upgrade_research_market_desc', effect: { type: 'marketBonus', value: 1 }, repeatable: true, purchasedCount: 0, requiredLevel: 10, requiresBuilding: 'research_lab' },
+
+    // --- Building Upgrades ---
+    'prod_speed1': { cost: 2000, name: 'upgrade_prod_speed1_name', description: 'upgrade_prod_speed1_desc', effect: { type: 'productionSpeed', value: 0.1 }, purchased: false, requiredLevel: 3 },
+    'prod_speed2': { cost: 8000, name: 'upgrade_prod_speed2_name', description: 'upgrade_prod_speed2_desc', effect: { type: 'productionSpeed', value: 0.15 }, purchased: false, requiredLevel: 6 },
+    'prod_speed3': { cost: 20000, name: 'upgrade_prod_speed3_name', description: 'upgrade_prod_speed3_desc', effect: { type: 'productionSpeed', value: 0.2 }, purchased: false, requiredLevel: 9 },
+
+    'prod_eff1': { cost: 2500, name: 'upgrade_prod_eff1_name', description: 'upgrade_prod_eff1_desc', effect: { type: 'productionEfficiency', value: 0.1 }, purchased: false, requiredLevel: 4 },
+    'prod_eff2': { cost: 10000, name: 'upgrade_prod_eff2_name', description: 'upgrade_prod_eff2_desc', effect: { type: 'productionEfficiency', value: 0.15 }, purchased: false, requiredLevel: 7 },
+    'prod_eff3': { cost: 25000, name: 'upgrade_prod_eff3_name', description: 'upgrade_prod_eff3_desc', effect: { type: 'productionEfficiency', value: 0.2 }, purchased: false, requiredLevel: 10 },
+
+    'prod_luck1': { cost: 5000, name: 'upgrade_prod_luck1_name', description: 'upgrade_prod_luck1_desc', effect: { type: 'productionLuck', value: 0.05 }, purchased: false, requiredLevel: 5 },
+    'prod_luck2': { cost: 15000, name: 'upgrade_prod_luck2_name', description: 'upgrade_prod_luck2_desc', effect: { type: 'productionLuck', value: 0.1 }, purchased: false, requiredLevel: 8 },
+    'prod_luck3': { cost: 30000, name: 'upgrade_prod_luck3_name', description: 'upgrade_prod_luck3_desc', effect: { type: 'productionLuck', value: 0.15 }, purchased: false, requiredLevel: 10 },
+
+    'prod_vol1': { cost: 10000, name: 'upgrade_prod_vol1_name', description: 'upgrade_prod_vol1_desc', effect: { type: 'productionVolume', value: 1 }, purchased: false, requiredLevel: 6 },
+    'prod_vol2': { cost: 25000, name: 'upgrade_prod_vol2_name', description: 'upgrade_prod_vol2_desc', effect: { type: 'productionVolume', value: 1 }, purchased: false, requiredLevel: 8 },
+    'prod_vol3': { cost: 50000, name: 'upgrade_prod_vol3_name', description: 'upgrade_prod_vol3_desc', effect: { type: 'productionVolume', value: 1 }, purchased: false, requiredLevel: 10 },
+
+    'prod_speed4': { cost: 50000, name: 'upgrade_prod_speed4_name', description: 'upgrade_prod_speed4_desc', effect: { type: 'productionSpeed', value: 0.25 }, purchased: false, requiredLevel: 10 },
+    'prod_eff4': { cost: 60000, name: 'upgrade_prod_eff4_name', description: 'upgrade_prod_eff4_desc', effect: { type: 'productionEfficiency', value: 0.25 }, purchased: false, requiredLevel: 10 },
+    'prod_luck4': { cost: 75000, name: 'upgrade_prod_luck4_name', description: 'upgrade_prod_luck4_desc', effect: { type: 'productionLuck', value: 0.2 }, purchased: false, requiredLevel: 10 },
+    'prod_vol4': { cost: 100000, name: 'upgrade_prod_vol4_name', description: 'upgrade_prod_vol4_desc', effect: { type: 'productionVolume', value: 1 }, purchased: false, requiredLevel: 10 },
 };
 
 export const buildings = {
