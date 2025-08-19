@@ -108,6 +108,11 @@ function renderField() {
                 productIcon.classList.add('product-icon');
                 productIcon.textContent = cropTypes[cell.autoCrop].icon;
                 plot.appendChild(productIcon);
+
+                const automationIcon = document.createElement('div');
+                automationIcon.classList.add('automation-icon');
+                automationIcon.textContent = '⚙️';
+                plot.appendChild(automationIcon);
             }
             DOM.fieldGrid.appendChild(plot);
         }
