@@ -178,10 +178,18 @@ export function buyUpgrade(upgradeId) {
         return false;
     }
 
-    if (player.money < upgrade.cost) {
-        showNotification(t('alert_not_enough_money'));
-        return false;
+    if (upgrade.costCurrency === 'research_points') {
+        if (warehouse.research_points < upgrade.cost) {
+            showNotification(t('alert_not_enough_research_points'));
+            return false;
+        }
+    } else {
+        if (player.money < upgrade.cost) {
+            showNotification(t('alert_not_enough_money'));
+            return false;
+        }
     }
+
 
     const { type, crop } = upgrade.effect;
 
@@ -200,7 +208,12 @@ export function buyUpgrade(upgradeId) {
     }
 
     // Handle other upgrade types
-    player.money -= upgrade.cost;
+    if (upgrade.costCurrency === 'research_points') {
+        warehouse.research_points -= upgrade.cost;
+    } else {
+        player.money -= upgrade.cost;
+    }
+
     if (upgrade.repeatable) {
         upgrade.purchasedCount = (upgrade.purchasedCount || 0) + 1;
     } else {
@@ -268,15 +281,28 @@ export function startProduction(buildingId, recipeIndex) {
 
     // Check for required ingredients for the entire batch
     for (const ingredient in recipe.input) {
-        if ((warehouse[ingredient] || 0) < recipe.input[ingredient] * batchSize) {
-            showNotification(t('alert_not_enough_ingredients', { item: t(ingredient) }));
-            return false;
+        const requiredAmount = recipe.input[ingredient] * batchSize;
+        if (ingredient === 'money') {
+            if (player.money < requiredAmount) {
+                showNotification(t('alert_not_enough_money'));
+                return false;
+            }
+        } else {
+            if ((warehouse[ingredient] || 0) < requiredAmount) {
+                showNotification(t('alert_not_enough_ingredients', { item: t(ingredient) }));
+                return false;
+            }
         }
     }
 
     // Consume ingredients for the entire batch
     for (const ingredient in recipe.input) {
-        warehouse[ingredient] -= recipe.input[ingredient] * batchSize;
+        const consumedAmount = recipe.input[ingredient] * batchSize;
+        if (ingredient === 'money') {
+            player.money -= consumedAmount;
+        } else {
+            warehouse[ingredient] -= consumedAmount;
+        }
     }
 
     playerBuilding.production.push({

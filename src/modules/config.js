@@ -182,6 +182,10 @@ export const cropTypes = {
         salesVolumeForPriceDrop: 1,
         xpValue: 50,
         requiredLevel: 8
+    },
+    'research_points': {
+        icon: '💡',
+        xpValue: 0
     }
 };
 
@@ -211,9 +215,9 @@ export const upgrades = {
     'auto_blueberry': { cost: 8000, name: 'upgrade_auto_blueberry_name', description: 'upgrade_auto_blueberry_desc', effect: { type: 'autoPlot', crop: 'blueberry' }, repeatable: true, maxPurchases: 2, purchasedCount: 0, requiredLevel: 9 },
 
     // --- Research Upgrades (unlocked by Research Lab) ---
-    'research_yield': { cost: 25000, name: 'upgrade_research_yield_name', description: 'upgrade_research_yield_desc', effect: { type: 'yieldBonus', value: 1 }, repeatable: true, purchasedCount: 0, requiredLevel: 10, requiresBuilding: 'research_lab' },
-    'research_growth': { cost: 30000, name: 'upgrade_research_growth_name', description: 'upgrade_research_growth_desc', effect: { type: 'growthMultiplier', value: 0.95 }, repeatable: true, purchasedCount: 0, requiredLevel: 10, requiresBuilding: 'research_lab' },
-    'research_market': { cost: 35000, name: 'upgrade_research_market_name', description: 'upgrade_research_market_desc', effect: { type: 'marketBonus', value: 1 }, repeatable: true, purchasedCount: 0, requiredLevel: 10, requiresBuilding: 'research_lab' },
+    'research_yield': { cost: 100, costCurrency: 'research_points', name: 'upgrade_research_yield_name', description: 'upgrade_research_yield_desc', effect: { type: 'yieldBonus', value: 1 }, repeatable: true, purchasedCount: 0, requiredLevel: 10, requiresBuilding: 'research_lab' },
+    'research_growth': { cost: 100, costCurrency: 'research_points', name: 'upgrade_research_growth_name', description: 'upgrade_research_growth_desc', effect: { type: 'growthMultiplier', value: 0.95 }, repeatable: true, purchasedCount: 0, requiredLevel: 10, requiresBuilding: 'research_lab' },
+    'research_market': { cost: 100, costCurrency: 'research_points', name: 'upgrade_research_market_name', description: 'upgrade_research_market_desc', effect: { type: 'marketBonus', value: 1 }, repeatable: true, purchasedCount: 0, requiredLevel: 10, requiresBuilding: 'research_lab' },
 
     // --- Building Upgrades ---
     'prod_speed1': { cost: 2000, name: 'upgrade_prod_speed1_name', description: 'upgrade_prod_speed1_desc', effect: { type: 'productionSpeed', value: 0.1 }, purchased: false, requiredLevel: 3 },
@@ -365,8 +369,14 @@ export const buildings = {
         name: 'Research Lab',
         icon: '🔬',
         cost: 50000,
-        description: 'Unlocks powerful, repeatable upgrades.',
-        recipes: [],
+        description: 'Produces Research Points to unlock powerful, repeatable upgrades.',
+        recipes: [
+            {
+                input: { 'money': 1000 },
+                output: { 'research_points': 10 },
+                productionTime: 300000
+            }
+        ],
         purchased: false,
         productionStartTime: 0,
         requiredLevel: 10

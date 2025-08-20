@@ -181,6 +181,9 @@ const locales = {
         "upgrade_research_market_name": "Market Analysis Research",
         "upgrade_research_market_desc": "Permanently increases all market sale prices by $1.",
         "alert_building_required": "You must construct the {building} to purchase this upgrade.",
+        "alert_not_enough_research_points": "Not enough research points!",
+        "research_points": "research points",
+        "Produces Research Points to unlock powerful, repeatable upgrades.": "Produces Research Points to unlock powerful, repeatable upgrades.",
 
         "upgrade_prod_speed1_name": "Efficient Machinery",
         "upgrade_prod_speed1_desc": "Increases production speed by 10%.",
@@ -400,6 +403,9 @@ const locales = {
         "upgrade_research_market_name": "Дослідження аналізу ринку",
         "upgrade_research_market_desc": "Постійно збільшує всі ринкові ціни продажу на $1.",
         "alert_building_required": "Ви повинні побудувати {building}, щоб придбати це покращення.",
+        "alert_not_enough_research_points": "Недостатньо дослідницьких балів!",
+        "research_points": "дослідницькі бали",
+        "Produces Research Points to unlock powerful, repeatable upgrades.": "Виробляє дослідницькі бали для розблокування потужних, повторюваних покращень.",
 
         "upgrade_prod_speed1_name": "Ефективне обладнання",
         "upgrade_prod_speed1_desc": "Збільшує швидкість виробництва на 10%.",

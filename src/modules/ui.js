@@ -45,6 +45,7 @@ export const DOM = {
     productionTabBtn: document.getElementById('production-tab-btn'),
     upgradesTabBtn: document.getElementById('upgrades-tab-btn'),
     moneyDisplay: document.getElementById('money-display'),
+    researchPointsDisplay: document.getElementById('research-points-display'),
     levelDisplay: document.getElementById('level-display'),
     xpBarContainer: document.getElementById('xp-bar-container'),
     xpBar: document.getElementById('xp-bar'),
@@ -385,16 +386,20 @@ function renderUpgrades() {
         itemDiv.classList.add('item');
 
         let buyButton;
+        const cost = upgrade.costCurrency === 'research_points'
+            ? `${upgrade.cost} ${t('research_points')}`
+            : `$${upgrade.cost}`;
+
         if (upgrade.repeatable) {
             const canPurchase = upgrade.purchasedCount < upgrade.maxPurchases;
             const purchaseStatus = `(${upgrade.purchasedCount}/${upgrade.maxPurchases})`;
             buyButton = canPurchase
-                ? `<button class="btn buy-upgrade-btn" data-upgrade-id="${upgradeId}">${t('btn_buy')} ($${upgrade.cost})</button> <span>${purchaseStatus}</span>`
+                ? `<button class="btn buy-upgrade-btn" data-upgrade-id="${upgradeId}">${t('btn_buy')} (${cost})</button> <span>${purchaseStatus}</span>`
                 : `<span>${t('status_maxed_out')} ${purchaseStatus}</span>`;
         } else {
             buyButton = upgrade.purchased
                 ? `<span>${t('status_purchased')}</span>`
-                : `<button class="btn buy-upgrade-btn" data-upgrade-id="${upgradeId}">${t('btn_buy')} ($${upgrade.cost})</button>`;
+                : `<button class="btn buy-upgrade-btn" data-upgrade-id="${upgradeId}">${t('btn_buy')} (${cost})</button>`;
         }
 
         itemDiv.innerHTML = `
@@ -505,6 +510,12 @@ function renderXpBar() {
 
 function renderPlayerState() {
     DOM.moneyDisplay.textContent = `💰 $${player.money}`;
+    if (warehouse.research_points > 0) {
+        DOM.researchPointsDisplay.textContent = `💡 ${warehouse.research_points}`;
+        DOM.researchPointsDisplay.style.display = 'block';
+    } else {
+        DOM.researchPointsDisplay.style.display = 'none';
+    }
     renderXpBar();
 
     let bonusHtml = '';

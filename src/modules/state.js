@@ -59,7 +59,8 @@ export let warehouse = {
     'strawberry': 0,
     'blueberry': 0,
     'strawberry_jam': 0,
-    'blueberry_jam': 0
+    'blueberry_jam': 0,
+    'research_points': 0
 };
 
 export let marketState = {};
