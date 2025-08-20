@@ -499,13 +499,13 @@ function renderBuildings() {
 
             let recipeSelector = '';
             if (playerBuilding.automated && building.recipes.length > 1) {
-                recipeSelector = `<select class="recipe-selector" data-building-id="${buildingId}">`;
+                recipeSelector += '<div class="recipe-selectors">';
                 building.recipes.forEach((recipe, index) => {
                     const output = Object.keys(recipe.output)[0];
-                    const selected = index === playerBuilding.selectedRecipe ? 'selected' : '';
-                    recipeSelector += `<option value="${index}" ${selected}>${t(output)}</option>`;
+                    const activeClass = index === playerBuilding.selectedRecipe ? 'active' : '';
+                    recipeSelector += `<button class="btn recipe-selector-btn ${activeClass}" data-building-id="${buildingId}" data-recipe-index="${index}">${t(output)}</button>`;
                 });
-                recipeSelector += '</select>';
+                recipeSelector += '</div>';
                 autoButton += recipeSelector;
             }
 

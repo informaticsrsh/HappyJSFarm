@@ -89,19 +89,14 @@ document.addEventListener('DOMContentLoaded', () => {
             stateChanged = startProduction(buildingId, recipeIndex);
         } else if (e.target.classList.contains('toggle-auto-btn')) {
             stateChanged = toggleBuildingAutomation(buildingId);
+        } else if (e.target.classList.contains('recipe-selector-btn')) {
+            const recipeIndex = parseInt(e.target.dataset.recipeIndex, 10);
+            player.buildings[buildingId].selectedRecipe = recipeIndex;
+            stateChanged = true;
         }
 
         if (stateChanged) {
             renderAll();
-            saveGameState();
-        }
-    });
-
-    DOM.buildingsGrid.addEventListener('change', (e) => {
-        if (e.target.classList.contains('recipe-selector')) {
-            const buildingId = e.target.dataset.buildingId;
-            const recipeIndex = parseInt(e.target.value, 10);
-            player.buildings[buildingId].selectedRecipe = recipeIndex;
             saveGameState();
         }
     });
