@@ -497,6 +497,18 @@ function renderBuildings() {
                 autoButton = `<button class="btn toggle-auto-btn" data-building-id="${buildingId}">${t(btnTextKey)}</button>`;
             }
 
+            let recipeSelector = '';
+            if (playerBuilding.automated && building.recipes.length > 1) {
+                recipeSelector = `<select class="recipe-selector" data-building-id="${buildingId}">`;
+                building.recipes.forEach((recipe, index) => {
+                    const output = Object.keys(recipe.output)[0];
+                    const selected = index === playerBuilding.selectedRecipe ? 'selected' : '';
+                    recipeSelector += `<option value="${index}" ${selected}>${t(output)}</option>`;
+                });
+                recipeSelector += '</select>';
+                autoButton += recipeSelector;
+            }
+
             buildingDiv.innerHTML = `
                 <div class="building-icon">${building.icon}</div>
                 <strong class="building-name">${t(building.name)}</strong>

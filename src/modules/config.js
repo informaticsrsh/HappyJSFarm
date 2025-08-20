@@ -204,10 +204,10 @@ export const cropTypes = {
         requiredLevel: 11
     },
     'bell_pepper': {
-        icon: '🫑',
+        icon: '🌶️',
         seed_icon: '🌱',
         growthTime: 20000,
-        visuals: ['🌱', '🌿', '🫑'],
+        visuals: ['🌱', '🌿', '🌶️'],
         yieldRange: [5, 10],
         maxPrice: 200,
         minPrice: 100,

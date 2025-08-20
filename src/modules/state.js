@@ -2,7 +2,7 @@ import { NUM_ROWS, NUM_COLS, cropTypes, upgrades, buildings } from './config.js'
 
 const initialBuildings = {};
 for (const buildingId in buildings) {
-    initialBuildings[buildingId] = { purchased: false, production: [], automated: false };
+    initialBuildings[buildingId] = { purchased: false, production: [], automated: false, selectedRecipe: 0 };
 }
 
 export let player = {

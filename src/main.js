@@ -97,6 +97,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    DOM.buildingsGrid.addEventListener('change', (e) => {
+        if (e.target.classList.contains('recipe-selector')) {
+            const buildingId = e.target.dataset.buildingId;
+            const recipeIndex = parseInt(e.target.value, 10);
+            player.buildings[buildingId].selectedRecipe = recipeIndex;
+            saveGameState();
+        }
+    });
+
     DOM.warehouseItems.addEventListener('click', (e) => {
         const seed = e.target.closest('[data-seed]');
         if (seed) {
