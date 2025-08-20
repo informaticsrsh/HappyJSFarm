@@ -387,12 +387,13 @@ function renderUpgrades() {
 
         let buyButton;
         const cost = upgrade.costCurrency === 'research_points'
-            ? `${upgrade.cost} ${t('research_points')}`
+            ? `${upgrade.cost} ${cropTypes['research_points'].icon}`
             : `$${upgrade.cost}`;
 
         if (upgrade.repeatable) {
-            const canPurchase = upgrade.purchasedCount < upgrade.maxPurchases;
-            const purchaseStatus = `(${upgrade.purchasedCount}/${upgrade.maxPurchases})`;
+            const hasMax = typeof upgrade.maxPurchases !== 'undefined';
+            const canPurchase = hasMax ? upgrade.purchasedCount < upgrade.maxPurchases : true;
+            const purchaseStatus = hasMax ? `(${upgrade.purchasedCount}/${upgrade.maxPurchases})` : `(${upgrade.purchasedCount})`;
             buyButton = canPurchase
                 ? `<button class="btn buy-upgrade-btn" data-upgrade-id="${upgradeId}">${t('btn_buy')} (${cost})</button> <span>${purchaseStatus}</span>`
                 : `<span>${t('status_maxed_out')} ${purchaseStatus}</span>`;
