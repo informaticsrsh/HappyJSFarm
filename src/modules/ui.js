@@ -182,6 +182,9 @@ function renderStore() {
 
 function formatTime(ms) {
     if (ms < 0) ms = 0;
+    if (ms < 60000) {
+        return "< 1m";
+    }
     const minutes = Math.round(ms / 60000);
     return `${minutes}m`;
 }
