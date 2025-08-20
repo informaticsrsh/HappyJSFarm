@@ -502,8 +502,9 @@ function renderBuildings() {
                 recipeSelector += '<div class="recipe-selectors">';
                 building.recipes.forEach((recipe, index) => {
                     const output = Object.keys(recipe.output)[0];
+                    const icon = getIconForItem(output);
                     const activeClass = index === playerBuilding.selectedRecipe ? 'active' : '';
-                    recipeSelector += `<button class="btn recipe-selector-btn ${activeClass}" data-building-id="${buildingId}" data-recipe-index="${index}">${t(output)}</button>`;
+                    recipeSelector += `<button class="btn recipe-selector-btn ${activeClass}" data-building-id="${buildingId}" data-recipe-index="${index}">${icon}</button>`;
                 });
                 recipeSelector += '</div>';
                 autoButton += recipeSelector;
