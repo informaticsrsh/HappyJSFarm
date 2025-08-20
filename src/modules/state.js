@@ -65,11 +65,13 @@ export let warehouse = {
 
 export let marketState = {};
 Object.keys(cropTypes).forEach(cropName => {
-    marketState[cropName] = {
-        currentPrice: cropTypes[cropName].maxPrice,
-        totalSold: 0,
-        lastRecoveryTime: Date.now()
-    };
+    if (cropTypes[cropName].maxPrice) {
+        marketState[cropName] = {
+            currentPrice: cropTypes[cropName].maxPrice,
+            totalSold: 0,
+            lastRecoveryTime: Date.now()
+        };
+    }
 });
 
 export let customers = {
