@@ -182,13 +182,8 @@ function renderStore() {
 
 function formatTime(ms) {
     if (ms < 0) ms = 0;
-    const totalSeconds = Math.round(ms / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    if (minutes > 0) {
-        return `${minutes}m ${seconds}s`;
-    }
-    return `${seconds}s`;
+    const minutes = Math.round(ms / 60000);
+    return `${minutes}m`;
 }
 
 function renderCropReference() {
