@@ -12,6 +12,11 @@ export const leveling = [
     { level: 8, xpRequired: 13000 },
     { level: 9, xpRequired: 23500 },
     { level: 10, xpRequired: 42500 },
+    { level: 11, xpRequired: 77000 },
+    { level: 12, xpRequired: 140000 },
+    { level: 13, xpRequired: 250000 },
+    { level: 14, xpRequired: 450000 },
+    { level: 15, xpRequired: 800000 },
 ];
 
 export const store = [
@@ -20,7 +25,9 @@ export const store = [
     { name: 'tomato_seed', price: 20, type: 'seed', requiredLevel: 1 },
     { name: 'potato_seed', price: 25, type: 'seed', requiredLevel: 1 },
     { name: 'strawberry_seed', price: 50, type: 'seed', requiredLevel: 5 },
-    { name: 'blueberry_seed', price: 60, type: 'seed', requiredLevel: 7 }
+    { name: 'blueberry_seed', price: 60, type: 'seed', requiredLevel: 7 },
+    { name: 'corn_seed', price: 75, type: 'seed', requiredLevel: 11 },
+    { name: 'bell_pepper_seed', price: 90, type: 'seed', requiredLevel: 13 }
 ];
 
 export const cropTypes = {
@@ -183,6 +190,50 @@ export const cropTypes = {
         xpValue: 50,
         requiredLevel: 8
     },
+    'corn': {
+        icon: '🌽',
+        seed_icon: '🌱',
+        growthTime: 18000,
+        visuals: ['🌱', '🌿', '🌽'],
+        yieldRange: [4, 8],
+        maxPrice: 160,
+        minPrice: 80,
+        priceRecoveryRate: 50000,
+        salesVolumeForPriceDrop: 2,
+        xpValue: 25,
+        requiredLevel: 11
+    },
+    'bell_pepper': {
+        icon: '🫑',
+        seed_icon: '🌱',
+        growthTime: 20000,
+        visuals: ['🌱', '🌿', '🫑'],
+        yieldRange: [5, 10],
+        maxPrice: 200,
+        minPrice: 100,
+        priceRecoveryRate: 60000,
+        salesVolumeForPriceDrop: 1,
+        xpValue: 30,
+        requiredLevel: 13
+    },
+    'taco': {
+        icon: '🌮',
+        maxPrice: 400,
+        minPrice: 250,
+        priceRecoveryRate: 70000,
+        salesVolumeForPriceDrop: 1,
+        xpValue: 60,
+        requiredLevel: 12
+    },
+    'salad': {
+        icon: '🥗',
+        maxPrice: 500,
+        minPrice: 300,
+        priceRecoveryRate: 80000,
+        salesVolumeForPriceDrop: 1,
+        xpValue: 75,
+        requiredLevel: 14
+    },
     'research_points': {
         icon: '💡',
         xpValue: 0
@@ -213,6 +264,8 @@ export const upgrades = {
     'auto_potato': { cost: 6000, name: 'upgrade_auto_potato_name', description: 'upgrade_auto_potato_desc', effect: { type: 'autoPlot', crop: 'potato' }, repeatable: true, maxPurchases: 2, purchasedCount: 0, requiredLevel: 7 },
     'auto_strawberry': { cost: 7000, name: 'upgrade_auto_strawberry_name', description: 'upgrade_auto_strawberry_desc', effect: { type: 'autoPlot', crop: 'strawberry' }, repeatable: true, maxPurchases: 2, purchasedCount: 0, requiredLevel: 8 },
     'auto_blueberry': { cost: 8000, name: 'upgrade_auto_blueberry_name', description: 'upgrade_auto_blueberry_desc', effect: { type: 'autoPlot', crop: 'blueberry' }, repeatable: true, maxPurchases: 2, purchasedCount: 0, requiredLevel: 9 },
+    'auto_corn': { cost: 9000, name: 'upgrade_auto_corn_name', description: 'upgrade_auto_corn_desc', effect: { type: 'autoPlot', crop: 'corn' }, repeatable: true, maxPurchases: 2, purchasedCount: 0, requiredLevel: 12 },
+    'auto_bell_pepper': { cost: 10000, name: 'upgrade_auto_bell_pepper_name', description: 'upgrade_auto_bell_pepper_desc', effect: { type: 'autoPlot', crop: 'bell_pepper' }, repeatable: true, maxPurchases: 2, purchasedCount: 0, requiredLevel: 14 },
 
     // --- Research Upgrades (unlocked by Research Lab) ---
     'research_yield': { cost: 100, costCurrency: 'research_points', name: 'upgrade_research_yield_name', description: 'upgrade_research_yield_desc', effect: { type: 'yieldBonus', value: 1 }, repeatable: true, purchasedCount: 0, requiredLevel: 10, requiresBuilding: 'research_lab' },
@@ -240,6 +293,16 @@ export const upgrades = {
     'prod_eff4': { cost: 60000, name: 'upgrade_prod_eff4_name', description: 'upgrade_prod_eff4_desc', effect: { type: 'productionEfficiency', value: 0.25 }, purchased: false, requiredLevel: 10 },
     'prod_luck4': { cost: 75000, name: 'upgrade_prod_luck4_name', description: 'upgrade_prod_luck4_desc', effect: { type: 'productionLuck', value: 0.2 }, purchased: false, requiredLevel: 10 },
     'prod_vol4': { cost: 100000, name: 'upgrade_prod_vol4_name', description: 'upgrade_prod_vol4_desc', effect: { type: 'productionVolume', value: 1 }, purchased: false, requiredLevel: 10 },
+
+    'fertilizer4': { cost: 25000, name: 'upgrade_fertilizer4_name', description: 'upgrade_fertilizer4_desc', effect: { type: 'growthMultiplier', value: 0.6 }, purchased: false, requiredLevel: 11 },
+    'compost3': { cost: 10000, name: 'upgrade_compost3_name', description: 'upgrade_compost3_desc', effect: { type: 'yieldBonus', value: 1 }, purchased: false, requiredLevel: 11 },
+    'negotiation4': { cost: 40000, name: 'upgrade_negotiation4_name', description: 'upgrade_negotiation4_desc', effect: { type: 'seedDiscount', value: 0.2 }, purchased: false, requiredLevel: 12 },
+    'charm4': { cost: 50000, name: 'upgrade_charm4_name', description: 'upgrade_charm4_desc', effect: { type: 'marketBonus', value: 7 }, purchased: false, requiredLevel: 13 },
+
+    'prod_speed5': { cost: 120000, name: 'upgrade_prod_speed5_name', description: 'upgrade_prod_speed5_desc', effect: { type: 'productionSpeed', value: 0.3 }, purchased: false, requiredLevel: 13 },
+    'prod_eff5': { cost: 150000, name: 'upgrade_prod_eff5_name', description: 'upgrade_prod_eff5_desc', effect: { type: 'productionEfficiency', value: 0.3 }, purchased: false, requiredLevel: 14 },
+    'prod_luck5': { cost: 180000, name: 'upgrade_prod_luck5_name', description: 'upgrade_prod_luck5_desc', effect: { type: 'productionLuck', value: 0.25 }, purchased: false, requiredLevel: 14 },
+    'prod_vol5': { cost: 250000, name: 'upgrade_prod_vol5_name', description: 'upgrade_prod_vol5_desc', effect: { type: 'productionVolume', value: 1 }, purchased: false, requiredLevel: 15 },
 };
 
 export const buildings = {
@@ -380,6 +443,38 @@ export const buildings = {
         purchased: false,
         productionStartTime: 0,
         requiredLevel: 10
+    },
+    'taco_stand': {
+        name: 'Taco Stand',
+        icon: 'ларьок',
+        cost: 20000,
+        description: 'Makes delicious tacos from corn.',
+        recipes: [
+            {
+                input: { 'corn': 5, 'tomato': 2 },
+                output: { 'taco': 1 },
+                productionTime: 120000
+            }
+        ],
+        purchased: false,
+        productionStartTime: 0,
+        requiredLevel: 12
+    },
+    'salad_bar': {
+        name: 'Salad Bar',
+        icon: '🥗',
+        cost: 30000,
+        description: 'Makes healthy salads.',
+        recipes: [
+            {
+                input: { 'bell_pepper': 3, 'tomato': 2, 'carrot': 3 },
+                output: { 'salad': 1 },
+                productionTime: 150000
+            }
+        ],
+        purchased: false,
+        productionStartTime: 0,
+        requiredLevel: 14
     }
 };
 

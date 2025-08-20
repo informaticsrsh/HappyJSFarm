@@ -43,7 +43,7 @@ function checkForLevelUp() {
 
         if (newlyUnlocked.crops.length > 0 || newlyUnlocked.buildings.length > 0 || newlyUnlocked.upgrades.length > 0 || farmExpanded) {
             showLevelUpModal(newLevel, newlyUnlocked, farmExpanded);
-        } else if (newLevel === 11) {
+        } else if (newLevel === 15) {
             showSimpleLevelUpModal(newLevel, t('level_up_max_level'));
         } else {
             showSimpleLevelUpModal(newLevel, t('level_up_congrats', { level: newLevel }));
