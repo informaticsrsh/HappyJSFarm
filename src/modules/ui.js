@@ -382,6 +382,12 @@ function renderUpgrades() {
         if (player.level < (upgrade.requiredLevel || 1)) {
             continue;
         }
+
+        // Do not display non-repeatable upgrades that have been purchased
+        if (!upgrade.repeatable && upgrade.purchased) {
+            continue;
+        }
+
         const itemDiv = document.createElement('div');
         itemDiv.classList.add('item');
 

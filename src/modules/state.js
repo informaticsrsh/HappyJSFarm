@@ -1,4 +1,9 @@
-import { NUM_ROWS, NUM_COLS, cropTypes, upgrades } from './config.js';
+import { NUM_ROWS, NUM_COLS, cropTypes, upgrades, buildings } from './config.js';
+
+const initialBuildings = {};
+for (const buildingId in buildings) {
+    initialBuildings[buildingId] = { purchased: false, production: [], automated: false };
+}
 
 export let player = {
     money: 100,
@@ -17,16 +22,7 @@ export let player = {
         productionVolume: 0,
         productionLuck: 0,
     },
-    buildings: {
-        'bakery': { purchased: false, production: [], automated: false },
-        'dairy': { purchased: false, production: [], automated: false },
-        'pig_pen': { purchased: false, production: [], automated: false },
-        'sandwich_shop': { purchased: false, production: [], automated:false },
-        'breakfast_bar': { purchased: false, production: [], automated: false },
-        'juicer': { purchased: false, production: [], automated: false },
-        'jam_factory': { purchased: false, production: [], automated: false },
-        'research_lab': { purchased: false, production: [], automated: false }
-    },
+    buildings: initialBuildings,
     npcBonuses: {
         growthMultiplier: 1.0,
         yieldBonus: 0,
@@ -60,7 +56,16 @@ export let warehouse = {
     'blueberry': 0,
     'strawberry_jam': 0,
     'blueberry_jam': 0,
-    'research_points': 0
+    'research_points': 0,
+    'corn_seed': 0,
+    'bell_pepper_seed': 0,
+    'corn': 0,
+    'bell_pepper': 0,
+    'taco': 0,
+    'salad': 0,
+    'cheese': 0,
+    'pizza': 0,
+    'fruit_tart': 0
 };
 
 export let marketState = {};
