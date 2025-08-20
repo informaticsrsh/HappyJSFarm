@@ -34,12 +34,12 @@ export const cropTypes = {
     'wheat': {
         icon: '🌾',
         seed_icon: '🌱',
-        growthTime: 6000, // ms per stage
+        growthTime: 12000, // ms per stage
         visuals: ['🌱', '🌿', '🌾'],
         yieldRange: [1, 3],
         maxPrice: 12,
         minPrice: 5,
-        priceRecoveryRate: 20000, // ms to recover 1 price point
+        priceRecoveryRate: 40000, // ms to recover 1 price point
         salesVolumeForPriceDrop: 10, // amount of sales to drop price by 1
         xpValue: 1,
         requiredLevel: 1
@@ -47,12 +47,12 @@ export const cropTypes = {
     'carrot': {
         icon: '🥕',
         seed_icon: '🌱',
-        growthTime: 8000,
+        growthTime: 16000,
         visuals: ['🌱', '🌿', '🥕'],
         yieldRange: [1, 2],
         maxPrice: 20,
         minPrice: 10,
-        priceRecoveryRate: 24000,
+        priceRecoveryRate: 48000,
         salesVolumeForPriceDrop: 8,
         xpValue: 2,
         requiredLevel: 1
@@ -60,12 +60,12 @@ export const cropTypes = {
     'tomato': {
         icon: '🍅',
         seed_icon: '🌱',
-        growthTime: 10000,
+        growthTime: 20000,
         visuals: ['🌱', '🌿', '🍅'],
         yieldRange: [2, 4],
         maxPrice: 40,
         minPrice: 20,
-        priceRecoveryRate: 30000,
+        priceRecoveryRate: 60000,
         salesVolumeForPriceDrop: 5,
         xpValue: 4,
         requiredLevel: 1
@@ -73,12 +73,12 @@ export const cropTypes = {
     'potato': {
         icon: '🥔',
         seed_icon: '🌱',
-        growthTime: 12000,
+        growthTime: 24000,
         visuals: ['🌱', '🌿', '🥔'],
         yieldRange: [3, 6],
         maxPrice: 60,
         minPrice: 30,
-        priceRecoveryRate: 40000,
+        priceRecoveryRate: 80000,
         salesVolumeForPriceDrop: 3,
         xpValue: 6,
         requiredLevel: 1
@@ -87,7 +87,7 @@ export const cropTypes = {
         icon: '🍞',
         maxPrice: 40,
         minPrice: 20,
-        priceRecoveryRate: 20000,
+        priceRecoveryRate: 40000,
         salesVolumeForPriceDrop: 5,
         xpValue: 8,
         requiredLevel: 1
@@ -96,7 +96,7 @@ export const cropTypes = {
         icon: '🥛',
         maxPrice: 50,
         minPrice: 25,
-        priceRecoveryRate: 24000,
+        priceRecoveryRate: 48000,
         salesVolumeForPriceDrop: 4,
         xpValue: 10,
         requiredLevel: 3
@@ -105,7 +105,7 @@ export const cropTypes = {
         icon: '🥓',
         maxPrice: 70,
         minPrice: 35,
-        priceRecoveryRate: 30000,
+        priceRecoveryRate: 60000,
         salesVolumeForPriceDrop: 3,
         xpValue: 12,
         requiredLevel: 5
@@ -114,7 +114,7 @@ export const cropTypes = {
         icon: '🥪',
         maxPrice: 180,
         minPrice: 100,
-        priceRecoveryRate: 40000,
+        priceRecoveryRate: 80000,
         salesVolumeForPriceDrop: 2,
         xpValue: 25,
         requiredLevel: 7
@@ -123,7 +123,7 @@ export const cropTypes = {
         icon: '🥣',
         maxPrice: 220,
         minPrice: 120,
-        priceRecoveryRate: 50000,
+        priceRecoveryRate: 100000,
         salesVolumeForPriceDrop: 1,
         xpValue: 35,
         requiredLevel: 8
@@ -132,7 +132,7 @@ export const cropTypes = {
         icon: '🥤',
         maxPrice: 80,
         minPrice: 40,
-        priceRecoveryRate: 30000,
+        priceRecoveryRate: 60000,
         salesVolumeForPriceDrop: 4,
         xpValue: 15,
         requiredLevel: 4
@@ -141,7 +141,7 @@ export const cropTypes = {
         icon: '🧃',
         maxPrice: 70,
         minPrice: 30,
-        priceRecoveryRate: 24000,
+        priceRecoveryRate: 48000,
         salesVolumeForPriceDrop: 5,
         xpValue: 12,
         requiredLevel: 4
@@ -149,12 +149,12 @@ export const cropTypes = {
     'strawberry': {
         icon: '🍓',
         seed_icon: '🌱',
-        growthTime: 14000,
+        growthTime: 28000,
         visuals: ['🌱', '🌿', '🍓'],
         yieldRange: [2, 5],
         maxPrice: 100,
         minPrice: 50,
-        priceRecoveryRate: 36000,
+        priceRecoveryRate: 72000,
         salesVolumeForPriceDrop: 3,
         xpValue: 15,
         requiredLevel: 5
@@ -162,12 +162,12 @@ export const cropTypes = {
     'blueberry': {
         icon: '🔵',
         seed_icon: '🌱',
-        growthTime: 16000,
+        growthTime: 32000,
         visuals: ['🌱', '🌿', '🔵'],
         yieldRange: [3, 6],
         maxPrice: 130,
         minPrice: 60,
-        priceRecoveryRate: 44000,
+        priceRecoveryRate: 88000,
         salesVolumeForPriceDrop: 2,
         xpValue: 20,
         requiredLevel: 7
@@ -176,7 +176,7 @@ export const cropTypes = {
         icon: '🍓🍯',
         maxPrice: 250,
         minPrice: 150,
-        priceRecoveryRate: 50000,
+        priceRecoveryRate: 100000,
         salesVolumeForPriceDrop: 2,
         xpValue: 40,
         requiredLevel: 8
@@ -185,7 +185,7 @@ export const cropTypes = {
         icon: '🔵🍯',
         maxPrice: 300,
         minPrice: 180,
-        priceRecoveryRate: 60000,
+        priceRecoveryRate: 120000,
         salesVolumeForPriceDrop: 1,
         xpValue: 50,
         requiredLevel: 8
@@ -193,12 +193,12 @@ export const cropTypes = {
     'corn': {
         icon: '🌽',
         seed_icon: '🌱',
-        growthTime: 18000,
+        growthTime: 36000,
         visuals: ['🌱', '🌿', '🌽'],
         yieldRange: [4, 8],
         maxPrice: 160,
         minPrice: 80,
-        priceRecoveryRate: 50000,
+        priceRecoveryRate: 100000,
         salesVolumeForPriceDrop: 2,
         xpValue: 25,
         requiredLevel: 11
@@ -206,12 +206,12 @@ export const cropTypes = {
     'bell_pepper': {
         icon: '🫑',
         seed_icon: '🌱',
-        growthTime: 20000,
+        growthTime: 40000,
         visuals: ['🌱', '🌿', '🫑'],
         yieldRange: [5, 10],
         maxPrice: 200,
         minPrice: 100,
-        priceRecoveryRate: 60000,
+        priceRecoveryRate: 120000,
         salesVolumeForPriceDrop: 1,
         xpValue: 30,
         requiredLevel: 13
@@ -220,7 +220,7 @@ export const cropTypes = {
         icon: '🌮',
         maxPrice: 400,
         minPrice: 250,
-        priceRecoveryRate: 70000,
+        priceRecoveryRate: 140000,
         salesVolumeForPriceDrop: 1,
         xpValue: 60,
         requiredLevel: 12
@@ -229,7 +229,7 @@ export const cropTypes = {
         icon: '🥗',
         maxPrice: 500,
         minPrice: 300,
-        priceRecoveryRate: 80000,
+        priceRecoveryRate: 160000,
         salesVolumeForPriceDrop: 1,
         xpValue: 75,
         requiredLevel: 14
@@ -238,7 +238,7 @@ export const cropTypes = {
         icon: '🧀',
         maxPrice: 120,
         minPrice: 60,
-        priceRecoveryRate: 30000,
+        priceRecoveryRate: 60000,
         salesVolumeForPriceDrop: 3,
         xpValue: 18,
         requiredLevel: 4
@@ -247,7 +247,7 @@ export const cropTypes = {
         icon: '🍕',
         maxPrice: 600,
         minPrice: 350,
-        priceRecoveryRate: 90000,
+        priceRecoveryRate: 180000,
         salesVolumeForPriceDrop: 1,
         xpValue: 100,
         requiredLevel: 6
@@ -256,7 +256,7 @@ export const cropTypes = {
         icon: '🍰',
         maxPrice: 700,
         minPrice: 400,
-        priceRecoveryRate: 100000,
+        priceRecoveryRate: 200000,
         salesVolumeForPriceDrop: 1,
         xpValue: 120,
         requiredLevel: 9
@@ -342,7 +342,7 @@ export const buildings = {
             {
                 input: { 'wheat': 2 },
                 output: { 'bread': 1 },
-                productionTime: 40000 // 20 seconds
+                productionTime: 80000 // 20 seconds
             }
         ],
         purchased: false,
@@ -358,12 +358,12 @@ export const buildings = {
             {
                 input: { 'wheat': 3 },
                 output: { 'milk': 1 },
-                productionTime: 60000 // 30 seconds
+                productionTime: 120000 // 30 seconds
             },
             {
                 input: { 'milk': 2 },
                 output: { 'cheese': 1 },
-                productionTime: 75000
+                productionTime: 150000
             }
         ],
         purchased: false,
@@ -379,7 +379,7 @@ export const buildings = {
             {
                 input: { 'potato': 5 },
                 output: { 'bacon': 1 },
-                productionTime: 90000 // 45 seconds
+                productionTime: 180000 // 45 seconds
             }
         ],
         purchased: false,
@@ -395,7 +395,7 @@ export const buildings = {
             {
                 input: { 'bread': 2, 'bacon': 1 },
                 output: { 'sandwich': 1 },
-                productionTime: 120000 // 1 minute
+                productionTime: 240000 // 1 minute
             }
         ],
         purchased: false,
@@ -411,7 +411,7 @@ export const buildings = {
             {
                 input: { 'milk': 1, 'wheat': 2 },
                 output: { 'cereal': 1 },
-                productionTime: 150000 // 1.25 minutes
+                productionTime: 300000 // 1.25 minutes
             }
         ],
         purchased: false,
@@ -427,12 +427,12 @@ export const buildings = {
             {
                 input: { 'tomato': 3 },
                 output: { 'tomato_juice': 1 },
-                productionTime: 50000 // 25 seconds
+                productionTime: 100000 // 25 seconds
             },
             {
                 input: { 'carrot': 4 },
                 output: { 'carrot_juice': 1 },
-                productionTime: 40000 // 20 seconds
+                productionTime: 80000 // 20 seconds
             }
         ],
         purchased: false,
@@ -448,12 +448,12 @@ export const buildings = {
             {
                 input: { 'strawberry': 5 },
                 output: { 'strawberry_jam': 1 },
-                productionTime: 80000 // 40 seconds
+                productionTime: 160000 // 40 seconds
             },
             {
                 input: { 'blueberry': 5 },
                 output: { 'blueberry_jam': 1 },
-                productionTime: 100000 // 50 seconds
+                productionTime: 200000 // 50 seconds
             }
         ],
         purchased: false,
@@ -469,7 +469,7 @@ export const buildings = {
             {
                 input: { 'money': 1000 },
                 output: { 'research_points': 10 },
-                productionTime: 300000
+                productionTime: 600000
             }
         ],
         purchased: false,
@@ -485,7 +485,7 @@ export const buildings = {
             {
                 input: { 'corn': 5, 'tomato': 2 },
                 output: { 'taco': 1 },
-                productionTime: 120000
+                productionTime: 240000
             }
         ],
         purchased: false,
@@ -501,7 +501,7 @@ export const buildings = {
             {
                 input: { 'bell_pepper': 3, 'tomato': 2, 'carrot': 3 },
                 output: { 'salad': 1 },
-                productionTime: 150000
+                productionTime: 300000
             }
         ],
         purchased: false,
@@ -517,7 +517,7 @@ export const buildings = {
             {
                 input: { 'bread': 2, 'tomato': 5, 'cheese': 1 },
                 output: { 'pizza': 1 },
-                productionTime: 180000
+                productionTime: 360000
             }
         ],
         purchased: false,
@@ -533,7 +533,7 @@ export const buildings = {
             {
                 input: { 'strawberry_jam': 1, 'bread': 1, 'milk': 1 },
                 output: { 'fruit_tart': 1 },
-                productionTime: 240000
+                productionTime: 480000
             }
         ],
         purchased: false,
@@ -543,7 +543,7 @@ export const buildings = {
 };
 
 export const customerConfig = {
-    orderLifetime: 240000, // ms
+    orderLifetime: 480000, // ms
     trustLevels: [
         { level: 1, trust: 0, size: [5, 10], reward: 1.1 },
         { level: 2, trust: 100, size: [10, 20], reward: 1.15 },

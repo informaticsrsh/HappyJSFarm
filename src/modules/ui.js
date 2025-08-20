@@ -180,6 +180,17 @@ function renderStore() {
     });
 }
 
+function formatTime(ms) {
+    if (ms < 0) ms = 0;
+    const totalSeconds = Math.round(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    if (minutes > 0) {
+        return `${minutes}m ${seconds}s`;
+    }
+    return `${seconds}s`;
+}
+
 function renderCropReference() {
     const content = DOM.refContent;
     content.innerHTML = '';
@@ -193,7 +204,7 @@ function renderCropReference() {
         cropDiv.innerHTML = `
             <h3>${crop.icon} ${t(cropName)}</h3>
             <p><strong>${t('ref_seed_price')}:</strong> $${storeItem.price}</p>
-            <p><strong>${t('ref_growth_time')}:</strong> ${t('ref_per_stage', { time: crop.growthTime / 1000 })}</p>
+            <p><strong>${t('ref_growth_time')}:</strong> ${t('ref_per_stage', { time: formatTime(crop.growthTime) })}</p>
             <p><strong>${t('ref_yield')}:</strong> ${t('ref_yield_range', { min: crop.yieldRange[0], max: crop.yieldRange[1] })}</p>
             <p><strong>${t('ref_market_price')}:</strong> $${crop.minPrice} - $${crop.maxPrice}</p>
             <p><strong>${t('ref_stages')}:</strong> ${crop.visuals.join(' → ')}</p>
@@ -212,7 +223,7 @@ function renderProductionReference() {
         let recipesHtml = building.recipes.map(recipe => {
             const inputs = Object.entries(recipe.input).map(([key, value]) => `${value} ${t(key)}`).join(', ');
             const outputs = Object.entries(recipe.output).map(([key, value]) => `${value} ${t(key)}`).join(', ');
-            return `<div class="recipe-info"><strong>${t('production_recipe')}:</strong> ${inputs} → ${outputs} (${recipe.productionTime / 1000}s)</div>`;
+            return `<div class="recipe-info"><strong>${t('production_recipe')}:</strong> ${inputs} → ${outputs} (${formatTime(recipe.productionTime)})</div>`;
         }).join('');
 
         itemDiv.innerHTML = `
@@ -342,7 +353,7 @@ function renderOrders() {
             orderDiv.classList.add('order', `order-customer-${customerId}`);
             orderDiv.dataset.customerId = customerId;
 
-            const timeLeft = Math.round((customer.order.expiresAt - Date.now()) / 1000);
+            const timeLeft = customer.order.expiresAt - Date.now();
             const icon = getIconForItem(customer.order.crop);
             const haveAmount = warehouse[customer.order.crop] || 0;
 
@@ -351,7 +362,7 @@ function renderOrders() {
                     <strong>${t(config.name)}</strong> (${t('order_trust')}: ${customer.trust})<br>
                     ${t('order_wants')}: ${icon} ${customer.order.amount} ${t(customer.order.crop)} (${t('order_have')}: ${haveAmount}/${customer.order.amount})<br>
                     ${t('order_reward')}: $${customer.order.reward}<br>
-                    ${t('order_time_left')}: <span class="order-timer">${timeLeft}s</span>
+                    ${t('order_time_left')}: <span class="order-timer">${formatTime(timeLeft)}</span>
                 </div>
                 <button class="btn fulfill-btn" data-customer-id="${customerId}" ${haveAmount >= customer.order.amount ? '' : 'disabled'}>${t('btn_fulfill')}</button>
             `;
@@ -368,8 +379,8 @@ export function renderOrderTimers() {
         if (customer && customer.order) {
             const timerSpan = orderElement.querySelector('.order-timer');
             if (timerSpan) {
-                const timeLeft = Math.round((customer.order.expiresAt - Date.now()) / 1000);
-                timerSpan.textContent = `${Math.max(0, timeLeft)}s`;
+                const timeLeft = customer.order.expiresAt - Date.now();
+                timerSpan.textContent = formatTime(timeLeft);
             }
         }
     });
@@ -437,7 +448,7 @@ function renderProduction() {
         let recipesHtml = building.recipes.map(recipe => {
             const inputs = Object.entries(recipe.input).map(([key, value]) => `${value} ${t(key)}`).join(', ');
             const outputs = Object.entries(recipe.output).map(([key, value]) => `${value} ${t(key)}`).join(', ');
-            return `<div class="recipe-info"><strong>${t('production_recipe')}:</strong> ${inputs} → ${outputs} (${recipe.productionTime / 1000}s)</div>`;
+            return `<div class="recipe-info"><strong>${t('production_recipe')}:</strong> ${inputs} → ${outputs} (${formatTime(recipe.productionTime)})</div>`;
         }).join('');
 
         const actionButton = `<button class="btn buy-building-btn" data-building-id="${buildingId}">${t('btn_buy')} ($${building.cost})</button>`;
@@ -469,14 +480,14 @@ function renderBuildings() {
                 const job = playerBuilding.production[0];
                 const recipe = building.recipes[job.recipeIndex];
                 const effectiveTime = recipe.productionTime * (1 - (player.upgrades.productionSpeed || 0));
-                const timeLeft = Math.round((job.startTime + effectiveTime - Date.now()) / 1000);
+                const timeLeft = job.startTime + effectiveTime - Date.now();
 
                 let queueStatus = '';
                 if (playerBuilding.production.length > 1) {
                     queueStatus = ` (+${playerBuilding.production.length - 1} in queue)`;
                 }
 
-                statusHtml = `<div class="building-status">${t('status_producing')} (${t('status_time_left', { time: Math.max(0, timeLeft) })}) ${queueStatus}</div>`;
+                statusHtml = `<div class="building-status">${t('status_producing')} (${t('status_time_left', { time: formatTime(timeLeft) })}) ${queueStatus}</div>`;
             } else {
                 building.recipes.forEach((recipe, index) => {
                     const inputs = Object.entries(recipe.input).map(([key, value]) => `${value} ${t(key)}`).join(', ');
