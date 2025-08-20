@@ -34,12 +34,12 @@ export const cropTypes = {
     'wheat': {
         icon: '🌾',
         seed_icon: '🌱',
-        growthTime: 12000, // ms per stage
+        growthTime: 6000, // ms per stage
         visuals: ['🌱', '🌿', '🌾'],
         yieldRange: [1, 3],
         maxPrice: 12,
         minPrice: 5,
-        priceRecoveryRate: 40000, // ms to recover 1 price point
+        priceRecoveryRate: 20000, // ms to recover 1 price point
         salesVolumeForPriceDrop: 10, // amount of sales to drop price by 1
         xpValue: 1,
         requiredLevel: 1
@@ -47,12 +47,12 @@ export const cropTypes = {
     'carrot': {
         icon: '🥕',
         seed_icon: '🌱',
-        growthTime: 16000,
+        growthTime: 8000,
         visuals: ['🌱', '🌿', '🥕'],
         yieldRange: [1, 2],
         maxPrice: 20,
         minPrice: 10,
-        priceRecoveryRate: 48000,
+        priceRecoveryRate: 24000,
         salesVolumeForPriceDrop: 8,
         xpValue: 2,
         requiredLevel: 1
@@ -60,12 +60,12 @@ export const cropTypes = {
     'tomato': {
         icon: '🍅',
         seed_icon: '🌱',
-        growthTime: 20000,
+        growthTime: 10000,
         visuals: ['🌱', '🌿', '🍅'],
         yieldRange: [2, 4],
         maxPrice: 40,
         minPrice: 20,
-        priceRecoveryRate: 60000,
+        priceRecoveryRate: 30000,
         salesVolumeForPriceDrop: 5,
         xpValue: 4,
         requiredLevel: 1
@@ -73,12 +73,12 @@ export const cropTypes = {
     'potato': {
         icon: '🥔',
         seed_icon: '🌱',
-        growthTime: 24000,
+        growthTime: 12000,
         visuals: ['🌱', '🌿', '🥔'],
         yieldRange: [3, 6],
         maxPrice: 60,
         minPrice: 30,
-        priceRecoveryRate: 80000,
+        priceRecoveryRate: 40000,
         salesVolumeForPriceDrop: 3,
         xpValue: 6,
         requiredLevel: 1
@@ -87,7 +87,7 @@ export const cropTypes = {
         icon: '🍞',
         maxPrice: 40,
         minPrice: 20,
-        priceRecoveryRate: 40000,
+        priceRecoveryRate: 20000,
         salesVolumeForPriceDrop: 5,
         xpValue: 8,
         requiredLevel: 1
@@ -342,7 +342,7 @@ export const buildings = {
             {
                 input: { 'wheat': 2 },
                 output: { 'bread': 1 },
-                productionTime: 80000 // 20 seconds
+                productionTime: 40000 // 20 seconds
             }
         ],
         purchased: false,
