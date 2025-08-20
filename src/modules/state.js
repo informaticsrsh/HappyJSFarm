@@ -25,7 +25,11 @@ export let player = {
         'breakfast_bar': { purchased: false, production: [], automated: false },
         'juicer': { purchased: false, production: [], automated: false },
         'jam_factory': { purchased: false, production: [], automated: false },
-        'research_lab': { purchased: false, production: [], automated: false }
+        'research_lab': { purchased: false, production: [], automated: false },
+        'taco_stand': { purchased: false, production: [], automated: false },
+        'salad_bar': { purchased: false, production: [], automated: false },
+        'pizzeria': { purchased: false, production: [], automated: false },
+        'dessert_shop': { purchased: false, production: [], automated: false }
     },
     npcBonuses: {
         growthMultiplier: 1.0,
@@ -60,7 +64,16 @@ export let warehouse = {
     'blueberry': 0,
     'strawberry_jam': 0,
     'blueberry_jam': 0,
-    'research_points': 0
+    'research_points': 0,
+    'corn_seed': 0,
+    'bell_pepper_seed': 0,
+    'corn': 0,
+    'bell_pepper': 0,
+    'taco': 0,
+    'salad': 0,
+    'cheese': 0,
+    'pizza': 0,
+    'fruit_tart': 0
 };
 
 export let marketState = {};
