@@ -1,4 +1,4 @@
-import { NUM_ROWS, NUM_COLS, cropTypes } from './config.js';
+import { NUM_ROWS, NUM_COLS, cropTypes, upgrades } from './config.js';
 
 export let player = {
     money: 100,
@@ -105,7 +105,8 @@ export function saveGameState() {
         field,
         warehouse,
         marketState,
-        customers
+        customers,
+        upgrades
     };
     localStorage.setItem(SAVE_KEY, JSON.stringify(gameState));
 }
@@ -125,6 +126,9 @@ export function loadGameState() {
         Object.assign(warehouse, restoredState.warehouse);
         Object.assign(marketState, restoredState.marketState);
         Object.assign(customers, restoredState.customers);
+        if (restoredState.upgrades) {
+            Object.assign(upgrades, restoredState.upgrades);
+        }
     }
 }
 
