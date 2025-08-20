@@ -1,6 +1,6 @@
 import { setLanguage, t } from './modules/localization.js';
-import { DOM, renderAll, renderOrderTimers } from './modules/ui.js';
-import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder, forceGenerateOrder, increaseTrust, buyBuilding, startProduction, devAddAllProducts, toggleBuildingAutomation, addXp } from './modules/game.js';
+import { DOM, renderAll, renderOrderTimers, toggleDebugMenu } from './modules/ui.js';
+import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder, forceGenerateOrder, increaseTrust, buyBuilding, startProduction, devAddAllProducts, toggleBuildingAutomation, addXp, devAddMoney, devAddLevel } from './modules/game.js';
 import { player, field, warehouse, saveGameState, clearGameState, loadGameState } from './modules/state.js';
 import { leveling, store } from './modules/config.js';
 
@@ -243,4 +243,36 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 1000); // Main game loop
     orderTimerInterval = setInterval(renderOrderTimers, 1000); // Timer-only render loop
+
+    // --- Debug ---
+    let sequence = '';
+    const cheatCode = 'shnaider';
+    document.addEventListener('keydown', (e) => {
+        sequence += e.key.toLowerCase();
+        if (sequence.length > cheatCode.length) {
+            sequence = sequence.slice(1);
+        }
+        if (sequence === cheatCode) {
+            toggleDebugMenu();
+            sequence = ''; // Reset sequence
+        }
+    });
+
+    DOM.debugControls.addEventListener('click', (e) => {
+        const id = e.target.id;
+        let stateChanged = false;
+
+        if (id === 'dev-add-level') {
+            stateChanged = devAddLevel();
+        } else if (id === 'dev-add-money') {
+            stateChanged = devAddMoney();
+        } else if (id === 'dev-add-products') {
+            stateChanged = devAddAllProducts();
+        }
+
+        if (stateChanged) {
+            renderAll();
+            saveGameState();
+        }
+    });
 });

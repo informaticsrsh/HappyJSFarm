@@ -54,10 +54,12 @@ export const DOM = {
     levelUpModal: document.getElementById('level-up-modal'),
     levelUpTitle: document.getElementById('level-up-title'),
     levelUpUnlocks: document.getElementById('level-up-unlocks'),
-    levelUpCloseBtn: document.querySelector('.level-up-close')
+    levelUpCloseBtn: document.querySelector('.level-up-close'),
+    debugControls: document.getElementById('debug-controls')
 };
 
 let notificationTimeout;
+let debugMenuInitialized = false;
 
 export function showNotification(message) {
     if (notificationTimeout) {
@@ -622,4 +624,26 @@ export function showSimpleLevelUpModal(level, message) {
     DOM.levelUpTitle.textContent = t('level_up_title', { level });
     DOM.levelUpUnlocks.innerHTML = `<p>${message}</p>`;
     DOM.levelUpModal.style.display = 'block';
+}
+
+export function toggleDebugMenu() {
+    if (!debugMenuInitialized) {
+        const buttons = [
+            { id: 'dev-add-level', text: '+1 Level' },
+            { id: 'dev-add-money', text: '+1M Money' },
+            { id: 'dev-add-products', text: '+1k Products' }
+        ];
+
+        buttons.forEach(btnInfo => {
+            const button = document.createElement('button');
+            button.id = btnInfo.id;
+            button.textContent = btnInfo.text;
+            button.classList.add('btn');
+            DOM.debugControls.appendChild(button);
+        });
+
+        debugMenuInitialized = true;
+    }
+
+    DOM.debugControls.classList.toggle('hidden');
 }
