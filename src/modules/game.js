@@ -577,7 +577,19 @@ export function forceGenerateOrder() {
 
 export function devAddAllProducts() {
     for (const item in warehouse) {
-        warehouse[item] += 100;
+        if (warehouse.hasOwnProperty(item)) {
+            warehouse[item] += 1000;
+        }
     }
+    return true;
+}
+
+export function devAddMoney() {
+    player.money += 1000000;
+    return true;
+}
+
+export function devAddLevel() {
+    addXp(player.xpToNextLevel - player.xp);
     return true;
 }
