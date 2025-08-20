@@ -89,6 +89,10 @@ document.addEventListener('DOMContentLoaded', () => {
             stateChanged = startProduction(buildingId, recipeIndex);
         } else if (e.target.classList.contains('toggle-auto-btn')) {
             stateChanged = toggleBuildingAutomation(buildingId);
+        } else if (e.target.classList.contains('recipe-selector-btn')) {
+            const recipeIndex = parseInt(e.target.dataset.recipeIndex, 10);
+            player.buildings[buildingId].selectedRecipe = recipeIndex;
+            stateChanged = true;
         }
 
         if (stateChanged) {

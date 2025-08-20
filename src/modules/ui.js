@@ -506,6 +506,19 @@ function renderBuildings() {
                 autoButton = `<button class="btn toggle-auto-btn" data-building-id="${buildingId}">${t(btnTextKey)}</button>`;
             }
 
+            let recipeSelector = '';
+            if (playerBuilding.automated && building.recipes.length > 1) {
+                recipeSelector += '<div class="recipe-selectors">';
+                building.recipes.forEach((recipe, index) => {
+                    const output = Object.keys(recipe.output)[0];
+                    const icon = getIconForItem(output);
+                    const activeClass = index === playerBuilding.selectedRecipe ? 'active' : '';
+                    recipeSelector += `<button class="btn recipe-selector-btn ${activeClass}" data-building-id="${buildingId}" data-recipe-index="${index}">${icon}</button>`;
+                });
+                recipeSelector += '</div>';
+                autoButton += recipeSelector;
+            }
+
             buildingDiv.innerHTML = `
                 <div class="building-icon">${building.icon}</div>
                 <strong class="building-name">${t(building.name)}</strong>
