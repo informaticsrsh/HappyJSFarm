@@ -413,7 +413,8 @@ function updateProduction(now) {
         // --- Handle auto-starting production ---
         if (playerBuilding.automated && playerBuilding.production.length === 0) {
              if (building.recipes.length > 0) {
-                if (startProduction(buildingId, 0)) {
+                const recipeIndex = playerBuilding.selectedRecipe || 0;
+                if (startProduction(buildingId, recipeIndex)) {
                     productionChanged = true;
                 }
             }

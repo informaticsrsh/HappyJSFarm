@@ -469,6 +469,14 @@ h1 {
     margin-top: 5px;
 }
 
+.recipe-selector-btn {
+    background-color: #f28482; /* red */
+}
+
+.recipe-selector-btn.active {
+    background-color: #81b29a; /* green */
+}
+
 /* Orders Section */
 #orders-container {
     background-color: #f4f1de;
