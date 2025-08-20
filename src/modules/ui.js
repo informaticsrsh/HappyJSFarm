@@ -289,7 +289,7 @@ function renderReference() {
 function renderMarket() {
     DOM.marketItems.innerHTML = '';
     Object.keys(warehouse).forEach(itemName => {
-        if (!itemName.endsWith('_seed') && warehouse[itemName] > 0) {
+        if (!itemName.endsWith('_seed') && warehouse[itemName] > 0 && marketState[itemName]) {
             const itemDiv = document.createElement('div');
             itemDiv.classList.add('item');
             const icon = getIconForItem(itemName);
