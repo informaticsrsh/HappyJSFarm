@@ -234,6 +234,33 @@ export const cropTypes = {
         xpValue: 75,
         requiredLevel: 14
     },
+    'cheese': {
+        icon: '🧀',
+        maxPrice: 120,
+        minPrice: 60,
+        priceRecoveryRate: 30000,
+        salesVolumeForPriceDrop: 3,
+        xpValue: 18,
+        requiredLevel: 4
+    },
+    'pizza': {
+        icon: '🍕',
+        maxPrice: 600,
+        minPrice: 350,
+        priceRecoveryRate: 90000,
+        salesVolumeForPriceDrop: 1,
+        xpValue: 100,
+        requiredLevel: 6
+    },
+    'fruit_tart': {
+        icon: '🍰',
+        maxPrice: 700,
+        minPrice: 400,
+        priceRecoveryRate: 100000,
+        salesVolumeForPriceDrop: 1,
+        xpValue: 120,
+        requiredLevel: 9
+    },
     'research_points': {
         icon: '💡',
         xpValue: 0
@@ -326,12 +353,17 @@ export const buildings = {
         name: 'Dairy',
         icon: '🐮',
         cost: 2500,
-        description: 'Produces milk from wheat.',
+        description: 'Produces milk from wheat and cheese from milk.',
         recipes: [
             {
                 input: { 'wheat': 3 },
                 output: { 'milk': 1 },
                 productionTime: 60000 // 30 seconds
+            },
+            {
+                input: { 'milk': 2 },
+                output: { 'cheese': 1 },
+                productionTime: 75000
             }
         ],
         purchased: false,
@@ -445,10 +477,10 @@ export const buildings = {
         requiredLevel: 10
     },
     'taco_stand': {
-        name: 'Taco Stand',
+        name: 'taco_stand_name',
         icon: 'ларьок',
         cost: 20000,
-        description: 'Makes delicious tacos from corn.',
+        description: 'taco_stand_desc',
         recipes: [
             {
                 input: { 'corn': 5, 'tomato': 2 },
@@ -461,10 +493,10 @@ export const buildings = {
         requiredLevel: 12
     },
     'salad_bar': {
-        name: 'Salad Bar',
+        name: 'salad_bar_name',
         icon: '🥗',
         cost: 30000,
-        description: 'Makes healthy salads.',
+        description: 'salad_bar_desc',
         recipes: [
             {
                 input: { 'bell_pepper': 3, 'tomato': 2, 'carrot': 3 },
@@ -475,6 +507,38 @@ export const buildings = {
         purchased: false,
         productionStartTime: 0,
         requiredLevel: 14
+    },
+    'pizzeria': {
+        name: 'pizzeria_name',
+        icon: '🍕',
+        cost: 40000,
+        description: 'pizzeria_desc',
+        recipes: [
+            {
+                input: { 'bread': 2, 'tomato': 5, 'cheese': 1 },
+                output: { 'pizza': 1 },
+                productionTime: 180000
+            }
+        ],
+        purchased: false,
+        productionStartTime: 0,
+        requiredLevel: 6
+    },
+    'dessert_shop': {
+        name: 'dessert_shop_name',
+        icon: '🍰',
+        cost: 60000,
+        description: 'dessert_shop_desc',
+        recipes: [
+            {
+                input: { 'strawberry_jam': 1, 'bread': 1, 'milk': 1 },
+                output: { 'fruit_tart': 1 },
+                productionTime: 240000
+            }
+        ],
+        purchased: false,
+        productionStartTime: 0,
+        requiredLevel: 9
     }
 };
 

@@ -412,6 +412,8 @@ h1 {
 .potato-seed { background-color: #a5682a44; }
 .strawberry-seed { background-color: #ff8da144; }
 .blueberry-seed { background-color: #8cb9ff44; }
+.corn-seed { background-color: #f7d04b44; }
+.bell-pepper-seed { background-color: #82b74b44; }
 
 /* Override for selected items to ensure text is readable */
 .item.selected {
@@ -426,6 +428,8 @@ h1 {
 .plot.potato { background-color: #a5682a44; }
 .plot.strawberry { background-color: #ff8da144; }
 .plot.blueberry { background-color: #8cb9ff44; }
+.plot.corn { background-color: #f7d04b44; }
+.plot.bell-pepper { background-color: #82b74b44; }
 
 .automated-plot {
     border: 3px dashed #81b29a;
@@ -453,6 +457,8 @@ h1 {
 .automated-plot.automated-potato { border-color: #a5682a; }
 .automated-plot.automated-strawberry { border-color: #ffb3ba; }
 .automated-plot.automated-blueberry { border-color: #a2d2ff; }
+.automated-plot.automated-corn { border-color: #f7d04b; }
+.automated-plot.automated-bell-pepper { border-color: #82b74b; }
 
 .building.automated {
     border-color: #81b29a;
