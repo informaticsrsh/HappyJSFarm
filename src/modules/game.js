@@ -339,7 +339,10 @@ function updateCropGrowth(now) {
 
             // Handle growth for all plots (manual and auto)
             if (cell.crop && cell.growthStage < cropTypes[cell.crop].visuals.length - 1) {
-                const timeToGrow = cropTypes[cell.crop].growthTime * player.upgrades.growthMultiplier * player.npcBonuses.growthMultiplier;
+                let timeToGrow = cropTypes[cell.crop].growthTime * player.upgrades.growthMultiplier * player.npcBonuses.growthMultiplier;
+                if (cell.autoCrop) {
+                    timeToGrow *= 3;
+                }
                 if (now - cell.stageStartTime >= timeToGrow) {
                     cell.growthStage++;
                     cell.stageStartTime = now;

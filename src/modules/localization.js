@@ -10,6 +10,7 @@ const locales = {
         "ref_crops_tab": "Crops",
         "ref_production_tab": "Production",
         "ref_customers_tab": "Customers",
+        "ref_my_upgrades_tab": "My Upgrades",
         "warehouse_title": "Warehouse",
         "field_title": "Field",
         "buildings_title": "Buildings",
@@ -261,7 +262,9 @@ const locales = {
         "upgrade_prod_luck5_name": "Divine Intervention",
         "upgrade_prod_luck5_desc": "Increases lucky chance by a further 25% (75% total).",
         "upgrade_prod_vol5_name": "Pocket Dimension",
-        "upgrade_prod_vol5_desc": "Increases production volume by a further 1 (5 total)."
+        "upgrade_prod_vol5_desc": "Increases production volume by a further 1 (5 total).",
+        "level_label": "Lvl",
+        "no_upgrades_purchased": "You haven't purchased any upgrades yet."
     },
     "uk": {
         "title": "Моя Ферма",
@@ -274,6 +277,7 @@ const locales = {
         "ref_crops_tab": "Врожай",
         "ref_production_tab": "Виробництво",
         "ref_customers_tab": "Клієнти",
+        "ref_my_upgrades_tab": "Мої Покращення",
         "warehouse_title": "Склад",
         "field_title": "Поле",
         "buildings_title": "Будівлі",
@@ -525,7 +529,9 @@ const locales = {
         "upgrade_prod_luck5_name": "Божественне втручання",
         "upgrade_prod_luck5_desc": "Збільшує шанс на удачу ще на 25% (всього 75%).",
         "upgrade_prod_vol5_name": "Кишеньковий вимір",
-        "upgrade_prod_vol5_desc": "Збільшує обсяг виробництва ще на 1 (всього 5)."
+        "upgrade_prod_vol5_desc": "Збільшує обсяг виробництва ще на 1 (всього 5).",
+        "level_label": "Рів",
+        "no_upgrades_purchased": "Ви ще не придбали жодних покращень."
     }
 };
 

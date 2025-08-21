@@ -18,9 +18,11 @@ export const DOM = {
     refCropsTabBtn: document.getElementById('ref-crops-tab-btn'),
     refProductionTabBtn: document.getElementById('ref-production-tab-btn'),
     refCustomersTabBtn: document.getElementById('ref-customers-tab-btn'),
+    refMyUpgradesTabBtn: document.getElementById('ref-my-upgrades-tab-btn'),
     refCropsContent: document.getElementById('ref-crops-content'),
     refProductionContent: document.getElementById('ref-production-content'),
     refCustomersContent: document.getElementById('ref-customers-content'),
+    refMyUpgradesContent: document.getElementById('ref-my-upgrades-content'),
     marketModal: document.getElementById('market-modal'),
     openMarketBtn: document.getElementById('open-market-btn'),
     marketCloseBtn: document.querySelector('.market-close'),
@@ -289,10 +291,42 @@ function renderCustomerReference() {
     }
 }
 
+function renderMyUpgrades() {
+    const content = DOM.refMyUpgradesContent;
+    content.innerHTML = '';
+    let hasUpgrades = false;
+
+    for (const upgradeId in upgrades) {
+        const upgrade = upgrades[upgradeId];
+        if (upgrade.purchased || (upgrade.repeatable && upgrade.purchasedCount > 0)) {
+            hasUpgrades = true;
+            const itemDiv = document.createElement('div');
+            itemDiv.classList.add('upgrade-reference');
+
+            let purchaseInfo = '';
+            if (upgrade.repeatable && upgrade.purchasedCount > 0) {
+                const max = upgrade.maxPurchases ? `/${upgrade.maxPurchases}` : '';
+                purchaseInfo = ` (${t('level_label')} ${upgrade.purchasedCount}${max})`;
+            }
+
+            itemDiv.innerHTML = `
+                <h3>${t(upgrade.name)}${purchaseInfo}</h3>
+                <p>${t(upgrade.description)}</p>
+            `;
+            content.appendChild(itemDiv);
+        }
+    }
+
+    if (!hasUpgrades) {
+        content.innerHTML = `<p>${t('no_upgrades_purchased')}</p>`;
+    }
+}
+
 function renderReference() {
     renderCropReference();
     renderProductionReference();
     renderCustomerReference();
+    renderMyUpgrades();
 }
 
 function renderMarket() {
@@ -329,6 +363,7 @@ function renderStaticUI() {
     DOM.refCropsTabBtn.textContent = t('ref_crops_tab');
     DOM.refProductionTabBtn.textContent = t('ref_production_tab');
     DOM.refCustomersTabBtn.textContent = t('ref_customers_tab');
+    DOM.refMyUpgradesTabBtn.textContent = t('ref_my_upgrades_tab');
     DOM.warehouseTitle.textContent = t('warehouse_title');
     DOM.fieldTitle.textContent = t('field_title');
     document.querySelector('#buildings-container h2').textContent = t('buildings_title');
