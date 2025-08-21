@@ -222,7 +222,11 @@ export function buyUpgrade(upgradeId) {
 
     const { value } = upgrade.effect;
     if (type === 'growthMultiplier') {
-        player.upgrades[type] = value;
+        if (upgrade.repeatable) {
+            player.upgrades.growthMultiplier *= value;
+        } else {
+            player.upgrades[type] = value;
+        }
     } else if (type === 'buildingAutomation') {
         player.upgrades.buildingAutomation = value;
     } else if (type === 'productionSpeed' || type === 'productionEfficiency' || type === 'productionLuck' || type === 'productionVolume') {
