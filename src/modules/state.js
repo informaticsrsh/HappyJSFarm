@@ -13,6 +13,7 @@ export let player = {
     selectedSeed: null,
     upgrades: {
         growthMultiplier: 1.0,
+        repeatableGrowthBonus: 1.0,
         yieldBonus: 0,
         seedDiscount: 0,
         marketBonus: 0,

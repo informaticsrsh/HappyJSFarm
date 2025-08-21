@@ -583,8 +583,9 @@ function renderPlayerState() {
     renderXpBar();
 
     let bonusHtml = '';
-    if (player.upgrades.growthMultiplier < 1.0) {
-        const percentage = (1 - player.upgrades.growthMultiplier) * 100;
+    const totalGrowthMultiplier = player.upgrades.growthMultiplier * player.upgrades.repeatableGrowthBonus;
+    if (totalGrowthMultiplier < 1.0) {
+        const percentage = (1 - totalGrowthMultiplier) * 100;
         bonusHtml += `<div>${t('bonus_growth')}: +${percentage.toFixed(0)}%</div>`;
     }
     if (player.upgrades.yieldBonus > 0) {
