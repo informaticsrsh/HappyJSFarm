@@ -297,7 +297,6 @@ export const upgrades = {
 
     // --- Research Upgrades (unlocked by Research Lab) ---
     'research_yield': { cost: 100, costCurrency: 'research_points', name: 'upgrade_research_yield_name', description: 'upgrade_research_yield_desc', effect: { type: 'yieldBonus', value: 1 }, repeatable: true, purchasedCount: 0, requiredLevel: 10, requiresBuilding: 'research_lab' },
-    'research_growth': { cost: 100, costCurrency: 'research_points', name: 'upgrade_research_growth_name', description: 'upgrade_research_growth_desc', effect: { type: 'growthMultiplier', value: 0.975 }, repeatable: true, purchasedCount: 0, requiredLevel: 10, requiresBuilding: 'research_lab' },
     'research_market': { cost: 100, costCurrency: 'research_points', name: 'upgrade_research_market_name', description: 'upgrade_research_market_desc', effect: { type: 'marketBonus', value: 1 }, repeatable: true, purchasedCount: 0, requiredLevel: 10, requiresBuilding: 'research_lab' },
 
     // --- Building Upgrades ---

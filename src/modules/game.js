@@ -222,11 +222,7 @@ export function buyUpgrade(upgradeId) {
 
     const { value } = upgrade.effect;
     if (type === 'growthMultiplier') {
-        if (upgrade.repeatable) {
-            player.upgrades.repeatableGrowthBonus *= value;
-        } else {
-            player.upgrades.growthMultiplier = value;
-        }
+        player.upgrades[type] = value;
     } else if (type === 'buildingAutomation') {
         player.upgrades.buildingAutomation = value;
     } else if (type === 'productionSpeed' || type === 'productionEfficiency' || type === 'productionLuck' || type === 'productionVolume') {
@@ -343,10 +339,7 @@ function updateCropGrowth(now) {
 
             // Handle growth for all plots (manual and auto)
             if (cell.crop && cell.growthStage < cropTypes[cell.crop].visuals.length - 1) {
-                let timeToGrow = cropTypes[cell.crop].growthTime * player.upgrades.growthMultiplier * player.upgrades.repeatableGrowthBonus * player.npcBonuses.growthMultiplier;
-                if (cell.autoCrop) {
-                    timeToGrow *= 3;
-                }
+                const timeToGrow = cropTypes[cell.crop].growthTime * player.upgrades.growthMultiplier * player.npcBonuses.growthMultiplier;
                 if (now - cell.stageStartTime >= timeToGrow) {
                     cell.growthStage++;
                     cell.stageStartTime = now;
