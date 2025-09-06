@@ -264,7 +264,12 @@ const locales = {
         "upgrade_prod_vol5_name": "Pocket Dimension",
         "upgrade_prod_vol5_desc": "Increases production volume by a further 1 (5 total).",
         "level_label": "Lvl",
-        "no_upgrades_purchased": "You haven't purchased any upgrades yet."
+        "no_upgrades_purchased": "You haven't purchased any upgrades yet.",
+        "alert_missing_ingredients": "Missing: {items}",
+        "status_missing_resources": "Missing Resources",
+        "status_idle": "Idle",
+        "alert_not_enough_ingredients_generic": "Not enough ingredients to start production.",
+        "money": "money"
     },
     "uk": {
         "title": "Моя Ферма",
@@ -529,7 +534,12 @@ const locales = {
         "upgrade_prod_vol5_name": "Кишеньковий вимір",
         "upgrade_prod_vol5_desc": "Збільшує обсяг виробництва ще на 1 (всього 5).",
         "level_label": "Рів",
-        "no_upgrades_purchased": "Ви ще не придбали жодних покращень."
+        "no_upgrades_purchased": "Ви ще не придбали жодних покращень.",
+        "alert_missing_ingredients": "Відсутні: {items}",
+        "status_missing_resources": "Відсутні ресурси",
+        "status_idle": "Очікування",
+        "alert_not_enough_ingredients_generic": "Недостатньо інгредієнтів для початку виробництва.",
+        "money": "гроші"
     }
 };
 
