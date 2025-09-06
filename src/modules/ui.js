@@ -1,6 +1,7 @@
 import { t } from './localization.js';
 import { player, field, warehouse, marketState, customers, deepCopy } from './state.js';
 import { NUM_ROWS, NUM_COLS, store, cropTypes, upgrades, customerConfig, buildings } from './config.js';
+import { checkIngredients } from './game.js';
 
 // --- State Cache ---
 let oldState = {};
@@ -764,14 +765,34 @@ function renderBuildings(force = false) {
                 const timeLeft = job.startTime + effectiveTime - Date.now();
                 let queueStatus = newPBuilding.production.length > 1 ? ` (+${newPBuilding.production.length - 1} in queue)` : '';
                 statusHtml = `<div class="building-status">${t('status_producing')} (<span class="production-timer">${formatTime(timeLeft)}</span>) ${queueStatus}</div>`;
+            } else if (newPBuilding.automated) {
+                const batchSize = 1 + (player.upgrades.productionVolume || 0);
+                const selectedRecipe = building.recipes[newPBuilding.selectedRecipe];
+                const missing = checkIngredients(selectedRecipe, batchSize);
+                if (missing.length > 0) {
+                    statusHtml = `<div class="building-status-problem">${t('status_missing_resources')}</div>`;
+                } else {
+                    statusHtml = `<div class="building-status">${t('status_idle')}</div>`;
+                }
             } else {
+                const batchSize = 1 + (player.upgrades.productionVolume || 0);
                  building.recipes.forEach((recipe, index) => {
                     const inputs = Object.entries(recipe.input).map(([key, value]) => `${value} ${t(key)}`).join(', ');
                     const outputs = Object.entries(recipe.output).map(([key, value]) => `${value} ${t(key)}`).join(', ');
+
+                    const missing = checkIngredients(recipe, batchSize);
+                    let buttonClass = 'btn start-production-btn';
+                    let buttonData = '';
+                    if (missing.length > 0) {
+                        buttonClass += ' btn-danger';
+                        const missingText = t('alert_missing_ingredients', { items: missing.join(', ') });
+                        buttonData = `data-missing="${missingText}"`;
+                    }
+
                     statusHtml += `
                         <div class="recipe">
                             <div class="recipe-io">${inputs} → ${outputs}</div>
-                            <button class="btn start-production-btn" data-building-id="${buildingId}" data-recipe-index="${index}">
+                            <button class="${buttonClass}" data-building-id="${buildingId}" data-recipe-index="${index}" ${buttonData}>
                                 ${t('btn_start_production')}
                             </button>
                         </div>`;
@@ -789,7 +810,12 @@ function renderBuildings(force = false) {
                 building.recipes.forEach((recipe, index) => {
                     const output = Object.keys(recipe.output)[0];
                     const icon = getIconForItem(output);
-                    const activeClass = index === newPBuilding.selectedRecipe ? 'active' : '';
+                    let activeClass = '';
+                    if (index === newPBuilding.selectedRecipe) {
+                        activeClass = 'active';
+                    } else {
+                        activeClass = 'btn-inactive';
+                    }
                     autoButton += `<button class="btn recipe-selector-btn ${activeClass}" data-building-id="${buildingId}" data-recipe-index="${index}">${icon}</button>`;
                 });
                 autoButton += '</div>';

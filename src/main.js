@@ -1,5 +1,5 @@
 import { setLanguage, t } from './modules/localization.js';
-import { DOM, scheduleUpdate, renderOrderTimers, toggleDebugMenu, renderProductionTimers } from './modules/ui.js';
+import { DOM, scheduleUpdate, renderOrderTimers, toggleDebugMenu, renderProductionTimers, showNotification } from './modules/ui.js';
 import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder, forceGenerateOrder, increaseTrust, buyBuilding, startProduction, devAddAllProducts, toggleBuildingAutomation, addXp, devAddMoney, devAddLevel } from './modules/game.js';
 import { player, field, warehouse, saveGameState, clearGameState, loadGameState } from './modules/state.js';
 import { leveling, store } from './modules/config.js';
@@ -93,6 +93,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let stateChanged = false;
         if (e.target.classList.contains('start-production-btn')) {
+            const missing = e.target.dataset.missing;
+            if (missing) {
+                showNotification(missing);
+                return; // Do not proceed with production
+            }
             const recipeIndex = e.target.dataset.recipeIndex;
             stateChanged = startProduction(buildingId, recipeIndex);
         } else if (e.target.classList.contains('toggle-auto-btn')) {
