@@ -266,6 +266,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (changes.growth) {
             scheduleUpdate('field');
             scheduleUpdate('warehouse');
+            scheduleUpdate('playerState');
+            scheduleUpdate('orders');
         }
         if (changes.market) {
             scheduleUpdate('market');
@@ -277,6 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
             scheduleUpdate('buildings');
             scheduleUpdate('warehouse'); // Production creates items
             scheduleUpdate('playerState'); // Production gives XP
+            scheduleUpdate('orders');
         }
 
     }, 1000); // Main game loop
