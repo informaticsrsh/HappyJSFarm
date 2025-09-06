@@ -545,11 +545,11 @@ export const customerConfig = {
     orderLifetime: 480000, // ms
     trustLevels: [
         // size is a time range in minutes for order generation
-        { level: 1, trust: 0, size: [5, 10], reward: 1.1 },
-        { level: 2, trust: 100, size: [10, 20], reward: 1.15 },
-        { level: 3, trust: 200, size: [20, 30], reward: 1.2 },
-        { level: 4, trust: 300, size: [30, 45], reward: 1.25 },
-        { level: 5, trust: 400, size: [45, 60], reward: 1.3 },
+        { level: 1, trust: 0, size: [3, 5], reward: 1.1, trustReward: 20, trustPenalty: 15 },
+        { level: 2, trust: 100, size: [5, 10], reward: 1.15, trustReward: 25, trustPenalty: 20 },
+        { level: 3, trust: 200, size: [10, 15], reward: 1.2, trustReward: 30, trustPenalty: 25 },
+        { level: 4, trust: 300, size: [15, 20], reward: 1.25, trustReward: 40, trustPenalty: 35 },
+        { level: 5, trust: 400, size: [20, 30], reward: 1.3, trustReward: 50, trustPenalty: 50 },
     ],
     customers: {
         'npc1': {

@@ -516,8 +516,9 @@ function updateOrders(now) {
     for (const customerId in customers) {
         const customer = customers[customerId];
         if (customer.order && now > customer.order.expiresAt) {
+            const tier = getCustomerTier(customer.trust);
+            customer.trust = Math.max(0, customer.trust - tier.trustPenalty);
             customer.order = null;
-            customer.trust = Math.max(0, customer.trust - 10); // Penalty
             updateNpcBonuses();
             ordersChanged = true;
             showNotification(t('alert_order_expired', { name: customerConfig.customers[customerId].name }));
@@ -625,7 +626,10 @@ export function fulfillOrder(customerId) {
 
         warehouse[order.crop] -= order.amount;
         player.money += order.reward;
-        customer.trust += 20; // Reward for fulfilling
+
+        const tier = getCustomerTier(customer.trust);
+        customer.trust += tier.trustReward;
+
         customer.order = null;
         updateNpcBonuses();
         showNotification(t('alert_order_fulfilled', { name: customerConfig.customers[customerId].name }));
