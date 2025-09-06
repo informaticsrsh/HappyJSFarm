@@ -1,5 +1,5 @@
 import { setLanguage, t } from './modules/localization.js';
-import { DOM, renderAll, renderOrderTimers, toggleDebugMenu } from './modules/ui.js';
+import { DOM, scheduleUpdate, renderOrderTimers, toggleDebugMenu } from './modules/ui.js';
 import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder, forceGenerateOrder, increaseTrust, buyBuilding, startProduction, devAddAllProducts, toggleBuildingAutomation, addXp, devAddMoney, devAddLevel } from './modules/game.js';
 import { player, field, warehouse, saveGameState, clearGameState, loadGameState } from './modules/state.js';
 import { leveling, store } from './modules/config.js';
@@ -29,7 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 stateChanged = plantSeed(r, c);
             }
             if (stateChanged) {
-                renderAll();
+                scheduleUpdate('field');
+                scheduleUpdate('warehouse');
                 saveGameState();
             }
         }
@@ -38,7 +39,12 @@ document.addEventListener('DOMContentLoaded', () => {
     DOM.upgradesItems.addEventListener('click', (e) => {
         if (e.target.classList.contains('buy-upgrade-btn')) {
             if (buyUpgrade(e.target.dataset.upgradeId)) {
-                renderAll();
+                // Upgrades can affect many things, so a targeted render is complex.
+                // For now, let's update the most common ones.
+                scheduleUpdate('playerState');
+                scheduleUpdate('warehouse'); // For RP
+                scheduleUpdate('upgrades'); // The list of upgrades itself
+                scheduleUpdate('field'); // In case of auto-plotter
                 saveGameState();
             }
         }
@@ -73,7 +79,9 @@ document.addEventListener('DOMContentLoaded', () => {
     DOM.productionItems.addEventListener('click', (e) => {
         if (e.target.classList.contains('buy-building-btn')) {
             if (buyBuilding(e.target.dataset.buildingId)) {
-                renderAll();
+                scheduleUpdate('buildings');
+                scheduleUpdate('production'); // The store tab for production
+                scheduleUpdate('playerState'); // For money
                 saveGameState();
             }
         }
@@ -96,7 +104,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (stateChanged) {
-            renderAll();
+            scheduleUpdate('buildings');
+            scheduleUpdate('warehouse'); // Starting production can use items
+            scheduleUpdate('playerState'); // Starting production can cost money
             saveGameState();
         }
     });
@@ -105,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const seed = e.target.closest('[data-seed]');
         if (seed) {
             player.selectedSeed = seed.dataset.seed;
-            renderAll();
+            scheduleUpdate('warehouse');
         }
     });
 
@@ -138,18 +148,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         if (buySeed(itemName, amount)) {
-            renderAll();
+            scheduleUpdate('warehouse');
+            scheduleUpdate('playerState'); // Money changes
             saveGameState();
         }
     });
 
     DOM.langEnBtn.addEventListener('click', () => {
         setLanguage('en');
-        renderAll();
+        scheduleUpdate('all');
     });
     DOM.langUkBtn.addEventListener('click', () => {
         setLanguage('uk');
-        renderAll();
+        scheduleUpdate('all');
     });
 
     document.getElementById('clear-data-btn').addEventListener('click', () => {
@@ -199,7 +210,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (sellCrop(cropName, amountToSell)) {
-            renderAll();
+            scheduleUpdate('warehouse');
+            scheduleUpdate('market');
+            scheduleUpdate('playerState'); // Money changes
             saveGameState();
         }
     });
@@ -228,7 +241,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target.classList.contains('fulfill-btn')) {
             const customerId = e.target.dataset.customerId;
             if (fulfillOrder(customerId)) {
-                renderAll();
+                scheduleUpdate('orders');
+                scheduleUpdate('warehouse');
+                scheduleUpdate('playerState'); // For money and XP
                 saveGameState();
             }
         }
@@ -240,11 +255,24 @@ document.addEventListener('DOMContentLoaded', () => {
     if (initialLevel) {
         player.xpToNextLevel = initialLevel.xpRequired;
     }
-    renderAll();
+    scheduleUpdate('all');
     gameLoopInterval = setInterval(() => {
-        if (gameTick()) {
-            renderAll();
+        const changes = gameTick();
+        if (changes.growth) {
+            scheduleUpdate('field');
         }
+        if (changes.market) {
+            scheduleUpdate('market');
+        }
+        if (changes.orders) {
+            scheduleUpdate('orders');
+        }
+        if (changes.production) {
+            scheduleUpdate('buildings');
+            scheduleUpdate('warehouse'); // Production creates items
+            scheduleUpdate('playerState'); // Production gives XP
+        }
+
     }, 1000); // Main game loop
     orderTimerInterval = setInterval(renderOrderTimers, 1000); // Timer-only render loop
 
@@ -275,7 +303,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (stateChanged) {
-            renderAll();
+            scheduleUpdate('buildings');
+            scheduleUpdate('warehouse'); // Starting production can use items
+            scheduleUpdate('playerState'); // Starting production can cost money
             saveGameState();
         }
     });
