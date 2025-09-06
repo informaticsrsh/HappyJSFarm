@@ -423,6 +423,41 @@ function updateProduction(now) {
     return productionChanged;
 }
 
+const productionTimeCache = new Map();
+
+function calculateProductionTime(itemName) {
+    if (productionTimeCache.has(itemName)) {
+        return productionTimeCache.get(itemName);
+    }
+
+    // Base case: is it a growable crop?
+    if (cropTypes[itemName] && cropTypes[itemName].growthTime) {
+        const time = cropTypes[itemName].growthTime;
+        productionTimeCache.set(itemName, time);
+        return time;
+    }
+
+    // Recursive step: is it a manufactured good?
+    for (const buildingId in buildings) {
+        const building = buildings[buildingId];
+        const recipe = building.recipes.find(r => r.output[itemName]);
+        if (recipe) {
+            let totalTime = recipe.productionTime;
+            for (const ingredient in recipe.input) {
+                if (ingredient === 'money') continue;
+                const quantity = recipe.input[ingredient];
+                totalTime += calculateProductionTime(ingredient) * quantity;
+            }
+            productionTimeCache.set(itemName, totalTime);
+            return totalTime;
+        }
+    }
+
+    // Fallback for items without a defined time (like seeds or special items)
+    productionTimeCache.set(itemName, 0);
+    return 0;
+}
+
 function getCustomerTier(trust) {
     let currentTier = customerConfig.trustLevels[0];
     for (const tier of customerConfig.trustLevels) {
@@ -439,13 +474,30 @@ function generateOrder(customerId) {
     const customer = customers[customerId];
     if (customer.order) return; // Don't generate if one is active
 
-    const availableCrops = Object.keys(cropTypes).filter(crop => cropTypes[crop].requiredLevel <= player.level);
+    const availableCrops = Object.keys(cropTypes).filter(crop => {
+        if (crop === 'research_points') return false;
+        const item = cropTypes[crop];
+        const hasRecipe = Object.values(buildings).some(b => b.recipes.some(r => r.output[crop]));
+        const isGrowable = !!item.growthTime;
+        return (item.requiredLevel <= player.level) && (isGrowable || hasRecipe);
+    });
+
     if (availableCrops.length === 0) return;
 
     const randomCrop = availableCrops[Math.floor(Math.random() * availableCrops.length)];
     const tier = getCustomerTier(customer.trust);
-    const [minSize, maxSize] = tier.size;
-    const amount = Math.floor(Math.random() * (maxSize - minSize + 1)) + minSize;
+    const [minTime, maxTime] = tier.size; // Time in minutes
+
+    const targetTimeMs = (Math.random() * (maxTime - minTime) + minTime) * 60 * 1000;
+    const timePerUnit = calculateProductionTime(randomCrop);
+
+    if (timePerUnit === 0) {
+        console.error(`Could not generate order for ${randomCrop}, timePerUnit is 0.`);
+        return;
+    }
+
+    const amount = Math.max(1, Math.floor(targetTimeMs / timePerUnit));
+
     const marketPrice = marketState[randomCrop].currentPrice;
     const reward = Math.round(marketPrice * amount * tier.reward);
 
@@ -464,8 +516,9 @@ function updateOrders(now) {
     for (const customerId in customers) {
         const customer = customers[customerId];
         if (customer.order && now > customer.order.expiresAt) {
+            const tier = getCustomerTier(customer.trust);
+            customer.trust = Math.max(0, customer.trust - tier.trustPenalty);
             customer.order = null;
-            customer.trust = Math.max(0, customer.trust - 10); // Penalty
             updateNpcBonuses();
             ordersChanged = true;
             showNotification(t('alert_order_expired', { name: customerConfig.customers[customerId].name }));
@@ -573,7 +626,10 @@ export function fulfillOrder(customerId) {
 
         warehouse[order.crop] -= order.amount;
         player.money += order.reward;
-        customer.trust += 20; // Reward for fulfilling
+
+        const tier = getCustomerTier(customer.trust);
+        customer.trust += tier.trustReward;
+
         customer.order = null;
         updateNpcBonuses();
         showNotification(t('alert_order_fulfilled', { name: customerConfig.customers[customerId].name }));
