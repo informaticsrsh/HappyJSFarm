@@ -730,9 +730,11 @@ function renderBuildings(force = false) {
     for (const buildingId in buildings) {
         const oldPBuilding = oldState.player?.buildings[buildingId];
         const newPBuilding = player.buildings[buildingId];
+        const oldProdVol = oldState.player?.upgrades.productionVolume;
+        const newProdVol = player.upgrades.productionVolume;
 
         // If a building is newly purchased or its state changes significantly, render it.
-        if (force || JSON.stringify(oldPBuilding) !== JSON.stringify(newPBuilding)) {
+        if (force || JSON.stringify(oldPBuilding) !== JSON.stringify(newPBuilding) || oldProdVol !== newProdVol) {
             let buildingDiv = document.getElementById(`building-${buildingId}`);
 
             // If building wasn't purchased but is now, create the div
@@ -779,11 +781,11 @@ function renderBuildings(force = false) {
                  building.recipes.forEach((recipe, index) => {
                     let inputs;
                     if (buildingId === 'research_lab') {
-                        inputs = `${getResearchCost()} ${t('money')}`;
+                        inputs = `${getResearchCost() * batchSize} ${t('money')}`;
                     } else {
-                        inputs = Object.entries(recipe.input).map(([key, value]) => `${value} ${t(key)}`).join(', ');
+                        inputs = Object.entries(recipe.input).map(([key, value]) => `${value * batchSize} ${t(key)}`).join(', ');
                     }
-                    const outputs = Object.entries(recipe.output).map(([key, value]) => `${value} ${t(key)}`).join(', ');
+                    const outputs = Object.entries(recipe.output).map(([key, value]) => `${value * batchSize} ${t(key)}`).join(', ');
 
                     const missing = checkIngredients(recipe, batchSize, buildingId);
                     let buttonClass = 'btn start-production-btn';
