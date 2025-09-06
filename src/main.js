@@ -1,5 +1,5 @@
 import { setLanguage, t } from './modules/localization.js';
-import { DOM, scheduleUpdate, renderOrderTimers, toggleDebugMenu, renderProductionTimers } from './modules/ui.js';
+import { DOM, scheduleUpdate, renderOrderTimers, toggleDebugMenu, renderProductionTimers, showNotification } from './modules/ui.js';
 import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder, forceGenerateOrder, increaseTrust, buyBuilding, startProduction, devAddAllProducts, toggleBuildingAutomation, addXp, devAddMoney, devAddLevel } from './modules/game.js';
 import { player, field, warehouse, saveGameState, clearGameState, loadGameState } from './modules/state.js';
 import { leveling, store } from './modules/config.js';
