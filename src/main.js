@@ -31,6 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (stateChanged) {
                 scheduleUpdate('field');
                 scheduleUpdate('warehouse');
+                scheduleUpdate('market');
+                scheduleUpdate('orders');
+                scheduleUpdate('buildings');
                 saveGameState();
             }
         }
