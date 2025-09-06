@@ -1,6 +1,69 @@
 import { t } from './localization.js';
-import { player, field, warehouse, marketState, customers } from './state.js';
+import { player, field, warehouse, marketState, customers, deepCopy } from './state.js';
 import { NUM_ROWS, NUM_COLS, store, cropTypes, upgrades, customerConfig, buildings } from './config.js';
+
+// --- State Cache ---
+let oldState = {};
+
+// --- Render Queue & Loop ---
+const renderQueue = new Set();
+
+function renderLoop() {
+    if (renderQueue.size > 0) {
+        const forceAll = renderQueue.has('all');
+        // Create a deep copy of the current state for diffing
+        const newState = {
+            player: deepCopy(player),
+            field: deepCopy(field),
+            warehouse: deepCopy(warehouse),
+            marketState: deepCopy(marketState),
+            customers: deepCopy(customers),
+        };
+
+        if (forceAll) {
+            renderAll(true);
+        } else {
+            renderQueue.forEach(component => {
+                switch(component) {
+                    case 'field':
+                        renderField();
+                        break;
+                    case 'warehouse':
+                        renderWarehouse();
+                        break;
+                    case 'market':
+                        renderMarket();
+                        break;
+                    case 'playerState':
+                        renderPlayerState();
+                        break;
+                    case 'orders':
+                        renderOrders();
+                        break;
+                    case 'buildings':
+                        renderBuildings();
+                        break;
+                    case 'upgrades':
+                        renderUpgrades();
+                        break;
+                    case 'production':
+                        renderProduction();
+                        break;
+                    // Cases for other components will be added here
+                }
+            });
+        }
+
+        // Update the old state cache
+        oldState = newState;
+        renderQueue.clear();
+    }
+    requestAnimationFrame(renderLoop);
+}
+
+export function scheduleUpdate(component = 'all') {
+    renderQueue.add(component);
+}
 
 export const DOM = {
     fieldGrid: document.getElementById('field-grid'),
@@ -84,64 +147,121 @@ function getIconForItem(itemName) {
     }
 }
 
-function renderField() {
-    DOM.fieldGrid.innerHTML = '';
-    DOM.fieldGrid.style.gridTemplateRows = `repeat(${field.length}, 50px)`;
-    DOM.fieldGrid.style.gridTemplateColumns = `repeat(${field[0].length}, 50px)`;
+function renderField(force = false) {
+    const grid = DOM.fieldGrid;
 
+    // Initial setup or if forced (e.g., farm expansion)
+    if (force || grid.children.length !== field.length * field[0].length) {
+        grid.innerHTML = '';
+        grid.style.gridTemplateRows = `repeat(${field.length}, 50px)`;
+        grid.style.gridTemplateColumns = `repeat(${field[0].length}, 50px)`;
+
+        for (let r = 0; r < field.length; r++) {
+            for (let c = 0; c < field[0].length; c++) {
+                const plot = document.createElement('div');
+                plot.id = `plot-${r}-${c}`;
+                plot.classList.add('plot');
+                plot.dataset.row = r;
+                plot.dataset.col = c;
+                grid.appendChild(plot);
+            }
+        }
+    }
+
+    // Diffing and targeted updates
     for (let r = 0; r < field.length; r++) {
         for (let c = 0; c < field[0].length; c++) {
-            const plot = document.createElement('div');
-            plot.classList.add('plot');
-            plot.dataset.row = r;
-            plot.dataset.col = c;
+            const oldCell = oldState.field?.[r]?.[c];
+            const newCell = field[r][c];
+            const plot = document.getElementById(`plot-${r}-${c}`);
 
-            const cell = field[r][c];
-            if (cell.crop) {
-                plot.textContent = cropTypes[cell.crop].visuals[cell.growthStage];
-                plot.classList.add(cell.crop); // Add class for crop color
-            } else {
-                plot.textContent = '🟫';
+            if (!plot) continue; // Should not happen after initial setup
+
+            // Compare states and update if necessary
+            if (force || !oldCell || oldCell.crop !== newCell.crop || oldCell.growthStage !== newCell.growthStage || oldCell.autoCrop !== newCell.autoCrop) {
+                // Update visuals
+                if (newCell.crop) {
+                    plot.textContent = cropTypes[newCell.crop].visuals[newCell.growthStage];
+                    plot.className = `plot ${newCell.crop}`; // Reset and add crop class
+                } else {
+                    plot.textContent = '🟫';
+                    plot.className = 'plot';
+                }
+
+                // Update automation visuals
+                if (newCell.autoCrop) {
+                    plot.classList.add('automated-plot', `automated-${newCell.autoCrop}`);
+                    // Ensure icons are present if needed, but avoid re-creating them if they exist
+                    if (!plot.querySelector('.product-icon')) {
+                        const productIcon = document.createElement('div');
+                        productIcon.classList.add('product-icon');
+                        productIcon.textContent = cropTypes[newCell.autoCrop].icon;
+                        plot.appendChild(productIcon);
+
+                        const automationIcon = document.createElement('div');
+                        automationIcon.classList.add('automation-icon');
+                        automationIcon.textContent = '⚙️';
+                        plot.appendChild(automationIcon);
+                    }
+                } else {
+                    // Clean up automation visuals if they exist
+                    plot.classList.remove('automated-plot');
+                    const productIcon = plot.querySelector('.product-icon');
+                    if (productIcon) productIcon.remove();
+                    const automationIcon = plot.querySelector('.automation-icon');
+                    if (automationIcon) automationIcon.remove();
+                }
             }
-
-            if (cell.autoCrop) {
-                plot.classList.add('automated-plot', `automated-${cell.autoCrop}`);
-                // For idle auto-plots, show the product icon in the corner
-                const productIcon = document.createElement('div');
-                productIcon.classList.add('product-icon');
-                productIcon.textContent = cropTypes[cell.autoCrop].icon;
-                plot.appendChild(productIcon);
-
-                const automationIcon = document.createElement('div');
-                automationIcon.classList.add('automation-icon');
-                automationIcon.textContent = '⚙️';
-                plot.appendChild(automationIcon);
-            }
-            DOM.fieldGrid.appendChild(plot);
         }
     }
 }
 
-function renderWarehouse() {
-    DOM.warehouseItems.innerHTML = '';
-    for (const item in warehouse) {
-        if (warehouse[item] > 0) {
-            const itemDiv = document.createElement('div');
-            itemDiv.classList.add('item');
-            itemDiv.classList.add(item.replace(/_/g, '-'));
+function renderWarehouse(force = false) {
+    const container = DOM.warehouseItems;
+    const allItems = { ...warehouse, ...(oldState.warehouse || {}) };
+
+    for (const item in allItems) {
+        const oldAmount = oldState.warehouse?.[item] || 0;
+        const newAmount = warehouse[item] || 0;
+        const oldSelected = oldState.player?.selectedSeed;
+        const newSelected = player.selectedSeed;
+
+        if (force || oldAmount !== newAmount || (item === oldSelected && oldSelected !== newSelected) || (item === newSelected && oldSelected !== newSelected)) {
+            let itemDiv = document.getElementById(`warehouse-item-${item}`);
+
+            // Remove item if amount is zero
+            if (newAmount === 0) {
+                if (itemDiv) {
+                    itemDiv.remove();
+                }
+                continue;
+            }
+
+            // Create item if it's new
+            if (!itemDiv) {
+                itemDiv = document.createElement('div');
+                itemDiv.id = `warehouse-item-${item}`;
+                itemDiv.classList.add('item', item.replace(/_/g, '-'));
+                container.appendChild(itemDiv);
+            }
+
+            // Update content
             const icon = getIconForItem(item);
             itemDiv.textContent = t('warehouse_item', {
                 icon,
                 itemName: t(item),
-                amount: warehouse[item]
+                amount: newAmount
             });
+
+            // Update selection status for seeds
             if (item.endsWith('_seed')) {
                 itemDiv.dataset.seed = item;
-                if (player.selectedSeed === item) {
+                if (newSelected === item) {
                     itemDiv.classList.add('selected');
+                } else {
+                    itemDiv.classList.remove('selected');
                 }
             }
-            DOM.warehouseItems.appendChild(itemDiv);
         }
     }
 }
@@ -295,17 +415,46 @@ function renderReference() {
     renderCustomerReference();
 }
 
-function renderMarket() {
-    DOM.marketItems.innerHTML = '';
-    Object.keys(warehouse).forEach(itemName => {
-        if (!itemName.endsWith('_seed') && warehouse[itemName] > 0 && marketState[itemName]) {
-            const itemDiv = document.createElement('div');
-            itemDiv.classList.add('item');
+function renderMarket(force = false) {
+    const container = DOM.marketItems;
+    // Consider all items that are currently in the market or were in the last state
+    const allMarketItems = new Set([...Object.keys(warehouse), ...(oldState.warehouse ? Object.keys(oldState.warehouse) : [])]);
+
+    allMarketItems.forEach(itemName => {
+        if (itemName.endsWith('_seed') || !marketState[itemName]) {
+            return; // Skip seeds and items not in market state
+        }
+
+        const oldAmount = oldState.warehouse?.[itemName] || 0;
+        const newAmount = warehouse[itemName] || 0;
+        const oldPrice = oldState.marketState?.[itemName]?.currentPrice;
+        const newPrice = marketState[itemName].currentPrice;
+
+        if (force || oldAmount !== newAmount || oldPrice !== newPrice) {
+            let itemDiv = document.getElementById(`market-item-${itemName}`);
+
+            // If item is gone from warehouse, remove it from market view
+            if (newAmount === 0) {
+                if (itemDiv) {
+                    itemDiv.remove();
+                }
+                return;
+            }
+
+            // If item is new to the market view, create it
+            if (!itemDiv) {
+                itemDiv = document.createElement('div');
+                itemDiv.id = `market-item-${itemName}`;
+                itemDiv.classList.add('item');
+                container.appendChild(itemDiv);
+            }
+
+            // Update the content
             const icon = getIconForItem(itemName);
-            const price = marketState[itemName].currentPrice + player.upgrades.marketBonus;
+            const price = newPrice + player.upgrades.marketBonus;
             itemDiv.innerHTML = `
                 <div class="market-item-info">
-                    ${icon} ${t(itemName)}: ${warehouse[itemName]}
+                    ${icon} ${t(itemName)}: ${newAmount}
                     <span>${t('market_item_price', { price })}</span>
                 </div>
                 <div class="market-actions">
@@ -317,7 +466,6 @@ function renderMarket() {
                     <button class="btn sell-btn" data-crop-name="${itemName}" data-amount="max">${t('btn_sell_all')}</button>
                 </div>
             `;
-            DOM.marketItems.appendChild(itemDiv);
         }
     });
 }
@@ -341,30 +489,54 @@ function renderStaticUI() {
     document.querySelector('#orders-container h2').textContent = t('orders_title');
 }
 
-function renderOrders() {
-    DOM.orderItems.innerHTML = '';
-    for (const customerId in customers) {
-        const customer = customers[customerId];
-        const config = customerConfig.customers[customerId];
-        if (customer.order) {
-            const orderDiv = document.createElement('div');
-            orderDiv.classList.add('order', `order-customer-${customerId}`);
-            orderDiv.dataset.customerId = customerId;
+function renderOrders(force = false) {
+    const container = DOM.orderItems;
+    const allCustomers = { ...customers, ...(oldState.customers || {}) };
 
-            const timeLeft = customer.order.expiresAt - Date.now();
-            const icon = getIconForItem(customer.order.crop);
-            const haveAmount = warehouse[customer.order.crop] || 0;
+    for (const customerId in allCustomers) {
+        const oldOrder = oldState.customers?.[customerId]?.order;
+        const newOrder = customers[customerId].order;
+        const oldTrust = oldState.customers?.[customerId]?.trust;
+        const newTrust = customers[customerId].trust;
+        const cropAmount = newOrder ? (warehouse[newOrder.crop] || 0) : 0;
+        const oldCropAmount = (oldOrder && oldState.warehouse) ? (oldState.warehouse[oldOrder.crop] || 0) : 0;
+
+
+        if (force || JSON.stringify(oldOrder) !== JSON.stringify(newOrder) || oldTrust !== newTrust || cropAmount !== oldCropAmount) {
+            let orderDiv = document.getElementById(`order-${customerId}`);
+
+            // If order is gone, remove the div
+            if (!newOrder) {
+                if (orderDiv) {
+                    orderDiv.remove();
+                }
+                continue;
+            }
+
+            // If order is new, create the div
+            if (!orderDiv) {
+                orderDiv = document.createElement('div');
+                orderDiv.id = `order-${customerId}`;
+                orderDiv.classList.add('order', `order-customer-${customerId}`);
+                orderDiv.dataset.customerId = customerId;
+                container.appendChild(orderDiv);
+            }
+
+            // Update the content
+            const config = customerConfig.customers[customerId];
+            const timeLeft = newOrder.expiresAt - Date.now();
+            const icon = getIconForItem(newOrder.crop);
+            const haveAmount = warehouse[newOrder.crop] || 0;
 
             orderDiv.innerHTML = `
                 <div class="order-info">
-                    <strong>${t(config.name)}</strong> (${t('order_trust')}: ${customer.trust})<br>
-                    ${t('order_wants')}: ${icon} ${customer.order.amount} ${t(customer.order.crop)} (${t('order_have')}: ${haveAmount}/${customer.order.amount})<br>
-                    ${t('order_reward')}: $${customer.order.reward}<br>
+                    <strong>${t(config.name)}</strong> (${t('order_trust')}: ${customers[customerId].trust})<br>
+                    ${t('order_wants')}: ${icon} ${newOrder.amount} ${t(newOrder.crop)} (${t('order_have')}: ${haveAmount}/${newOrder.amount})<br>
+                    ${t('order_reward')}: $${newOrder.reward}<br>
                     ${t('order_time_left')}: <span class="order-timer">${formatTime(timeLeft)}</span>
                 </div>
-                <button class="btn fulfill-btn" data-customer-id="${customerId}" ${haveAmount >= customer.order.amount ? '' : 'disabled'}>${t('btn_fulfill')}</button>
+                <button class="btn fulfill-btn" data-customer-id="${customerId}" ${haveAmount >= newOrder.amount ? '' : 'disabled'}>${t('btn_fulfill')}</button>
             `;
-            DOM.orderItems.appendChild(orderDiv);
         }
     }
 }
@@ -384,110 +556,147 @@ export function renderOrderTimers() {
     });
 }
 
-function renderUpgrades() {
-    DOM.upgradesItems.innerHTML = '';
+function renderUpgrades(force = false) {
+    const container = DOM.upgradesItems;
+
     for (const upgradeId in upgrades) {
-        const upgrade = upgrades[upgradeId];
-        if (player.level < (upgrade.requiredLevel || 1)) {
-            continue;
+        const oldUpgrade = oldState.upgrades?.[upgradeId];
+        const newUpgrade = upgrades[upgradeId];
+        const oldLevel = oldState.player?.level;
+        const newLevel = player.level;
+
+        if (force || JSON.stringify(oldUpgrade) !== JSON.stringify(newUpgrade) || oldLevel !== newLevel) {
+            let itemDiv = document.getElementById(`upgrade-item-${upgradeId}`);
+
+            const isVisible = newLevel >= (newUpgrade.requiredLevel || 1);
+            const isPurchased = !newUpgrade.repeatable && newUpgrade.purchased;
+
+            if (!isVisible || isPurchased) {
+                if (itemDiv) itemDiv.remove();
+                continue;
+            }
+
+            if (!itemDiv) {
+                itemDiv = document.createElement('div');
+                itemDiv.id = `upgrade-item-${upgradeId}`;
+                itemDiv.classList.add('item');
+                container.appendChild(itemDiv);
+            }
+
+            let buyButton;
+            const cost = newUpgrade.costCurrency === 'research_points'
+                ? `${newUpgrade.cost} ${cropTypes['research_points'].icon}`
+                : `$${newUpgrade.cost}`;
+
+            if (newUpgrade.repeatable) {
+                const hasMax = typeof newUpgrade.maxPurchases !== 'undefined';
+                const purchasedCount = newUpgrade.purchasedCount || 0;
+                const canPurchase = hasMax ? purchasedCount < newUpgrade.maxPurchases : true;
+                const purchaseStatus = hasMax ? `(${purchasedCount}/${newUpgrade.maxPurchases})` : `(${purchasedCount})`;
+                buyButton = canPurchase
+                    ? `<button class="btn buy-upgrade-btn" data-upgrade-id="${upgradeId}">${t('btn_buy')} (${cost})</button> <span>${purchaseStatus}</span>`
+                    : `<span>${t('status_maxed_out')} ${purchaseStatus}</span>`;
+            } else {
+                buyButton = `<button class="btn buy-upgrade-btn" data-upgrade-id="${upgradeId}">${t('btn_buy')} (${cost})</button>`;
+            }
+
+            itemDiv.innerHTML = `
+                <strong>${t(newUpgrade.name)}</strong>
+                <p>${t(newUpgrade.description)}</p>
+                <div class="upgrade-actions">${buyButton}</div>
+            `;
         }
-
-        // Do not display non-repeatable upgrades that have been purchased
-        if (!upgrade.repeatable && upgrade.purchased) {
-            continue;
-        }
-
-        const itemDiv = document.createElement('div');
-        itemDiv.classList.add('item');
-
-        let buyButton;
-        const cost = upgrade.costCurrency === 'research_points'
-            ? `${upgrade.cost} ${cropTypes['research_points'].icon}`
-            : `$${upgrade.cost}`;
-
-        if (upgrade.repeatable) {
-            const hasMax = typeof upgrade.maxPurchases !== 'undefined';
-            const canPurchase = hasMax ? upgrade.purchasedCount < upgrade.maxPurchases : true;
-            const purchaseStatus = hasMax ? `(${upgrade.purchasedCount}/${upgrade.maxPurchases})` : `(${upgrade.purchasedCount})`;
-            buyButton = canPurchase
-                ? `<button class="btn buy-upgrade-btn" data-upgrade-id="${upgradeId}">${t('btn_buy')} (${cost})</button> <span>${purchaseStatus}</span>`
-                : `<span>${t('status_maxed_out')} ${purchaseStatus}</span>`;
-        } else {
-            buyButton = upgrade.purchased
-                ? `<span>${t('status_purchased')}</span>`
-                : `<button class="btn buy-upgrade-btn" data-upgrade-id="${upgradeId}">${t('btn_buy')} (${cost})</button>`;
-        }
-
-        itemDiv.innerHTML = `
-            <strong>${t(upgrade.name)}</strong>
-            <p>${t(upgrade.description)}</p>
-            <div class="upgrade-actions">${buyButton}</div>
-        `;
-        DOM.upgradesItems.appendChild(itemDiv);
     }
 }
 
-function renderProduction() {
-    DOM.productionItems.innerHTML = '';
+function renderProduction(force = false) {
+    const container = DOM.productionItems;
+
     for (const buildingId in buildings) {
-        const building = buildings[buildingId];
-        if (player.level < (building.requiredLevel || 1)) {
-            continue;
+        const oldPBuilding = oldState.player?.buildings[buildingId];
+        const newPBuilding = player.buildings[buildingId];
+        const oldLevel = oldState.player?.level;
+        const newLevel = player.level;
+
+        if (force || oldPBuilding?.purchased !== newPBuilding.purchased || oldLevel !== newLevel) {
+            let itemDiv = document.getElementById(`production-item-${buildingId}`);
+
+            const building = buildings[buildingId];
+            const isVisible = newLevel >= (building.requiredLevel || 1);
+            const isPurchased = newPBuilding.purchased;
+
+            if (!isVisible || isPurchased) {
+                if (itemDiv) itemDiv.remove();
+                continue;
+            }
+
+            if (!itemDiv) {
+                itemDiv = document.createElement('div');
+                itemDiv.id = `production-item-${buildingId}`;
+                itemDiv.classList.add('item');
+                container.appendChild(itemDiv);
+            }
+
+            let recipesHtml = building.recipes.map(recipe => {
+                const inputs = Object.entries(recipe.input).map(([key, value]) => `${value} ${t(key)}`).join(', ');
+                const outputs = Object.entries(recipe.output).map(([key, value]) => `${value} ${t(key)}`).join(', ');
+                return `<div class="recipe-info"><strong>${t('production_recipe')}:</strong> ${inputs} → ${outputs} (${formatTime(recipe.productionTime)})</div>`;
+            }).join('');
+
+            const actionButton = `<button class="btn buy-building-btn" data-building-id="${buildingId}">${t('btn_buy')} ($${building.cost})</button>`;
+
+            itemDiv.innerHTML = `
+                <strong>${t(building.name)}</strong>
+                <p>${t(building.description)}</p>
+                ${recipesHtml}
+                ${actionButton}
+            `;
         }
-
-        const playerBuilding = player.buildings[buildingId];
-        if (playerBuilding.purchased) {
-            continue; // Skip purchased buildings
-        }
-
-        const itemDiv = document.createElement('div');
-        itemDiv.classList.add('item');
-
-        let recipesHtml = building.recipes.map(recipe => {
-            const inputs = Object.entries(recipe.input).map(([key, value]) => `${value} ${t(key)}`).join(', ');
-            const outputs = Object.entries(recipe.output).map(([key, value]) => `${value} ${t(key)}`).join(', ');
-            return `<div class="recipe-info"><strong>${t('production_recipe')}:</strong> ${inputs} → ${outputs} (${formatTime(recipe.productionTime)})</div>`;
-        }).join('');
-
-        const actionButton = `<button class="btn buy-building-btn" data-building-id="${buildingId}">${t('btn_buy')} ($${building.cost})</button>`;
-
-        itemDiv.innerHTML = `
-            <strong>${t(building.name)}</strong>
-            <p>${t(building.description)}</p>
-            ${recipesHtml}
-            ${actionButton}
-        `;
-        DOM.productionItems.appendChild(itemDiv);
     }
 }
 
-function renderBuildings() {
-    DOM.buildingsGrid.innerHTML = '';
-    for (const buildingId in player.buildings) {
-        const playerBuilding = player.buildings[buildingId];
-        if (playerBuilding.purchased) {
+function renderBuildings(force = false) {
+    const container = DOM.buildingsGrid;
+
+    for (const buildingId in buildings) {
+        const oldPBuilding = oldState.player?.buildings[buildingId];
+        const newPBuilding = player.buildings[buildingId];
+
+        // If a building is newly purchased or its state changes significantly, render it.
+        if (force || JSON.stringify(oldPBuilding) !== JSON.stringify(newPBuilding)) {
+            let buildingDiv = document.getElementById(`building-${buildingId}`);
+
+            // If building wasn't purchased but is now, create the div
+            if (newPBuilding.purchased && !buildingDiv) {
+                buildingDiv = document.createElement('div');
+                buildingDiv.id = `building-${buildingId}`;
+                container.appendChild(buildingDiv);
+            }
+
+            // If building is not purchased, ensure it's not on the DOM
+            if (!newPBuilding.purchased) {
+                if (buildingDiv) buildingDiv.remove();
+                continue;
+            }
+
+            // Re-render the whole card for simplicity, as its state is complex.
+            // This is still a huge win over re-rendering the whole page.
             const building = buildings[buildingId];
-            const buildingDiv = document.createElement('div');
-            buildingDiv.classList.add('building');
-            if (playerBuilding.automated) {
+            buildingDiv.className = 'building'; // Reset class
+            if (newPBuilding.automated) {
                 buildingDiv.classList.add('automated');
             }
 
             let statusHtml = '';
-            if (playerBuilding.production.length > 0) {
-                const job = playerBuilding.production[0];
+            if (newPBuilding.production.length > 0) {
+                const job = newPBuilding.production[0];
                 const recipe = building.recipes[job.recipeIndex];
                 const effectiveTime = recipe.productionTime * (1 - (player.upgrades.productionSpeed || 0));
                 const timeLeft = job.startTime + effectiveTime - Date.now();
-
-                let queueStatus = '';
-                if (playerBuilding.production.length > 1) {
-                    queueStatus = ` (+${playerBuilding.production.length - 1} in queue)`;
-                }
-
+                let queueStatus = newPBuilding.production.length > 1 ? ` (+${newPBuilding.production.length - 1} in queue)` : '';
                 statusHtml = `<div class="building-status">${t('status_producing')} (${t('status_time_left', { time: formatTime(timeLeft) })}) ${queueStatus}</div>`;
             } else {
-                building.recipes.forEach((recipe, index) => {
+                 building.recipes.forEach((recipe, index) => {
                     const inputs = Object.entries(recipe.input).map(([key, value]) => `${value} ${t(key)}`).join(', ');
                     const outputs = Object.entries(recipe.output).map(([key, value]) => `${value} ${t(key)}`).join(', ');
                     statusHtml += `
@@ -502,21 +711,19 @@ function renderBuildings() {
 
             let autoButton = '';
             if (player.upgrades.buildingAutomation) {
-                const btnTextKey = playerBuilding.automated ? 'btn_deactivate_auto' : 'btn_activate_auto';
+                const btnTextKey = newPBuilding.automated ? 'btn_deactivate_auto' : 'btn_activate_auto';
                 autoButton = `<button class="btn toggle-auto-btn" data-building-id="${buildingId}">${t(btnTextKey)}</button>`;
             }
 
-            let recipeSelector = '';
-            if (playerBuilding.automated && building.recipes.length > 1) {
-                recipeSelector += '<div class="recipe-selectors">';
+            if (newPBuilding.automated && building.recipes.length > 1) {
+                autoButton += '<div class="recipe-selectors">';
                 building.recipes.forEach((recipe, index) => {
                     const output = Object.keys(recipe.output)[0];
                     const icon = getIconForItem(output);
-                    const activeClass = index === playerBuilding.selectedRecipe ? 'active' : '';
-                    recipeSelector += `<button class="btn recipe-selector-btn ${activeClass}" data-building-id="${buildingId}" data-recipe-index="${index}">${icon}</button>`;
+                    const activeClass = index === newPBuilding.selectedRecipe ? 'active' : '';
+                    autoButton += `<button class="btn recipe-selector-btn ${activeClass}" data-building-id="${buildingId}" data-recipe-index="${index}">${icon}</button>`;
                 });
-                recipeSelector += '</div>';
-                autoButton += recipeSelector;
+                autoButton += '</div>';
             }
 
             buildingDiv.innerHTML = `
@@ -525,7 +732,6 @@ function renderBuildings() {
                 <div class="building-recipes">${statusHtml}</div>
                 <div class="building-automation">${autoButton}</div>
             `;
-            DOM.buildingsGrid.appendChild(buildingDiv);
         }
     }
 }
@@ -537,78 +743,96 @@ function renderXpBar() {
     DOM.xpText.textContent = `${player.xp} / ${player.xpToNextLevel} XP`;
 }
 
-function renderPlayerState() {
-    DOM.moneyDisplay.textContent = `💰 $${player.money}`;
-    if (warehouse.research_points > 0) {
-        DOM.researchPointsDisplay.textContent = `💡 ${warehouse.research_points}`;
-        DOM.researchPointsDisplay.style.display = 'block';
-    } else {
-        DOM.researchPointsDisplay.style.display = 'none';
-    }
-    renderXpBar();
+function renderPlayerState(force = false) {
+    const oldP = oldState.player;
+    const newP = player;
+    const oldWh = oldState.warehouse;
+    const newWh = warehouse;
 
-    let bonusHtml = '';
-    if (player.upgrades.growthMultiplier < 1.0) {
-        const percentage = (1 - player.upgrades.growthMultiplier) * 100;
-        bonusHtml += `<div>${t('bonus_growth')}: +${percentage.toFixed(0)}%</div>`;
-    }
-    if (player.upgrades.yieldBonus > 0) {
-        bonusHtml += `<div>${t('bonus_yield')}: +${player.upgrades.yieldBonus}</div>`;
-    }
-    if (player.upgrades.seedDiscount > 0) {
-        const percentage = player.upgrades.seedDiscount * 100;
-        bonusHtml += `<div>${t('bonus_seed_discount')}: ${percentage.toFixed(0)}%</div>`;
-    }
-    if (player.upgrades.marketBonus > 0) {
-        bonusHtml += `<div>${t('bonus_market_bonus')}: +$${player.upgrades.marketBonus}</div>`;
+    // Money
+    if (force || oldP?.money !== newP.money) {
+        DOM.moneyDisplay.textContent = `💰 $${newP.money}`;
     }
 
-    // Display NPC Bonuses
-    const { npcBonuses } = player;
-    const hasNpcBonus =
-        npcBonuses.yieldBonus > 0 ||
-        npcBonuses.growthMultiplier < 1.0 ||
-        npcBonuses.marketBonus > 0 ||
-        npcBonuses.seedDiscount > 0 ||
-        Object.keys(npcBonuses.priceBonus).length > 0;
-
-    if (hasNpcBonus) {
-        bonusHtml += `<div class="bonus-section-title">${t('bonus_npc_bonuses')}:</div>`;
-        if (npcBonuses.growthMultiplier < 1.0) {
-            const percentage = Math.round((1 - npcBonuses.growthMultiplier) * 100);
-            bonusHtml += `<div>- ${t('bonus_growth_speed')}: +${percentage}%</div>`;
-        }
-        if (npcBonuses.yieldBonus > 0) {
-            bonusHtml += `<div>- ${t('bonus_yield')}: +${npcBonuses.yieldBonus}</div>`;
-        }
-        if (npcBonuses.seedDiscount > 0) {
-            const percentage = Math.round(npcBonuses.seedDiscount * 100);
-            bonusHtml += `<div>- ${t('bonus_seed_discount')}: ${percentage}%</div>`;
-        }
-        if (npcBonuses.marketBonus > 0) {
-            bonusHtml += `<div>- ${t('bonus_market_prices')}: +$${npcBonuses.marketBonus}</div>`;
-        }
-        for (const cropName in npcBonuses.priceBonus) {
-            const bonus = npcBonuses.priceBonus[cropName];
-            bonusHtml += `<div>- ${t(cropName)} ${t('bonus_price')}: +$${bonus}</div>`;
-        }
+    // Research Points
+    if (force || oldWh?.research_points !== newWh.research_points) {
+        const rp = newWh.research_points || 0;
+        DOM.researchPointsDisplay.textContent = `💡 ${rp}`;
+        DOM.researchPointsDisplay.style.display = rp > 0 ? 'block' : 'none';
     }
 
-    DOM.bonusDisplay.innerHTML = bonusHtml;
+    // XP Bar and Level
+    if (force || oldP?.xp !== newP.xp || oldP?.level !== newP.level) {
+        DOM.levelDisplay.textContent = t('level_display', { level: newP.level });
+        const xpPercentage = (newP.xp / newP.xpToNextLevel) * 100;
+        DOM.xpBar.style.width = `${xpPercentage}%`;
+        DOM.xpText.textContent = `${newP.xp} / ${newP.xpToNextLevel} XP`;
+    }
+
+    // Bonuses - This part is complex, so for now we'll re-render it fully on any upgrade change
+    // A more granular approach could be implemented if needed
+    if (force || JSON.stringify(oldP?.upgrades) !== JSON.stringify(newP.upgrades) || JSON.stringify(oldP?.npcBonuses) !== JSON.stringify(newP.npcBonuses)) {
+        let bonusHtml = '';
+        if (newP.upgrades.growthMultiplier < 1.0) {
+            const percentage = (1 - newP.upgrades.growthMultiplier) * 100;
+            bonusHtml += `<div>${t('bonus_growth')}: +${percentage.toFixed(0)}%</div>`;
+        }
+        if (newP.upgrades.yieldBonus > 0) {
+            bonusHtml += `<div>${t('bonus_yield')}: +${newP.upgrades.yieldBonus}</div>`;
+        }
+        if (newP.upgrades.seedDiscount > 0) {
+            const percentage = newP.upgrades.seedDiscount * 100;
+            bonusHtml += `<div>${t('bonus_seed_discount')}: ${percentage.toFixed(0)}%</div>`;
+        }
+        if (newP.upgrades.marketBonus > 0) {
+            bonusHtml += `<div>${t('bonus_market_bonus')}: +$${newP.upgrades.marketBonus}</div>`;
+        }
+
+        const { npcBonuses } = newP;
+        const hasNpcBonus =
+            npcBonuses.yieldBonus > 0 ||
+            npcBonuses.growthMultiplier < 1.0 ||
+            npcBonuses.marketBonus > 0 ||
+            npcBonuses.seedDiscount > 0 ||
+            Object.keys(npcBonuses.priceBonus).length > 0;
+
+        if (hasNpcBonus) {
+            bonusHtml += `<div class="bonus-section-title">${t('bonus_npc_bonuses')}:</div>`;
+            if (npcBonuses.growthMultiplier < 1.0) {
+                const percentage = Math.round((1 - npcBonuses.growthMultiplier) * 100);
+                bonusHtml += `<div>- ${t('bonus_growth_speed')}: +${percentage}%</div>`;
+            }
+            if (npcBonuses.yieldBonus > 0) {
+                bonusHtml += `<div>- ${t('bonus_yield')}: +${npcBonuses.yieldBonus}</div>`;
+            }
+            if (npcBonuses.seedDiscount > 0) {
+                const percentage = Math.round(npcBonuses.seedDiscount * 100);
+                bonusHtml += `<div>- ${t('bonus_seed_discount')}: ${percentage}%</div>`;
+            }
+            if (npcBonuses.marketBonus > 0) {
+                bonusHtml += `<div>- ${t('bonus_market_prices')}: +$${npcBonuses.marketBonus}</div>`;
+            }
+            for (const cropName in npcBonuses.priceBonus) {
+                const bonus = npcBonuses.priceBonus[cropName];
+                bonusHtml += `<div>- ${t(cropName)} ${t('bonus_price')}: +$${bonus}</div>`;
+            }
+        }
+        DOM.bonusDisplay.innerHTML = bonusHtml;
+    }
 }
 
-export function renderAll() {
+export function renderAll(force = false) {
     renderStaticUI();
-    renderField();
-    renderWarehouse();
+    renderField(force);
+    renderWarehouse(force);
     renderStore();
     renderReference();
-    renderMarket();
-    renderOrders();
-    renderUpgrades();
-    renderProduction();
-    renderBuildings();
-    renderPlayerState();
+    renderMarket(force);
+    renderOrders(force);
+    renderUpgrades(force);
+    renderProduction(force);
+    renderBuildings(force);
+    renderPlayerState(force);
 }
 
 // Export DOM elements to be used in main.js for event listeners
@@ -687,3 +911,6 @@ export function toggleDebugMenu() {
 
     DOM.debugControls.classList.toggle('hidden');
 }
+
+// --- Initial Kick-off ---
+requestAnimationFrame(renderLoop);

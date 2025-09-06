@@ -143,3 +143,10 @@ export function clearGameState(gameLoopInterval, orderTimerInterval) {
     localStorage.removeItem(SAVE_KEY);
     window.location.reload();
 }
+
+export function deepCopy(obj) {
+    if (obj === null || typeof obj !== 'object') {
+        return obj;
+    }
+    return JSON.parse(JSON.stringify(obj));
+}

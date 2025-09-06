@@ -543,17 +543,19 @@ function updateNpcBonuses() {
 
 export function gameTick() {
     const now = Date.now();
-    const growthChanged = updateCropGrowth(now);
-    const marketChanged = updateMarketPrices(now);
-    const ordersChanged = updateOrders(now);
-    const productionChanged = updateProduction(now);
+    const changes = {
+        growth: updateCropGrowth(now),
+        market: updateMarketPrices(now),
+        orders: updateOrders(now),
+        production: updateProduction(now)
+    };
 
     if (now - lastSaveTime > SAVE_INTERVAL) {
         saveGameState();
         lastSaveTime = now;
     }
 
-    return growthChanged || marketChanged || ordersChanged || productionChanged;
+    return changes;
 }
 
 export function fulfillOrder(customerId) {
