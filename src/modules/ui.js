@@ -1,7 +1,7 @@
 import { t } from './localization.js';
 import { player, field, warehouse, marketState, customers, deepCopy } from './state.js';
 import { NUM_ROWS, NUM_COLS, store, cropTypes, upgrades, customerConfig, buildings } from './config.js';
-import { checkIngredients } from './game.js';
+import { checkIngredients, getResearchCost } from './game.js';
 
 // --- State Cache ---
 let oldState = {};
@@ -768,7 +768,7 @@ function renderBuildings(force = false) {
             } else if (newPBuilding.automated) {
                 const batchSize = 1 + (player.upgrades.productionVolume || 0);
                 const selectedRecipe = building.recipes[newPBuilding.selectedRecipe];
-                const missing = checkIngredients(selectedRecipe, batchSize);
+                const missing = checkIngredients(selectedRecipe, batchSize, buildingId);
                 if (missing.length > 0) {
                     statusHtml = `<div class="building-status-problem">${t('status_missing_resources')}</div>`;
                 } else {
@@ -777,10 +777,15 @@ function renderBuildings(force = false) {
             } else {
                 const batchSize = 1 + (player.upgrades.productionVolume || 0);
                  building.recipes.forEach((recipe, index) => {
-                    const inputs = Object.entries(recipe.input).map(([key, value]) => `${value} ${t(key)}`).join(', ');
+                    let inputs;
+                    if (buildingId === 'research_lab') {
+                        inputs = `${getResearchCost()} ${t('money')}`;
+                    } else {
+                        inputs = Object.entries(recipe.input).map(([key, value]) => `${value} ${t(key)}`).join(', ');
+                    }
                     const outputs = Object.entries(recipe.output).map(([key, value]) => `${value} ${t(key)}`).join(', ');
 
-                    const missing = checkIngredients(recipe, batchSize);
+                    const missing = checkIngredients(recipe, batchSize, buildingId);
                     let buttonClass = 'btn start-production-btn';
                     let buttonData = '';
                     if (missing.length > 0) {

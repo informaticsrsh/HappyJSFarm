@@ -1,7 +1,7 @@
 import { t } from './localization.js';
 import { player, field, warehouse, marketState, customers, saveGameState } from './state.js';
 import { cropTypes, upgrades, NUM_COLS, store, customerConfig, buildings, leveling } from './config.js';
-import { showNotification, showLevelUpModal, showSimpleLevelUpModal } from './ui.js';
+import { showNotification, showLevelUpModal, showSimpleLevelUpModal, scheduleUpdate } from './ui.js';
 
 let lastSaveTime = 0;
 const SAVE_INTERVAL = 5000; // 5 seconds
@@ -423,6 +423,7 @@ function updateProduction(now) {
                         showNotification(t('alert_production_finished', { item: t(product) }));
                         if (product === 'research_points') {
                             player.scienceProductionCount += discreteAmount;
+                            scheduleUpdate('buildings');
                         }
                     }
                 }
