@@ -341,7 +341,7 @@ export const buildings = {
             {
                 input: { 'wheat': 2 },
                 output: { 'bread': 1 },
-                productionTime: 20000 // 20 seconds
+                productionTime: 15000
             }
         ],
         purchased: false,
@@ -357,12 +357,12 @@ export const buildings = {
             {
                 input: { 'wheat': 3 },
                 output: { 'milk': 1 },
-                productionTime: 60000 // 30 seconds
+                productionTime: 50000
             },
             {
                 input: { 'milk': 2 },
                 output: { 'cheese': 1 },
-                productionTime: 75000
+                productionTime: 60000
             }
         ],
         purchased: false,
@@ -378,7 +378,7 @@ export const buildings = {
             {
                 input: { 'potato': 5 },
                 output: { 'bacon': 1 },
-                productionTime: 90000 // 45 seconds
+                productionTime: 70000
             }
         ],
         purchased: false,
@@ -394,7 +394,7 @@ export const buildings = {
             {
                 input: { 'bread': 2, 'bacon': 1 },
                 output: { 'sandwich': 1 },
-                productionTime: 120000 // 1 minute
+                productionTime: 100000
             }
         ],
         purchased: false,
@@ -410,7 +410,7 @@ export const buildings = {
             {
                 input: { 'milk': 1, 'wheat': 2 },
                 output: { 'cereal': 1 },
-                productionTime: 150000 // 1.25 minutes
+                productionTime: 120000
             }
         ],
         purchased: false,
@@ -426,12 +426,12 @@ export const buildings = {
             {
                 input: { 'tomato': 3 },
                 output: { 'tomato_juice': 1 },
-                productionTime: 50000 // 25 seconds
+                productionTime: 40000
             },
             {
                 input: { 'carrot': 4 },
                 output: { 'carrot_juice': 1 },
-                productionTime: 40000 // 20 seconds
+                productionTime: 30000
             }
         ],
         purchased: false,
@@ -447,12 +447,12 @@ export const buildings = {
             {
                 input: { 'strawberry': 5 },
                 output: { 'strawberry_jam': 1 },
-                productionTime: 80000 // 40 seconds
+                productionTime: 60000
             },
             {
                 input: { 'blueberry': 5 },
                 output: { 'blueberry_jam': 1 },
-                productionTime: 100000 // 50 seconds
+                productionTime: 80000
             }
         ],
         purchased: false,
@@ -468,7 +468,7 @@ export const buildings = {
             {
                 input: { 'money': 1000 },
                 output: { 'research_points': 10 },
-                productionTime: 300000
+                productionTime: 250000
             }
         ],
         purchased: false,
@@ -484,7 +484,7 @@ export const buildings = {
             {
                 input: { 'corn': 5, 'tomato': 2 },
                 output: { 'taco': 1 },
-                productionTime: 120000
+                productionTime: 100000
             }
         ],
         purchased: false,
@@ -500,7 +500,7 @@ export const buildings = {
             {
                 input: { 'bell_pepper': 3, 'tomato': 2, 'carrot': 3 },
                 output: { 'salad': 1 },
-                productionTime: 150000
+                productionTime: 120000
             }
         ],
         purchased: false,
@@ -516,7 +516,7 @@ export const buildings = {
             {
                 input: { 'bread': 2, 'tomato': 5, 'cheese': 1 },
                 output: { 'pizza': 1 },
-                productionTime: 180000
+                productionTime: 150000
             }
         ],
         purchased: false,
@@ -532,7 +532,7 @@ export const buildings = {
             {
                 input: { 'strawberry_jam': 1, 'bread': 1, 'milk': 1 },
                 output: { 'fruit_tart': 1 },
-                productionTime: 240000
+                productionTime: 200000
             }
         ],
         purchased: false,
