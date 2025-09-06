@@ -302,11 +302,15 @@ function renderStore() {
 
 function formatTime(ms) {
     if (ms < 0) ms = 0;
-    if (ms < 60000) {
-        return "< 1m";
+    const totalSeconds = Math.round(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    if (minutes > 0) {
+        return `${minutes}m ${seconds}s`;
+    } else {
+        return `${seconds}s`;
     }
-    const minutes = Math.round(ms / 60000);
-    return `${minutes}m`;
 }
 
 function renderCropReference() {
@@ -466,6 +470,25 @@ function renderMarket(force = false) {
                     <button class="btn sell-btn" data-crop-name="${itemName}" data-amount="max">${t('btn_sell_all')}</button>
                 </div>
             `;
+        }
+    });
+}
+
+export function renderProductionTimers() {
+    const buildingElements = DOM.buildingsGrid.querySelectorAll('.building');
+    buildingElements.forEach(buildingElement => {
+        const buildingId = buildingElement.dataset.buildingId;
+        const playerBuilding = player.buildings[buildingId];
+        if (playerBuilding && playerBuilding.production.length > 0) {
+            const timerSpan = buildingElement.querySelector('.production-timer');
+            if (timerSpan) {
+                const building = buildings[buildingId];
+                const job = playerBuilding.production[0];
+                const recipe = building.recipes[job.recipeIndex];
+                const effectiveTime = recipe.productionTime * (1 - (player.upgrades.productionSpeed || 0));
+                const timeLeft = job.startTime + effectiveTime - Date.now();
+                timerSpan.textContent = formatTime(timeLeft);
+            }
         }
     });
 }
@@ -683,6 +706,7 @@ function renderBuildings(force = false) {
             // This is still a huge win over re-rendering the whole page.
             const building = buildings[buildingId];
             buildingDiv.className = 'building'; // Reset class
+            buildingDiv.dataset.buildingId = buildingId;
             if (newPBuilding.automated) {
                 buildingDiv.classList.add('automated');
             }
@@ -694,7 +718,7 @@ function renderBuildings(force = false) {
                 const effectiveTime = recipe.productionTime * (1 - (player.upgrades.productionSpeed || 0));
                 const timeLeft = job.startTime + effectiveTime - Date.now();
                 let queueStatus = newPBuilding.production.length > 1 ? ` (+${newPBuilding.production.length - 1} in queue)` : '';
-                statusHtml = `<div class="building-status">${t('status_producing')} (${t('status_time_left', { time: formatTime(timeLeft) })}) ${queueStatus}</div>`;
+                statusHtml = `<div class="building-status">${t('status_producing')} (<span class="production-timer">${formatTime(timeLeft)}</span>) ${queueStatus}</div>`;
             } else {
                  building.recipes.forEach((recipe, index) => {
                     const inputs = Object.entries(recipe.input).map(([key, value]) => `${value} ${t(key)}`).join(', ');
