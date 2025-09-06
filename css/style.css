@@ -641,3 +641,30 @@ h1 {
         right: 10px;
     }
 }
+
+.btn.disabled, .btn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    border-color: #999999;
+}
+
+.btn-danger {
+    background-color: #dc3545 !important;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c82333 !important;
+}
+
+.recipe-selector-btn.btn-inactive {
+    background-color: #6c757d;
+    color: white;
+    opacity: 0.65;
+}
+
+.building-status-problem {
+    color: #dc3545;
+    font-weight: bold;
+    margin-top: 5px;
+}

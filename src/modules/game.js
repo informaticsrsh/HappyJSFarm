@@ -267,6 +267,23 @@ export function buyBuilding(buildingId) {
     }
 }
 
+export function checkIngredients(recipe, batchSize) {
+    const missing = [];
+    for (const ingredient in recipe.input) {
+        const requiredAmount = recipe.input[ingredient] * batchSize;
+        if (ingredient === 'money') {
+            if (player.money < requiredAmount) {
+                missing.push(t('money'));
+            }
+        } else {
+            if ((warehouse[ingredient] || 0) < requiredAmount) {
+                missing.push(t(ingredient));
+            }
+        }
+    }
+    return missing;
+}
+
 export function startProduction(buildingId, recipeIndex) {
     const building = buildings[buildingId];
     const playerBuilding = player.buildings[buildingId];
@@ -274,26 +291,19 @@ export function startProduction(buildingId, recipeIndex) {
 
     if (!building || !playerBuilding.purchased) {
         showNotification("Building not purchased.");
-        return false;
+        return false; // Should not happen in normal gameplay
     }
 
     const batchSize = 1 + (player.upgrades.productionVolume || 0);
+    const missingIngredients = checkIngredients(recipe, batchSize);
 
-    // Check for required ingredients for the entire batch
-    for (const ingredient in recipe.input) {
-        const requiredAmount = recipe.input[ingredient] * batchSize;
-        if (ingredient === 'money') {
-            if (player.money < requiredAmount) {
-                showNotification(t('alert_not_enough_money'));
-                return false;
-            }
-        } else {
-            if ((warehouse[ingredient] || 0) < requiredAmount) {
-                showNotification(t('alert_not_enough_ingredients', { item: t(ingredient) }));
-                return false;
-            }
-        }
+    if (missingIngredients.length > 0) {
+        // The UI will handle showing the specific missing ingredients.
+        // This is a fallback notification.
+        showNotification(t('alert_not_enough_ingredients_generic'));
+        return false;
     }
+
 
     // Consume ingredients for the entire batch
     for (const ingredient in recipe.input) {

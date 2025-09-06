@@ -93,6 +93,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let stateChanged = false;
         if (e.target.classList.contains('start-production-btn')) {
+            const missing = e.target.dataset.missing;
+            if (missing) {
+                showNotification(missing);
+                return; // Do not proceed with production
+            }
             const recipeIndex = e.target.dataset.recipeIndex;
             stateChanged = startProduction(buildingId, recipeIndex);
         } else if (e.target.classList.contains('toggle-auto-btn')) {
