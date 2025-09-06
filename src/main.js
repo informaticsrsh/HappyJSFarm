@@ -265,6 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const changes = gameTick();
         if (changes.growth) {
             scheduleUpdate('field');
+            scheduleUpdate('warehouse');
         }
         if (changes.market) {
             scheduleUpdate('market');

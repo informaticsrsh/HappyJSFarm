@@ -387,7 +387,7 @@ function updateProduction(now) {
         const building = buildings[buildingId];
 
         // --- Handle finished production ---
-        while (playerBuilding.production.length > 0) {
+        if (playerBuilding.production.length > 0) {
             const job = playerBuilding.production[0];
             const recipe = building.recipes[job.recipeIndex];
             const effectiveTime = recipe.productionTime * (1 - (player.upgrades.productionSpeed || 0));
@@ -417,9 +417,6 @@ function updateProduction(now) {
                 // Remove completed job from queue
                 playerBuilding.production.shift();
                 productionChanged = true;
-            } else {
-                // If the first job is not ready, none of the subsequent jobs are either
-                break;
             }
         }
 
