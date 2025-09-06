@@ -267,11 +267,18 @@ export function buyBuilding(buildingId) {
     }
 }
 
-export function checkIngredients(recipe, batchSize) {
+export function getResearchCost() {
+    return 1000 + (Math.floor(player.scienceProductionCount / 10) * 100);
+}
+
+export function checkIngredients(recipe, batchSize, buildingId) {
     const missing = [];
     for (const ingredient in recipe.input) {
-        const requiredAmount = recipe.input[ingredient] * batchSize;
+        let requiredAmount = recipe.input[ingredient] * batchSize;
         if (ingredient === 'money') {
+            if (buildingId === 'research_lab') {
+                requiredAmount = getResearchCost() * batchSize;
+            }
             if (player.money < requiredAmount) {
                 missing.push(t('money'));
             }
@@ -295,7 +302,7 @@ export function startProduction(buildingId, recipeIndex) {
     }
 
     const batchSize = 1 + (player.upgrades.productionVolume || 0);
-    const missingIngredients = checkIngredients(recipe, batchSize);
+    const missingIngredients = checkIngredients(recipe, batchSize, buildingId);
 
     if (missingIngredients.length > 0) {
         // The UI will handle showing the specific missing ingredients.
@@ -307,8 +314,11 @@ export function startProduction(buildingId, recipeIndex) {
 
     // Consume ingredients for the entire batch
     for (const ingredient in recipe.input) {
-        const consumedAmount = recipe.input[ingredient] * batchSize;
+        let consumedAmount = recipe.input[ingredient] * batchSize;
         if (ingredient === 'money') {
+            if (buildingId === 'research_lab') {
+                consumedAmount = getResearchCost() * batchSize;
+            }
             player.money -= consumedAmount;
         } else {
             warehouse[ingredient] -= consumedAmount;
@@ -411,6 +421,9 @@ function updateProduction(now) {
                         warehouse[product] = (warehouse[product] || 0) + discreteAmount;
                         addXp(cropTypes[product].xpValue * discreteAmount);
                         showNotification(t('alert_production_finished', { item: t(product) }));
+                        if (product === 'research_points') {
+                            player.scienceProductionCount += discreteAmount;
+                        }
                     }
                 }
 

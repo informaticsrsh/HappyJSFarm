@@ -467,8 +467,8 @@ export const buildings = {
         recipes: [
             {
                 input: { 'money': 1000 },
-                output: { 'research_points': 10 },
-                productionTime: 120000
+                output: { 'research_points': 1 },
+                productionTime: 1000
             }
         ],
         purchased: false,

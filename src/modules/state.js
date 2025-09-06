@@ -29,7 +29,8 @@ export let player = {
         seedDiscount: 0,
         marketBonus: 0,
         priceBonus: {} // e.g., { 'wheat': 5 }
-    }
+    },
+    scienceProductionCount: 0
 };
 
 export let field = Array(NUM_ROWS).fill(null).map(() => Array(NUM_COLS).fill(null).map(() => ({ crop: null, growthStage: 0, stageStartTime: 0, autoCrop: null })));
@@ -123,6 +124,7 @@ export function loadGameState() {
 
         // Restore the state
         Object.assign(player, restoredState.player);
+        player.scienceProductionCount = player.scienceProductionCount || 0;
 
         // Correctly restore array to avoid leaving old data
         field.length = 0;
