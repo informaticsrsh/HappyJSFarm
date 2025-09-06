@@ -544,11 +544,12 @@ export const buildings = {
 export const customerConfig = {
     orderLifetime: 480000, // ms
     trustLevels: [
+        // size is a time range in minutes for order generation
         { level: 1, trust: 0, size: [5, 10], reward: 1.1 },
         { level: 2, trust: 100, size: [10, 20], reward: 1.15 },
-        { level: 3, trust: 200, size: [20, 40], reward: 1.2 },
-        { level: 4, trust: 300, size: [30, 50], reward: 1.25 },
-        { level: 5, trust: 400, size: [40, 60], reward: 1.3 },
+        { level: 3, trust: 200, size: [20, 30], reward: 1.2 },
+        { level: 4, trust: 300, size: [30, 45], reward: 1.25 },
+        { level: 5, trust: 400, size: [45, 60], reward: 1.3 },
     ],
     customers: {
         'npc1': {
