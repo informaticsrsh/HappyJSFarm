@@ -218,9 +218,48 @@ function renderField(force = false) {
 
 function renderWarehouse(force = false) {
     const container = DOM.warehouseItems;
-    const allItems = { ...warehouse, ...(oldState.warehouse || {}) };
 
-    for (const item in allItems) {
+    // 1. Define a canonical order
+    const seedOrder = store.map(s => s.name);
+    const productOrder = Object.keys(cropTypes)
+        .filter(item => !item.endsWith('_seed') && item !== 'research_points')
+        .sort();
+    const canonicalOrder = [...seedOrder, ...productOrder];
+
+    // 2. Get and sort current warehouse items
+    const warehouseItems = Object.keys(warehouse).filter(item => warehouse[item] > 0 && item !== 'research_points');
+    warehouseItems.sort((a, b) => {
+        const indexA = canonicalOrder.indexOf(a);
+        const indexB = canonicalOrder.indexOf(b);
+        if (indexA === -1) return 1;
+        if (indexB === -1) return -1;
+        return indexA - indexB;
+    });
+
+    // 3. Diff and render
+    const allItemsToRender = new Set([...warehouseItems, ...(oldState.warehouse ? Object.keys(oldState.warehouse) : [])]);
+
+    // Efficiently re-order DOM elements if needed
+    if (force || warehouseItems.some((item, index) => container.children[index]?.id !== `warehouse-item-${item}`)) {
+         // Create a map of existing elements for quick lookup
+        const existingElements = new Map();
+        for (const child of container.children) {
+            existingElements.set(child.id.replace('warehouse-item-', ''), child);
+        }
+
+        // Append elements in the correct order
+        warehouseItems.forEach(item => {
+            const el = existingElements.get(item);
+            if (el) {
+                container.appendChild(el); // Re-appending moves the element
+            }
+        });
+    }
+
+
+    for (const item of allItemsToRender) {
+         if (item === 'research_points') continue;
+
         const oldAmount = oldState.warehouse?.[item] || 0;
         const newAmount = warehouse[item] || 0;
         const oldSelected = oldState.player?.selectedSeed;
@@ -242,7 +281,13 @@ function renderWarehouse(force = false) {
                 itemDiv = document.createElement('div');
                 itemDiv.id = `warehouse-item-${item}`;
                 itemDiv.classList.add('item', item.replace(/_/g, '-'));
-                container.appendChild(itemDiv);
+                // Find the correct position to insert
+                const index = warehouseItems.indexOf(item);
+                if (index !== -1 && container.children[index]) {
+                    container.insertBefore(itemDiv, container.children[index]);
+                } else {
+                    container.appendChild(itemDiv);
+                }
             }
 
             // Update content
