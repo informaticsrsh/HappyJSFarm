@@ -34,7 +34,7 @@ export const cropTypes = {
     'wheat': {
         icon: '🌾',
         seed_icon: '🌱',
-        growthTime: 6000, // ms per stage
+        growthTime: 2000, // ms per stage
         visuals: ['🌱', '🌿', '🌾'],
         yieldRange: [1, 3],
         maxPrice: 12,
@@ -47,7 +47,7 @@ export const cropTypes = {
     'carrot': {
         icon: '🥕',
         seed_icon: '🌱',
-        growthTime: 8000,
+        growthTime: 2667,
         visuals: ['🌱', '🌿', '🥕'],
         yieldRange: [1, 2],
         maxPrice: 20,
@@ -60,7 +60,7 @@ export const cropTypes = {
     'tomato': {
         icon: '🍅',
         seed_icon: '🌱',
-        growthTime: 10000,
+        growthTime: 3333,
         visuals: ['🌱', '🌿', '🍅'],
         yieldRange: [2, 4],
         maxPrice: 40,
@@ -73,7 +73,7 @@ export const cropTypes = {
     'potato': {
         icon: '🥔',
         seed_icon: '🌱',
-        growthTime: 12000,
+        growthTime: 4000,
         visuals: ['🌱', '🌿', '🥔'],
         yieldRange: [3, 6],
         maxPrice: 60,
@@ -149,7 +149,7 @@ export const cropTypes = {
     'strawberry': {
         icon: '🍓',
         seed_icon: '🌱',
-        growthTime: 28000,
+        growthTime: 9333,
         visuals: ['🌱', '🌿', '🍓'],
         yieldRange: [2, 5],
         maxPrice: 100,
@@ -162,7 +162,7 @@ export const cropTypes = {
     'blueberry': {
         icon: '🔵',
         seed_icon: '🌱',
-        growthTime: 32000,
+        growthTime: 16000,
         visuals: ['🌱', '🌿', '🔵'],
         yieldRange: [3, 6],
         maxPrice: 130,
@@ -193,7 +193,7 @@ export const cropTypes = {
     'corn': {
         icon: '🌽',
         seed_icon: '🌱',
-        growthTime: 36000,
+        growthTime: 18000,
         visuals: ['🌱', '🌿', '🌽'],
         yieldRange: [4, 8],
         maxPrice: 160,
@@ -206,7 +206,6 @@ export const cropTypes = {
     'bell_pepper': {
         icon: '🌶️',
         seed_icon: '🌱',
-        growthTime: 40000,
         growthTime: 20000,
         visuals: ['🌱', '🌿', '🌶️'],
         yieldRange: [5, 10],
@@ -342,7 +341,7 @@ export const buildings = {
             {
                 input: { 'wheat': 2 },
                 output: { 'bread': 1 },
-                productionTime: 40000 // 20 seconds
+                productionTime: 20000 // 20 seconds
             }
         ],
         purchased: false,
@@ -358,12 +357,12 @@ export const buildings = {
             {
                 input: { 'wheat': 3 },
                 output: { 'milk': 1 },
-                productionTime: 120000 // 30 seconds
+                productionTime: 60000 // 30 seconds
             },
             {
                 input: { 'milk': 2 },
                 output: { 'cheese': 1 },
-                productionTime: 150000
+                productionTime: 75000
             }
         ],
         purchased: false,
@@ -379,7 +378,7 @@ export const buildings = {
             {
                 input: { 'potato': 5 },
                 output: { 'bacon': 1 },
-                productionTime: 180000 // 45 seconds
+                productionTime: 90000 // 45 seconds
             }
         ],
         purchased: false,
@@ -395,7 +394,7 @@ export const buildings = {
             {
                 input: { 'bread': 2, 'bacon': 1 },
                 output: { 'sandwich': 1 },
-                productionTime: 240000 // 1 minute
+                productionTime: 120000 // 1 minute
             }
         ],
         purchased: false,
@@ -411,7 +410,7 @@ export const buildings = {
             {
                 input: { 'milk': 1, 'wheat': 2 },
                 output: { 'cereal': 1 },
-                productionTime: 300000 // 1.25 minutes
+                productionTime: 150000 // 1.25 minutes
             }
         ],
         purchased: false,
@@ -427,12 +426,12 @@ export const buildings = {
             {
                 input: { 'tomato': 3 },
                 output: { 'tomato_juice': 1 },
-                productionTime: 100000 // 25 seconds
+                productionTime: 50000 // 25 seconds
             },
             {
                 input: { 'carrot': 4 },
                 output: { 'carrot_juice': 1 },
-                productionTime: 80000 // 20 seconds
+                productionTime: 40000 // 20 seconds
             }
         ],
         purchased: false,
@@ -448,12 +447,12 @@ export const buildings = {
             {
                 input: { 'strawberry': 5 },
                 output: { 'strawberry_jam': 1 },
-                productionTime: 160000 // 40 seconds
+                productionTime: 80000 // 40 seconds
             },
             {
                 input: { 'blueberry': 5 },
                 output: { 'blueberry_jam': 1 },
-                productionTime: 200000 // 50 seconds
+                productionTime: 100000 // 50 seconds
             }
         ],
         purchased: false,
@@ -469,7 +468,7 @@ export const buildings = {
             {
                 input: { 'money': 1000 },
                 output: { 'research_points': 10 },
-                productionTime: 600000
+                productionTime: 300000
             }
         ],
         purchased: false,
@@ -485,7 +484,7 @@ export const buildings = {
             {
                 input: { 'corn': 5, 'tomato': 2 },
                 output: { 'taco': 1 },
-                productionTime: 240000
+                productionTime: 120000
             }
         ],
         purchased: false,
@@ -501,7 +500,7 @@ export const buildings = {
             {
                 input: { 'bell_pepper': 3, 'tomato': 2, 'carrot': 3 },
                 output: { 'salad': 1 },
-                productionTime: 300000
+                productionTime: 150000
             }
         ],
         purchased: false,
@@ -517,7 +516,7 @@ export const buildings = {
             {
                 input: { 'bread': 2, 'tomato': 5, 'cheese': 1 },
                 output: { 'pizza': 1 },
-                productionTime: 360000
+                productionTime: 180000
             }
         ],
         purchased: false,
@@ -533,7 +532,7 @@ export const buildings = {
             {
                 input: { 'strawberry_jam': 1, 'bread': 1, 'milk': 1 },
                 output: { 'fruit_tart': 1 },
-                productionTime: 480000
+                productionTime: 240000
             }
         ],
         purchased: false,
