@@ -50,6 +50,9 @@ function renderLoop() {
                     case 'production':
                         renderProduction();
                         break;
+                    case 'store':
+                        renderStore();
+                        break;
                     // Cases for other components will be added here
                 }
             });
