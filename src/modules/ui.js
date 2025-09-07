@@ -50,6 +50,9 @@ function renderLoop() {
                     case 'production':
                         renderProduction();
                         break;
+                    case 'store':
+                        renderStore();
+                        break;
                     // Cases for other components will be added here
                 }
             });
@@ -150,12 +153,14 @@ function getIconForItem(itemName) {
 
 function renderField(force = false) {
     const grid = DOM.fieldGrid;
+    let gridRebuilt = false;
 
     // Initial setup or if forced (e.g., farm expansion)
-    if (force || grid.children.length !== field.length * field[0].length) {
+    if (force || grid.children.length !== field.length * (field[0]?.length || 0)) {
+        gridRebuilt = true;
         grid.innerHTML = '';
         grid.style.gridTemplateRows = `repeat(${field.length}, 50px)`;
-        grid.style.gridTemplateColumns = `repeat(${field[0].length}, 50px)`;
+        grid.style.gridTemplateColumns = `repeat(${field[0]?.length || 0}, 50px)`;
 
         for (let r = 0; r < field.length; r++) {
             for (let c = 0; c < field[0].length; c++) {
@@ -179,7 +184,7 @@ function renderField(force = false) {
             if (!plot) continue; // Should not happen after initial setup
 
             // Compare states and update if necessary
-            if (force || !oldCell || oldCell.crop !== newCell.crop || oldCell.growthStage !== newCell.growthStage || oldCell.autoCrop !== newCell.autoCrop) {
+            if (force || gridRebuilt || !oldCell || oldCell.crop !== newCell.crop || oldCell.growthStage !== newCell.growthStage || oldCell.autoCrop !== newCell.autoCrop) {
                 // Update visuals
                 if (newCell.crop) {
                     plot.textContent = cropTypes[newCell.crop].visuals[newCell.growthStage];

@@ -34,6 +34,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 scheduleUpdate('market');
                 scheduleUpdate('orders');
                 scheduleUpdate('buildings');
+                scheduleUpdate('playerState');
+                scheduleUpdate('store');
+                scheduleUpdate('production');
+                scheduleUpdate('upgrades');
                 saveGameState();
             }
         }
@@ -252,6 +256,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 scheduleUpdate('orders');
                 scheduleUpdate('warehouse');
                 scheduleUpdate('playerState'); // For money and XP
+                scheduleUpdate('store');
+                scheduleUpdate('production');
+                scheduleUpdate('upgrades');
                 saveGameState();
             }
         }
@@ -283,6 +290,9 @@ document.addEventListener('DOMContentLoaded', () => {
             scheduleUpdate('warehouse'); // Production creates items
             scheduleUpdate('playerState'); // Production gives XP
             scheduleUpdate('orders');
+            scheduleUpdate('store');
+            scheduleUpdate('production');
+            scheduleUpdate('upgrades');
         }
 
     }, 1000); // Main game loop
