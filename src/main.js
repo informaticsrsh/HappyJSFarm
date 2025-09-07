@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 scheduleUpdate('market');
                 scheduleUpdate('orders');
                 scheduleUpdate('buildings');
+                scheduleUpdate('playerState'); // Re-render XP and level
                 saveGameState();
             }
         }
