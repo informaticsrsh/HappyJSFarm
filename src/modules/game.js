@@ -1,7 +1,7 @@
 import { t } from './localization.js';
 import { player, field, warehouse, marketState, customers, saveGameState } from './state.js';
 import { cropTypes, upgrades, NUM_COLS, store, customerConfig, buildings, leveling } from './config.js';
-import { showNotification, showLevelUpModal, showSimpleLevelUpModal, scheduleUpdate } from './ui.js';
+import { showNotification, showLevelUpModal, showSimpleLevelUpModal, scheduleUpdate, showFloatingText } from './ui.js';
 
 let lastSaveTime = 0;
 const SAVE_INTERVAL = 5000; // 5 seconds
@@ -91,6 +91,15 @@ export function harvestCrop(r, c) {
         let yieldAmount = Math.floor(Math.random() * (max - min + 1)) + min;
         yieldAmount += (player.upgrades.yieldBonus + player.npcBonuses.yieldBonus);
         warehouse[cell.crop] = (warehouse[cell.crop] || 0) + yieldAmount;
+        
+        // НОВЕ: Показати floating text
+        const plotElement = document.querySelector(`[data-row="${r}"][data-col="${c}"]`);
+        if (plotElement) {
+            const rect = plotElement.getBoundingClientRect();
+            showFloatingText(rect.left + rect.width / 2, rect.top, `+${yieldAmount} ${crop.icon}`, '#4CAF50');
+            showFloatingText(rect.left + rect.width / 2 + 30, rect.top + 10, `+${crop.xpValue * yieldAmount} XP`, '#FFC107');
+        }
+        
         addXp(crop.xpValue * yieldAmount);
         cell.crop = null;
         cell.growthStage = 0;

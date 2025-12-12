@@ -3,12 +3,12 @@
 html, body {
     height: 100%;
     margin: 0;
-    overflow: hidden; /* Prevent scrollbars on the body */
+    overflow: hidden;
 }
 
 body {
     font-family: 'Karla', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-    background-color: #333; /* Dark background for the letterbox */
+    background-color: #333;
     color: #3d405b;
 }
 
@@ -16,13 +16,12 @@ body {
     width: 100vw;
     height: 100vh;
     background-color: #f4f1de;
-    overflow-y: auto; /* Allow scrolling within the game */
+    overflow-y: auto;
     position: relative;
     padding: 10px;
     box-sizing: border-box;
 }
 
-/* Letterbox on larger screens */
 @media (min-width: 1280px) and (min-height: 720px) {
     body {
         display: flex;
@@ -37,6 +36,91 @@ body {
     }
 }
 
+/* НОВЕ: Floating Text Animation */
+.floating-text {
+    position: fixed;
+    font-weight: bold;
+    font-size: 18px;
+    pointer-events: none;
+    z-index: 1000;
+    animation: float-up 1s ease-out forwards;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+@keyframes float-up {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+}
+
+/* НОВЕ: Tooltip Styles */
+.tooltip {
+    position: fixed;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    z-index: 10000;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    animation: tooltip-appear 0.2s ease;
+    max-width: 250px;
+    line-height: 1.4;
+}
+
+@keyframes tooltip-appear {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* НОВЕ: Growth Progress Bar */
+.growth-progress-bar {
+    position: absolute;
+    bottom: 2px;
+    left: 2px;
+    right: 2px;
+    height: 4px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 2px;
+    overflow: hidden;
+    pointer-events: none; /* Не блокує кліки */
+}
+
+.growth-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50, #8BC34A);
+    transition: width 0.3s ease;
+    pointer-events: none; /* Не блокує кліки */
+}
+
+/* НОВЕ: Ready to Harvest Animation */
+.ready-to-harvest {
+    animation: pulse 1.5s ease-in-out infinite;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.6);
+}
+
+@keyframes pulse {
+    0%, 100% { 
+        transform: scale(1); 
+        box-shadow: 0 0 10px rgba(76, 175, 80, 0.6);
+    }
+    50% { 
+        transform: scale(1.05); 
+        box-shadow: 0 0 20px rgba(76, 175, 80, 0.8);
+    }
+}
 
 .notification {
     position: fixed;
@@ -54,12 +138,24 @@ body {
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s, visibility 0.3s, top 0.3s;
+    animation: notification-appear 0.3s ease;
 }
 
 .notification.show {
     opacity: 1;
     visibility: visible;
     top: 40px;
+}
+
+@keyframes notification-appear {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
 }
 
 h1, h2 {
@@ -87,13 +183,14 @@ h1 {
 }
 
 #field-container, #warehouse-container, #buildings-container, .modal-content {
-    background-color: #c6d5ac; /* New, softer background color */
+    background-color: #c6d5ac;
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     border: 2px solid #3d405b;
 }
 
+/* НОВЕ: Smooth Button Transitions */
 .btn {
     background-color: #81b29a;
     color: white;
@@ -104,11 +201,26 @@ h1 {
     font-family: 'Karla', sans-serif;
     font-size: 16px;
     font-weight: 700;
-    transition: background-color 0.2s;
+    transition: all 0.2s ease;
 }
 
 .btn:hover {
     background-color: #3d405b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.btn-success {
+    background-color: #28a745;
+}
+
+.btn-success:hover {
+    background-color: #218838;
 }
 
 .button-group {
@@ -131,6 +243,7 @@ h1 {
     margin-bottom: 5px;
 }
 
+/* НОВЕ: Enhanced XP Bar */
 #xp-bar-container {
     width: 100%;
     background-color: #e0e0e0;
@@ -144,9 +257,10 @@ h1 {
 #xp-bar {
     width: 0%;
     height: 100%;
-    background-color: #81b29a;
+    background: linear-gradient(90deg, #4CAF50, #8BC34A);
     border-radius: 4px;
-    transition: width 0.3s ease-in-out;
+    transition: width 0.5s ease;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
 }
 
 #xp-text {
@@ -186,8 +300,7 @@ h1 {
     margin-left: 10px;
 }
 
-/* Store Tab Styles */
-.store-tabs {
+.store-tabs, .ref-tabs {
     display: flex;
     border-bottom: 2px solid #3d405b;
     margin-bottom: 15px;
@@ -202,6 +315,11 @@ h1 {
     font-weight: 700;
     color: #3d405b;
     opacity: 0.6;
+    transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+    opacity: 0.8;
 }
 
 .tab-btn.active {
@@ -217,10 +335,8 @@ h1 {
     display: block;
 }
 
-
-/* Modal Styles */
 .modal {
-    display: none; /* Hidden by default */
+    display: none;
     position: fixed;
     z-index: 1;
     left: 0;
@@ -246,6 +362,7 @@ h1 {
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
+    transition: color 0.2s ease;
 }
 
 .close-btn:hover,
@@ -261,28 +378,35 @@ h1 {
     background-color: #f2cc8f;
     padding: 10px;
     border-radius: 8px;
-    max-width: 500px; /* Prevent oversized plots on large screens */
-    margin: auto; /* Center the grid */
-    flex-grow: 1; /* Allow grid to grow */
+    max-width: 500px;
+    margin: auto;
+    flex-grow: 1;
 }
 
+/* НОВЕ: Enhanced Plot Styling */
 .plot {
-    aspect-ratio: 1 / 1; /* Maintain square shape, width/height set by grid */
+    aspect-ratio: 1 / 1;
     background-color: #a5682a;
     border: 2px solid #654321;
     border-radius: 4px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 2em; /* Responsive font size */
+    font-size: 2em;
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: all 0.2s ease;
     position: relative;
     overflow: hidden;
 }
 
 .plot:hover {
-    transform: scale(1.1);
+    transform: scale(1.05);
+    box-shadow: 0 0 8px rgba(255, 193, 7, 0.5);
+}
+
+.crop-icon {
+    z-index: 2;
+    pointer-events: none; /* Не блокує кліки */
 }
 
 #buildings-grid {
@@ -291,6 +415,7 @@ h1 {
     gap: 15px;
 }
 
+/* НОВЕ: Enhanced Building Cards */
 .building {
     background-color: #f4f1de;
     padding: 15px;
@@ -302,12 +427,21 @@ h1 {
     align-items: center;
     gap: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: all 0.3s ease;
 }
 
 .building:hover {
     transform: translateY(-5px);
     box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.building.production-complete {
+    animation: building-bounce 0.5s ease;
+}
+
+@keyframes building-bounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
 }
 
 .building-icon {
@@ -327,10 +461,104 @@ h1 {
 }
 
 .building-timer {
-    margin-top: auto; /* Pushes the button/timer to the bottom */
+    margin-top: auto;
     padding-top: 10px;
     font-weight: 700;
     color: #e07a5f;
+}
+
+/* НОВЕ: Warehouse Item Styling */
+.warehouse-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 5px;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+    animation: slide-in 0.3s ease;
+}
+
+@keyframes slide-in {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.warehouse-item:hover {
+    background-color: #f4f1de;
+    transform: translateX(5px);
+}
+
+.warehouse-item.selected {
+    background-color: #81b29a;
+    color: #fff;
+    box-shadow: 0 0 5px #81b29a;
+    font-weight: 700;
+    border-color: #3d405b;
+}
+
+.warehouse-icon {
+    font-size: 24px;
+}
+
+.warehouse-count {
+    font-weight: 700;
+}
+
+/* НОВЕ: Market Item Styling */
+.market-item {
+    background-color: #f4f1de;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border: 2px solid #3d405b;
+    animation: slide-in 0.3s ease;
+}
+
+.market-item-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.market-item-icon {
+    font-size: 28px;
+}
+
+.market-item-name {
+    font-weight: 700;
+    flex-grow: 1;
+}
+
+.market-item-stock {
+    background-color: #81b29a;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+}
+
+.market-item-price {
+    font-size: 18px;
+    color: #e07a5f;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.market-actions, .store-actions {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: wrap;
 }
 
 .item {
@@ -338,7 +566,7 @@ h1 {
     padding: 8px;
     border-radius: 6px;
     margin-bottom: 5px;
-    transition: background-color 0.2s, box-shadow 0.2s;
+    transition: all 0.2s ease;
     border: 2px solid transparent;
 }
 
@@ -353,25 +581,11 @@ h1 {
     font-weight: 700;
 }
 
-#market-items .item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-.market-item-info {
+.store-item-info, .market-item-info {
     flex-grow: 1;
 }
 
-.market-actions {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    margin-top: 5px;
-}
-
-.sell-amount-input {
+.sell-amount-input, .buy-amount-input {
     width: 60px;
     padding: 5px;
     border-radius: 4px;
@@ -379,34 +593,6 @@ h1 {
     font-family: 'Karla', sans-serif;
 }
 
-#store-items .item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-.store-item-info {
-    flex-grow: 1;
-}
-
-.store-actions {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    margin-top: 5px;
-}
-
-.buy-amount-input {
-    width: 60px;
-    padding: 5px;
-    border-radius: 4px;
-    border: 1px solid #3d405b;
-    font-family: 'Karla', sans-serif;
-}
-
-
-/* Seed-specific colors */
 .wheat-seed { background-color: #f2cc8f44; }
 .carrot-seed { background-color: #e07a5f44; }
 .tomato-seed { background-color: #f2848244; }
@@ -416,13 +602,11 @@ h1 {
 .corn-seed { background-color: #f7d04b44; }
 .bell-pepper-seed { background-color: #82b74b44; }
 
-/* Override for selected items to ensure text is readable */
 .item.selected {
     color: #fff !important;
     background-color: #81b29a;
 }
 
-/* Crop-specific colors in the field */
 .plot.wheat { background-color: #f2cc8f44; }
 .plot.carrot { background-color: #e07a5f44; }
 .plot.tomato { background-color: #f2848244; }
@@ -443,6 +627,7 @@ h1 {
     right: 2px;
     font-size: 0.5em;
     z-index: 1;
+    pointer-events: none; /* Не блокує кліки */
 }
 
 .automation-icon {
@@ -451,7 +636,9 @@ h1 {
     left: 2px;
     font-size: 0.5em;
     z-index: 1;
+    pointer-events: none; /* Не блокує кліки */
 }
+
 .automated-plot.automated-wheat { border-color: #f2cc8f; }
 .automated-plot.automated-carrot { border-color: #e07a5f; }
 .automated-plot.automated-tomato { border-color: #f28482; }
@@ -471,14 +658,13 @@ h1 {
 }
 
 .recipe-selector-btn {
-    background-color: #f28482; /* red */
+    background-color: #f28482;
 }
 
 .recipe-selector-btn.active {
-    background-color: #81b29a; /* green */
+    background-color: #81b29a;
 }
 
-/* Orders Section */
 #orders-container {
     background-color: #f4f1de;
     padding: 15px;
@@ -504,14 +690,12 @@ h1 {
     font-size: 14px;
 }
 
-/* Customer-specific Order Colors */
-.order-customer-npc1 { background-color: #f2cc8fcc; } /* Farmer Joe - Wheat-like */
-.order-customer-npc2 { background-color: #a2d2ffcc; } /* Granny Smith - Sky Blue */
-.order-customer-npc3 { background-color: #ffc8ddcc; } /* Chef Pierre - Rosy Pink */
-.order-customer-npc4 { background-color: #cdb4dbcc; } /* Rancher Rick - Lavender */
-.order-customer-npc5 { background-color: #bde0fecc; } /* Baker Betty - Light Blue */
+.order-customer-npc1 { background-color: #f2cc8fcc; }
+.order-customer-npc2 { background-color: #a2d2ffcc; }
+.order-customer-npc3 { background-color: #ffc8ddcc; }
+.order-customer-npc4 { background-color: #cdb4dbcc; }
+.order-customer-npc5 { background-color: #bde0fecc; }
 
-/* Level Up Modal Styles */
 #level-up-modal .modal-content {
     text-align: center;
     background: linear-gradient(135deg, #f2cc8f, #e07a5f);
@@ -566,7 +750,6 @@ h1 {
     display: none;
 }
 
-/* Mobile Landscape */
 @media (max-height: 480px) and (orientation: landscape) {
     h1 {
         font-size: 1.2em;
@@ -601,7 +784,7 @@ h1 {
     }
 
     .plot {
-        font-size: 1.5em; /* Adjust font size for smaller plots */
+        font-size: 1.5em;
     }
 
     #buildings-grid {
