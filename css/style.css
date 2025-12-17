@@ -1162,3 +1162,122 @@ h1 {
 .token-shop-item[data-type="permanent"] {
     border-left: 4px solid #4CAF50;
 }
+
+/* ========== ACTIVE BOOSTS PANEL ========== */
+
+.active-boosts-panel {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(244, 241, 222, 0.95);
+    border: 2px solid #667eea;
+    border-radius: 12px;
+    padding: 12px;
+    min-width: 220px;
+    max-width: 280px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 900;
+    backdrop-filter: blur(10px);
+    transition: opacity 0.3s ease;
+}
+
+.active-boosts-panel.hidden {
+    display: none;
+}
+
+.boosts-header {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #3d405b;
+    text-align: center;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 6px;
+}
+
+.boosts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Individual Boost Cards */
+.boost-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    padding: 10px;
+    color: white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.boost-card.growth-speed {
+    background: linear-gradient(135deg, #4CAF50 0%, #2e7d32 100%);
+}
+
+.boost-card.lucky-day {
+    background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+}
+
+.boost-card.double-harvest {
+    background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+}
+
+.boost-name {
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.boost-icon {
+    font-size: 18px;
+}
+
+.boost-time {
+    font-size: 12px;
+    opacity: 0.9;
+    margin-bottom: 4px;
+}
+
+.boost-charges {
+    font-size: 12px;
+    opacity: 0.9;
+    font-weight: bold;
+}
+
+.boost-progress-bar {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 6px;
+}
+
+.boost-progress-fill {
+    height: 100%;
+    background: white;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+/* Empty State */
+.boosts-empty {
+    text-align: center;
+    color: #888;
+    font-style: italic;
+    font-size: 13px;
+    padding: 10px;
+}
+
+/* Pulse Glow Animation */
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+    50% {
+        box-shadow: 0 2px 12px rgba(102, 126, 234, 0.4);
+    }
+}

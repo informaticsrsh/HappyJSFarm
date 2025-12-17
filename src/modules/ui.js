@@ -1,5 +1,5 @@
 import { t } from './localization.js';
-import { player, field, warehouse, marketState, customers, deepCopy } from './state.js';
+import { player, field, warehouse, marketState, customers, deepCopy, activeBoosts } from './state.js';
 import { NUM_ROWS, NUM_COLS, store, cropTypes, upgrades, customerConfig, buildings } from './config.js';
 import { checkIngredients, getResearchCost } from './game.js';
 import { TOKEN_SHOP } from './tokenShop.js';
@@ -133,7 +133,10 @@ export const DOM = {
     tokenShopCloseBtn: document.querySelector('.token-shop-close'),
     tokenShopItemsGrid: document.getElementById('token-shop-items-grid'),
     tokenCount: document.getElementById('token-count'),
-    headerTokenCount: document.getElementById('header-token-count')
+    headerTokenCount: document.getElementById('header-token-count'),
+    // Active Boosts
+    activeBoostsPanel: document.getElementById('active-boosts-panel'),
+    activeBoostsList: document.getElementById('active-boosts-list')
 };
 
 let notificationTimeout;
@@ -1287,6 +1290,108 @@ window.addEventListener('scroll', () => {
     // Очищаємо всі tooltips при скролі
     clearAllTooltips();
 }, true);
+
+// ========== ACTIVE BOOSTS DISPLAY ==========
+
+/**
+ * Helper: Get boost icon
+ */
+function getBoostIcon(type) {
+    const icons = {
+        'growthSpeed': '⚡',
+        'doubleHarvest': '×2',
+        'luckyDay': '🍀'
+    };
+    return icons[type] || '✨';
+}
+
+/**
+ * Helper: Get boost name
+ */
+function getBoostName(type) {
+    const names = {
+        'growthSpeed': 'Growth Speed',
+        'doubleHarvest': 'Double Harvest',
+        'luckyDay': 'Lucky Day'
+    };
+    return names[type] || 'Active Boost';
+}
+
+/**
+ * Helper: Format time as MM:SS
+ */
+function formatBoostTime(ms) {
+    if (ms <= 0) return '0:00';
+    const totalSeconds = Math.ceil(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+}
+
+/**
+ * Render Active Boosts Panel
+ */
+export function renderActiveBoosts() {
+    if (!DOM.activeBoostsPanel || !DOM.activeBoostsList) return;
+
+    const now = Date.now();
+    const hasBoosts = activeBoosts.length > 0 || player.activeEffects?.doubleHarvestCharges > 0;
+
+    // Show/hide panel
+    if (hasBoosts) {
+        DOM.activeBoostsPanel.classList.remove('hidden');
+    } else {
+        DOM.activeBoostsPanel.classList.add('hidden');
+        return;
+    }
+
+    let html = '';
+
+    // Render time-based boosts
+    activeBoosts.forEach(boost => {
+        const timeLeft = (boost.startTime + boost.duration) - now;
+        if (timeLeft <= 0) return; // Skip expired boosts
+
+        const progress = Math.max(0, Math.min(100, (timeLeft / boost.duration) * 100));
+        const icon = getBoostIcon(boost.type);
+        const name = getBoostName(boost.type);
+        const timeStr = formatBoostTime(timeLeft);
+
+        html += `
+            <div class="boost-card ${boost.type}">
+                <div class="boost-name">
+                    <span class="boost-icon">${icon}</span>
+                    <span>${name}</span>
+                </div>
+                <div class="boost-time">⏱ ${timeStr} remaining</div>
+                <div class="boost-progress-bar">
+                    <div class="boost-progress-fill" style="width: ${progress}%"></div>
+                </div>
+            </div>
+        `;
+    });
+
+    // Render charge-based boosts (Double Harvest)
+    if (player.activeEffects?.doubleHarvestCharges > 0) {
+        const charges = player.activeEffects.doubleHarvestCharges;
+        html += `
+            <div class="boost-card double-harvest">
+                <div class="boost-name">
+                    <span class="boost-icon">×2</span>
+                    <span>Double Harvest</span>
+                </div>
+                <div class="boost-charges">⚡ ${charges} harvests remaining</div>
+            </div>
+        `;
+    }
+
+    // Show empty state if no boosts after filtering
+    if (!html) {
+        html = '<div class="boosts-empty">No active boosts</div>';
+    }
+
+    DOM.activeBoostsList.innerHTML = html;
+}
 
 // ========== TOKEN SHOP RENDERING ==========
 

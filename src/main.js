@@ -1,5 +1,5 @@
 import { setLanguage, t } from './modules/localization.js';
-import { DOM, scheduleUpdate, renderOrderTimers, toggleDebugMenu, renderProductionTimers, showNotification, updateTokenCounter } from './modules/ui.js';
+import { DOM, scheduleUpdate, renderOrderTimers, toggleDebugMenu, renderProductionTimers, showNotification, updateTokenCounter, renderActiveBoosts } from './modules/ui.js';
 import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder, forceGenerateOrder, increaseTrust, buyBuilding, startProduction, devAddAllProducts, toggleBuildingAutomation, addXp, devAddMoney, devAddLevel, buyTokenShopItem } from './modules/game.js';
 import { player, field, warehouse, saveGameState, clearGameState, loadGameState, activeBoosts } from './modules/state.js';
 import { leveling, store } from './modules/config.js';
@@ -237,6 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 scheduleUpdate('tokenShop');
                 scheduleUpdate('playerState');
                 scheduleUpdate('field');  // For field slot upgrades
+                renderActiveBoosts(); // Update boosts display immediately
                 saveGameState();
             }
         }
@@ -315,6 +316,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     scheduleUpdate('all');
     updateTokenCounter(); // Initialize token counter display
+    renderActiveBoosts(); // Initialize active boosts display
 
     gameLoopInterval = setInterval(() => {
         const changes = gameTick();
@@ -344,6 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
     orderTimerInterval = setInterval(() => {
         renderOrderTimers();
         renderProductionTimers();
+        renderActiveBoosts(); // Update boosts display every second
     }, 1000);
 
     // --- Debug ---
