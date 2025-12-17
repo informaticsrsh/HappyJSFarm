@@ -33,7 +33,7 @@
 
 **Пріоритет:** 🔴 CRITICAL
 **Час:** 1 година
-**Статус:** ❌ Не розпочато
+**Статус:** ✅ **ВИКОНАНО** (2025-12-18)
 
 **Проблема:**
 Бусти працюють в фоні, але гравець не бачить:
@@ -41,48 +41,49 @@
 - Скільки часу залишилось
 - Скільки charges для doubleHarvest
 
-**Що зробити:**
+**Що було зроблено:**
 
 1. **HTML (10 хв)**
-   - [ ] Створити `<div id="active-boosts-panel">` в `index.html`
-   - [ ] Додати в top-right corner
-   - [ ] Структура: header + list container
+   - ✅ Створено `<div id="active-boosts-panel">` в `index.html`
+   - ✅ Додано в top-right corner
+   - ✅ Структура: header + list container
 
 2. **CSS (15 хв)**
-   - [ ] Fixed position в top-right
-   - [ ] Напівпрозорий фон з blur
-   - [ ] Градієнтні backgrounds для boost cards
-   - [ ] Glow animation (pulse effect)
-   - [ ] Progress bar стилі
-   - [ ] Різні кольори для типів бустів:
-     - Growth Speed: зелений
-     - Lucky Day: золотий
-     - Double Harvest: рожевий
+   - ✅ Fixed position в top-right (top: 20px, right: 20px)
+   - ✅ Напівпрозорий фон з backdrop blur
+   - ✅ Градієнтні backgrounds для boost cards
+   - ✅ Pulse glow animation (2s ease-in-out infinite)
+   - ✅ Progress bar стилі
+   - ✅ Різні кольори для типів бустів:
+     - Growth Speed: зелений (#4CAF50 → #2e7d32)
+     - Lucky Day: золотий (#ffd700 → #ff8c00)
+     - Double Harvest: рожевий (#ff6b9d → #c44569)
 
 3. **JavaScript (25 хв)**
-   - [ ] Створити `renderActiveBoosts()` в `ui.js`
-   - [ ] Loop через `activeBoosts` array
-   - [ ] Розрахувати timeLeft для кожного
-   - [ ] Format time як "MM:SS"
-   - [ ] Розрахувати progress % для progress bar
-   - [ ] Показати charge-based boosts окремо
-   - [ ] Handle empty state ("No active boosts")
+   - ✅ Створено `renderActiveBoosts()` в `ui.js`
+   - ✅ Loop через `activeBoosts` array
+   - ✅ Розрахунок timeLeft для кожного
+   - ✅ Format time як "M:SS"
+   - ✅ Розрахунок progress % для progress bar
+   - ✅ Показ charge-based boosts окремо
+   - ✅ Handle empty state (auto-hide panel)
 
 4. **Helper Functions (10 хв)**
-   - [ ] `getBoostIcon(type)` - повертає emoji
-   - [ ] `getTotalBoostDuration(boost)` - повертає duration
-   - [ ] `formatTime(ms)` - конвертує в MM:SS
+   - ✅ `getBoostIcon(type)` - повертає emoji
+   - ✅ `getBoostName(type)` - повертає назву
+   - ✅ `formatBoostTime(ms)` - конвертує в M:SS
 
 5. **Auto-Update Timer (10 хв)**
-   - [ ] `setInterval(renderActiveBoosts, 1000)` в `main.js`
-   - [ ] Update кожну секунду
-   - [ ] Clear interval при page unload
+   - ✅ Додано `renderActiveBoosts()` до interval в `main.js`
+   - ✅ Update кожну секунду
+   - ✅ Викликається при завантаженні гри
+   - ✅ Викликається після покупки з Token Shop
 
-**Файли для редагування:**
-- `index.html` - panel HTML
-- `css/style.css` - стилі + animations
-- `src/modules/ui.js` - render function
-- `src/main.js` - timer setup
+**Файли відредаговано:**
+- `index.html` - додано panel HTML
+- `css/style.css` - додано 120+ рядків стилів + animations
+- `src/modules/ui.js` - додано renderActiveBoosts() + 3 helper functions
+- `src/main.js` - інтегровано в timer + imports
 
 **Критерії готовності:**
 - ✅ Panel видимий в top-right
@@ -90,9 +91,7 @@
 - ✅ Progress bars працюють
 - ✅ Різні типи бустів мають різні кольори
 - ✅ Charges показуються для doubleHarvest
-- ✅ Після закінчення буст зникає
-
-**Детальний код:** Див. `QUICK_FIXES_ROADMAP.md` - Fix #2
+- ✅ Після закінчення буст зникає (auto-hide)
 
 ---
 
@@ -405,10 +404,10 @@ Special Seeds реалізовані, але їх неможливо отрим�
 
 ### Критичні (Total: 3-4 год)
 - [x] Token Shop UI (2h) - ✅ 100% **DONE** (2025-12-18)
-- [ ] Active Boosts Display (1h) - 0%
+- [x] Active Boosts Display (1h) - ✅ 100% **DONE** (2025-12-18)
 - [x] Tooltips (30m) - ✅ 100% **DONE** (2025-12-18)
 
-**Overall Critical Progress: 2/3 (67%)**
+**Overall Critical Progress: 3/3 (100%)** 🎉
 
 ### Високий пріоритет (Total: 8-12 год)
 - [ ] Energy System (4h) - 0%
