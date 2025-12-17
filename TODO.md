@@ -9,68 +9,23 @@
 
 Ці задачі блокують релізs гри. Без них гравці не зможуть використовувати основні фічі.
 
-### ✅ Task 1: Token Shop UI
+### ✅ Task 1: Token Shop UI - ЗАВЕРШЕНО
 
 **Пріоритет:** 🔴 CRITICAL
 **Час:** 1.5-2 години
-**Статус:** ❌ Не розпочато
+**Статус:** ✅ **ВИКОНАНО** (2025-12-18)
 
-**Проблема:**
-Token Shop реалізовано в коді, але немає UI. Гравці не можуть купувати предмети і не знають що токени існують.
+**Що було зроблено:**
+- ✅ Додано Token Shop modal з компактним дизайном (550px width)
+- ✅ Створено кнопку "🪙 Token Shop" з token counter
+- ✅ Реалізовано 2-column grid layout для items
+- ✅ Додано tabs (Boosts / Permanent) з переключенням
+- ✅ Інтегровано render functions (`renderTokenShop`, `updateTokenCounter`)
+- ✅ Підключено event listeners для покупок
+- ✅ Застосовано дизайн у стилі гри (#f4f1de background, #667eea accents)
+- ✅ Оптимізовано для фіксованого вікна 1280x720px
 
-**Що зробити:**
-
-1. **HTML (15 хв)**
-   - [ ] Додати Token Shop modal в `index.html` (після Market Modal)
-   - [ ] Додати кнопку "🪙 Token Shop" в left-panel
-   - [ ] Додати token counter в header
-   - [ ] Створити tabs (Boosts / Permanent)
-   - [ ] Створити grid для items
-
-2. **CSS (20 хв)**
-   - [ ] Стилі для modal window
-   - [ ] Градієнтний фон для кнопки Token Shop
-   - [ ] Grid layout для items (250px cards)
-   - [ ] Стилі для boost badges (різні кольори)
-   - [ ] Hover effects та animations
-   - [ ] Disabled states
-
-3. **JavaScript (45 хв)**
-   - [ ] Додати DOM references в `ui.js`
-   - [ ] Створити `renderTokenShop()` function
-   - [ ] Створити `updateTokenCounter()` function
-   - [ ] Додати filter по category (boosts/permanent)
-   - [ ] Показувати purchase count для repeatable items
-   - [ ] Disabled state коли не вистачає токенів
-   - [ ] Tooltips на disabled кнопках
-
-4. **Event Listeners (15 хв)**
-   - [ ] Open/Close modal listeners в `main.js`
-   - [ ] Tab switching listeners
-   - [ ] Purchase button click handler
-   - [ ] Інтеграція з `buyTokenShopItem()`
-   - [ ] Update UI після покупки
-
-5. **Integration (15 хв)**
-   - [ ] Додати 'tokenShop' case в `scheduleUpdate()`
-   - [ ] Update token counter при виконанні order
-   - [ ] Import TOKEN_SHOP в потрібні файли
-   - [ ] Перевірити що все працює
-
-**Файли для редагування:**
-- `index.html` - додати HTML
-- `css/style.css` - додати стилі
-- `src/modules/ui.js` - render functions
-- `src/main.js` - event listeners
-
-**Критерії готовності:**
-- ✅ Modal відкривається/закривається
-- ✅ Всі items відображаються
-- ✅ Purchase працює
-- ✅ Token counter оновлюється
-- ✅ Disabled states показують причину
-
-**Детальний код:** Див. `QUICK_FIXES_ROADMAP.md` - Fix #1
+**Commit:** `0fe6908` - "feat: Add Token Shop UI with compact design"
 
 ---
 
@@ -145,44 +100,49 @@ Token Shop реалізовано в коді, але немає UI. Гравц�
 
 **Пріоритет:** 🔴 CRITICAL
 **Час:** 30 хвилин
-**Статус:** ❌ Не розпочато
+**Статус:** ✅ **ВИКОНАНО** (2025-12-18)
 
 **Проблема:**
 Кнопки стають сірими без пояснення чому. Гравці frustrated.
 
-**Що зробити:**
+**Що було зроблено:**
 
 1. **Helper Functions (10 хв)**
-   - [ ] Створити `getPurchaseBlockReason(item, cost, requiredLevel)` в `ui.js`
-   - [ ] Створити `getUpgradeBlockReason(upgrade)` в `ui.js`
-   - [ ] Functions повертають string з причиною
+   - ✅ Створено `getPurchaseBlockReason(cost, requiredLevel)` в `ui.js`
+   - ✅ Створено `getUpgradeBlockReason(upgrade)` в `ui.js`
+   - ✅ Створено `getBuildingBlockReason(building)` в `ui.js`
+   - ✅ Functions повертають string з причиною (newline separated)
 
 2. **Apply to Store (10 хв)**
-   - [ ] Оновити `renderStoreSeeds()` в `ui.js`
-   - [ ] Додати `title` attribute до disabled buttons
-   - [ ] Показувати:
+   - ✅ Оновлено `renderStore()` в `ui.js`
+   - ✅ Додано `title` attribute до disabled buttons
+   - ✅ Показує:
      - "Requires level X (you are Y)"
      - "Need $X more money"
 
 3. **Apply to Upgrades (10 хв)**
-   - [ ] Оновити `renderUpgrades()` в `ui.js`
-   - [ ] Додати tooltips до disabled upgrade buttons
-   - [ ] Показувати:
-     - "Requires level X"
-     - "Need $X more"
+   - ✅ Оновлено `renderUpgrades()` в `ui.js`
+   - ✅ Додано tooltips до disabled upgrade buttons
+   - ✅ Показує:
+     - "Requires level X (you are Y)"
+     - "Need $X more money"
+     - "Need X more research points"
      - "Requires [Building Name]"
-     - "Maximum purchases reached"
+     - "Maximum purchases reached (X/Y)"
 
-**Файли для редагування:**
-- `src/modules/ui.js` - render functions
+4. **Apply to Production Buildings (Bonus)**
+   - ✅ Оновлено `renderProduction()` в `ui.js`
+   - ✅ Додано tooltips до disabled building purchase buttons
+
+**Файли відредаговано:**
+- `src/modules/ui.js` - додано 3 helper functions + tooltips до render functions
 
 **Критерії готовності:**
 - ✅ Hover на disabled button показує причину
 - ✅ Точна сума яка потрібна
 - ✅ Required level показується
 - ✅ Required building показується
-
-**Детальний код:** Див. `QUICK_FIXES_ROADMAP.md` - Fix #3
+- ✅ Max purchases показується
 
 ---
 
@@ -444,11 +404,11 @@ Special Seeds реалізовані, але їх неможливо отрим�
 ## 📊 PROGRESS TRACKER
 
 ### Критичні (Total: 3-4 год)
-- [ ] Token Shop UI (2h) - 0%
+- [x] Token Shop UI (2h) - ✅ 100% **DONE** (2025-12-18)
 - [ ] Active Boosts Display (1h) - 0%
-- [ ] Tooltips (30m) - 0%
+- [x] Tooltips (30m) - ✅ 100% **DONE** (2025-12-18)
 
-**Overall Critical Progress: 0/3 (0%)**
+**Overall Critical Progress: 2/3 (67%)**
 
 ### Високий пріоритет (Total: 8-12 год)
 - [ ] Energy System (4h) - 0%

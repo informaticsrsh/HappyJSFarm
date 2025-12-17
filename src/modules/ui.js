@@ -167,32 +167,32 @@ export function showFloatingText(x, y, text, color = '#4CAF50') {
 export function createTooltip(element, getContent) {
     let tooltip = null;
     let isMouseOver = false;
-    
+
     const showTooltip = () => {
         if (tooltip) return;
         isMouseOver = true;
-        
+
         tooltip = document.createElement('div');
         tooltip.className = 'tooltip';
         tooltip.innerHTML = typeof getContent === 'function' ? getContent() : getContent;
         document.body.appendChild(tooltip);
         activeTooltips.add(tooltip); // Додаємо до глобального списку
-        
+
         const rect = element.getBoundingClientRect();
         const tooltipRect = tooltip.getBoundingClientRect();
-        
+
         let left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
         let top = rect.bottom + 5;
-        
+
         if (left < 5) left = 5;
         if (left + tooltipRect.width > window.innerWidth - 5) {
             left = window.innerWidth - tooltipRect.width - 5;
         }
-        
+
         tooltip.style.left = left + 'px';
         tooltip.style.top = top + 'px';
     };
-    
+
     const hideTooltip = () => {
         isMouseOver = false;
         if (tooltip) {
@@ -201,10 +201,85 @@ export function createTooltip(element, getContent) {
             tooltip = null;
         }
     };
-    
+
     element.addEventListener('mouseenter', showTooltip);
     element.addEventListener('mouseleave', hideTooltip);
     element.addEventListener('click', hideTooltip);
+}
+
+// Helper: Get reason why purchase is blocked
+function getPurchaseBlockReason(cost, requiredLevel) {
+    const reasons = [];
+
+    if (player.level < requiredLevel) {
+        reasons.push(`Requires level ${requiredLevel} (you are ${player.level})`);
+    }
+
+    if (player.money < cost) {
+        const needed = cost - player.money;
+        reasons.push(`Need $${needed} more money`);
+    }
+
+    return reasons.join('\n');
+}
+
+// Helper: Get reason why upgrade is blocked
+function getUpgradeBlockReason(upgrade) {
+    const reasons = [];
+
+    // Check level requirement
+    if (player.level < (upgrade.requiredLevel || 1)) {
+        reasons.push(`Requires level ${upgrade.requiredLevel || 1} (you are ${player.level})`);
+    }
+
+    // Check cost
+    if (upgrade.costCurrency === 'research_points') {
+        const rp = warehouse.research_points || 0;
+        if (rp < upgrade.cost) {
+            const needed = upgrade.cost - rp;
+            reasons.push(`Need ${needed} more research points`);
+        }
+    } else {
+        if (player.money < upgrade.cost) {
+            const needed = upgrade.cost - player.money;
+            reasons.push(`Need $${needed} more money`);
+        }
+    }
+
+    // Check building requirement
+    if (upgrade.requiresBuilding) {
+        const hasBuilding = player.buildings[upgrade.requiresBuilding]?.purchased;
+        if (!hasBuilding) {
+            const buildingName = buildings[upgrade.requiresBuilding]?.name || upgrade.requiresBuilding;
+            reasons.push(`Requires ${t(buildingName)}`);
+        }
+    }
+
+    // Check max purchases
+    if (upgrade.repeatable && upgrade.maxPurchases) {
+        const purchasedCount = upgrade.purchasedCount || 0;
+        if (purchasedCount >= upgrade.maxPurchases) {
+            reasons.push(`Maximum purchases reached (${purchasedCount}/${upgrade.maxPurchases})`);
+        }
+    }
+
+    return reasons.join('\n');
+}
+
+// Helper: Check if building purchase is blocked
+function getBuildingBlockReason(building) {
+    const reasons = [];
+
+    if (player.level < (building.requiredLevel || 1)) {
+        reasons.push(`Requires level ${building.requiredLevel || 1} (you are ${player.level})`);
+    }
+
+    if (player.money < building.cost) {
+        const needed = building.cost - player.money;
+        reasons.push(`Need $${needed} more money`);
+    }
+
+    return reasons.join('\n');
 }
 
 // НОВЕ: Calculate growth progress
@@ -454,6 +529,35 @@ function renderStore() {
             </div>
         `;
         DOM.storeItems.appendChild(itemDiv);
+
+        // Add tooltips to disabled buttons
+        setTimeout(() => {
+            const buttons = itemDiv.querySelectorAll('.buy-btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('mouseenter', function() {
+                    if (this.disabled) {
+                        const amount = this.dataset.amount;
+                        let quantity = 0;
+
+                        if (amount === 'max') {
+                            quantity = Math.floor(player.money / finalPrice);
+                        } else if (amount.endsWith('%')) {
+                            const percent = parseInt(amount) / 100;
+                            quantity = Math.floor((player.money * percent) / finalPrice);
+                        } else {
+                            quantity = parseInt(amount);
+                        }
+
+                        const totalCost = quantity * finalPrice;
+                        const reason = getPurchaseBlockReason(totalCost, item.requiredLevel || 1);
+
+                        if (reason) {
+                            this.title = reason;
+                        }
+                    }
+                });
+            });
+        }, 0);
     });
 }
 
@@ -821,6 +925,21 @@ function renderUpgrades(force = false) {
                 <p>${t(newUpgrade.description)}</p>
                 <div class="upgrade-actions">${buyButton}</div>
             `;
+
+            // Add tooltips to disabled upgrade buttons
+            setTimeout(() => {
+                const btn = itemDiv.querySelector('.buy-upgrade-btn');
+                if (btn) {
+                    btn.addEventListener('mouseenter', function() {
+                        if (this.disabled) {
+                            const reason = getUpgradeBlockReason(newUpgrade);
+                            if (reason) {
+                                this.title = reason;
+                            }
+                        }
+                    });
+                }
+            }, 0);
         }
     }
 }
@@ -867,6 +986,21 @@ function renderProduction(force = false) {
                 ${recipesHtml}
                 ${actionButton}
             `;
+
+            // Add tooltips to disabled building buttons
+            setTimeout(() => {
+                const btn = itemDiv.querySelector('.buy-building-btn');
+                if (btn) {
+                    btn.addEventListener('mouseenter', function() {
+                        if (this.disabled) {
+                            const reason = getBuildingBlockReason(building);
+                            if (reason) {
+                                this.title = reason;
+                            }
+                        }
+                    });
+                }
+            }, 0);
         }
     }
 }
