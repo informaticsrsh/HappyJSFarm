@@ -35,6 +35,7 @@
                 <button id="open-store-btn" class="btn">Store</button>
                 <button id="open-market-btn" class="btn">Market</button>
                 <button id="open-ref-btn" class="btn">Reference</button>
+                <button id="open-token-shop-btn" class="btn token-shop-btn">🪙 Token Shop (<span id="header-token-count">0</span>)</button>
             </div>
             <div id="warehouse-container">
                 <h2>Warehouse</h2>
@@ -82,6 +83,30 @@
             <span class="close-btn market-close">&times;</span>
             <h2>Market</h2>
             <div id="market-items"></div>
+        </div>
+    </div>
+
+    <!-- Token Shop Modal -->
+    <div id="token-shop-modal" class="modal">
+        <div class="modal-content token-shop-content">
+            <span class="close-btn token-shop-close">&times;</span>
+            <div class="token-shop-header">
+                <h2>🪙 Trust Token Shop</h2>
+                <div class="token-balance">
+                    You have: <span id="token-count" class="token-amount">0</span> 🪙
+                </div>
+            </div>
+
+            <!-- Categories -->
+            <div class="token-shop-tabs">
+                <button class="tab-btn active" data-category="boosts">⚡ Boosts</button>
+                <button class="tab-btn" data-category="permanent">➕ Permanent</button>
+            </div>
+
+            <!-- Items Grid -->
+            <div id="token-shop-items-grid" class="token-shop-grid">
+                <!-- Will be populated by JS -->
+            </div>
         </div>
     </div>
 

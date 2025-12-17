@@ -1,7 +1,7 @@
 import { setLanguage, t } from './modules/localization.js';
-import { DOM, scheduleUpdate, renderOrderTimers, toggleDebugMenu, renderProductionTimers, showNotification } from './modules/ui.js';
-import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder, forceGenerateOrder, increaseTrust, buyBuilding, startProduction, devAddAllProducts, toggleBuildingAutomation, addXp, devAddMoney, devAddLevel } from './modules/game.js';
-import { player, field, warehouse, saveGameState, clearGameState, loadGameState } from './modules/state.js';
+import { DOM, scheduleUpdate, renderOrderTimers, toggleDebugMenu, renderProductionTimers, showNotification, updateTokenCounter } from './modules/ui.js';
+import { plantSeed, harvestCrop, sellCrop, buyUpgrade, gameTick, buySeed, fulfillOrder, forceGenerateOrder, increaseTrust, buyBuilding, startProduction, devAddAllProducts, toggleBuildingAutomation, addXp, devAddMoney, devAddLevel, buyTokenShopItem } from './modules/game.js';
+import { player, field, warehouse, saveGameState, clearGameState, loadGameState, activeBoosts } from './modules/state.js';
 import { leveling, store } from './modules/config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -10,6 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let orderTimerInterval;
 
     loadGameState();
+
+    // НОВИЙ: Глобальний доступ до функцій для тестування через консоль
+    window.buyTokenShopItem = buyTokenShopItem;
+    window.activeBoosts = activeBoosts;
+    window.player = player;
+    window.warehouse = warehouse;
     // --- Event Listeners ---
     DOM.fieldGrid.addEventListener('click', (e) => {
         if (e.target.classList.contains('plot')) {
@@ -203,6 +209,39 @@ document.addEventListener('DOMContentLoaded', () => {
         DOM.marketModal.style.display = 'none';
     });
 
+    // Token Shop Modal
+    DOM.openTokenShopBtn.addEventListener('click', () => {
+        DOM.tokenShopModal.style.display = 'block';
+        scheduleUpdate('tokenShop');
+    });
+    DOM.tokenShopCloseBtn.addEventListener('click', () => {
+        DOM.tokenShopModal.style.display = 'none';
+    });
+
+    // Token Shop Tabs
+    document.querySelector('.token-shop-tabs').addEventListener('click', (e) => {
+        if (e.target.classList.contains('tab-btn')) {
+            document.querySelectorAll('.token-shop-tabs .tab-btn').forEach(btn =>
+                btn.classList.remove('active')
+            );
+            e.target.classList.add('active');
+            scheduleUpdate('tokenShop');
+        }
+    });
+
+    // Token Shop Purchase
+    DOM.tokenShopItemsGrid.addEventListener('click', (e) => {
+        if (e.target.classList.contains('buy-token-item-btn')) {
+            const itemId = e.target.dataset.itemId;
+            if (buyTokenShopItem(itemId)) {
+                scheduleUpdate('tokenShop');
+                scheduleUpdate('playerState');
+                scheduleUpdate('field');  // For field slot upgrades
+                saveGameState();
+            }
+        }
+    });
+
     DOM.marketItems.addEventListener('click', (e) => {
         if (!e.target.classList.contains('sell-btn')) return;
 
@@ -244,6 +283,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target == DOM.marketModal) {
             DOM.marketModal.style.display = 'none';
         }
+        if (e.target == DOM.tokenShopModal) {
+            DOM.tokenShopModal.style.display = 'none';
+        }
         if (e.target == DOM.levelUpModal) {
             DOM.levelUpModal.style.display = 'none';
         }
@@ -259,6 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 scheduleUpdate('store');
                 scheduleUpdate('production');
                 scheduleUpdate('upgrades');
+                updateTokenCounter(); // Update token display
                 saveGameState();
             }
         }
@@ -271,6 +314,8 @@ document.addEventListener('DOMContentLoaded', () => {
         player.xpToNextLevel = initialLevel.xpRequired;
     }
     scheduleUpdate('all');
+    updateTokenCounter(); // Initialize token counter display
+
     gameLoopInterval = setInterval(() => {
         const changes = gameTick();
         if (changes.growth) {

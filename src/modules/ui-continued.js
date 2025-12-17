@@ -1,11 +1,30 @@
 // Це продовження ui.js для функцій render
 
 function finishRenderOrders(orderDiv, customerId, newOrder, config, icon, haveAmount, timeLeft) {
+    // НОВИЙ: Визначити тип замовлення
+    const orderType = newOrder.type || 'standard';
+    let typeBadge = '';
+    let typeClass = '';
+    
+    if (orderType === 'express') {
+        typeBadge = '<span class="order-type-badge express" title="' + t('order_type_express_desc') + '">⚡ ' + t('order_type_express') + '</span>';
+        typeClass = 'order-express';
+    } else if (orderType === 'bulk') {
+        typeBadge = '<span class="order-type-badge bulk" title="' + t('order_type_bulk_desc') + '">📦📦📦 ' + t('order_type_bulk') + '</span>';
+        typeClass = 'order-bulk';
+    }
+    
+    // Додати клас до orderDiv
+    if (typeClass) {
+        orderDiv.classList.add(typeClass);
+    }
+    
     orderDiv.innerHTML = `
+        ${typeBadge}
         <div class="order-info">
             <strong>${t(config.name)}</strong> (${t('order_trust')}: ${customers[customerId].trust})<br>
             ${t('order_wants')}: ${icon} ${newOrder.amount} ${t(newOrder.crop)} (${t('order_have')}: ${haveAmount}/${newOrder.amount})<br>
-            ${t('order_reward')}: $${newOrder.reward}<br>
+            ${t('order_reward')}: ${newOrder.reward}<br>
             ${t('order_time_left')}: <span class="order-timer">${formatTime(timeLeft)}</span>
         </div>
         <button class="btn fulfill-btn" data-customer-id="${customerId}" ${haveAmount >= newOrder.amount ? '' : 'disabled'}>${t('btn_fulfill')}</button>

@@ -2,6 +2,7 @@ import { t } from './localization.js';
 import { player, field, warehouse, marketState, customers, deepCopy } from './state.js';
 import { NUM_ROWS, NUM_COLS, store, cropTypes, upgrades, customerConfig, buildings } from './config.js';
 import { checkIngredients, getResearchCost } from './game.js';
+import { TOKEN_SHOP } from './tokenShop.js';
 
 // --- State Cache ---
 let oldState = {};
@@ -51,6 +52,9 @@ function renderLoop() {
                         break;
                     case 'store':
                         renderStore();
+                        break;
+                    case 'tokenShop':
+                        renderTokenShop();
                         break;
                 }
             });
@@ -122,7 +126,14 @@ export const DOM = {
     levelUpUnlocks: document.getElementById('level-up-unlocks'),
     levelUpCloseBtn: document.querySelector('.level-up-close'),
     debugControls: document.getElementById('debug-controls'),
-    playerStats: document.getElementById('player-stats')
+    playerStats: document.getElementById('player-stats'),
+    // Token Shop
+    openTokenShopBtn: document.getElementById('open-token-shop-btn'),
+    tokenShopModal: document.getElementById('token-shop-modal'),
+    tokenShopCloseBtn: document.querySelector('.token-shop-close'),
+    tokenShopItemsGrid: document.getElementById('token-shop-items-grid'),
+    tokenCount: document.getElementById('token-count'),
+    headerTokenCount: document.getElementById('header-token-count')
 };
 
 let notificationTimeout;
@@ -1142,5 +1153,78 @@ window.addEventListener('scroll', () => {
     // Очищаємо всі tooltips при скролі
     clearAllTooltips();
 }, true);
+
+// ========== TOKEN SHOP RENDERING ==========
+
+/**
+ * Render Token Shop items
+ */
+export function renderTokenShop() {
+    if (!DOM.tokenShopItemsGrid) return;
+
+    const items = Object.values(TOKEN_SHOP);
+    const activeCategory = getActiveTokenCategory();
+
+    let html = '';
+
+    items.forEach(item => {
+        // Filter by category
+        if (activeCategory === 'boosts' && item.type !== 'boost') return;
+        if (activeCategory === 'permanent' && item.type !== 'permanent') return;
+
+        const canAfford = player.trustTokens >= item.cost;
+        const purchaseCount = player.tokenShopPurchases?.[item.id] || 0;
+        const maxedOut = item.maxPurchases && purchaseCount >= item.maxPurchases;
+        const isPurchasable = canAfford && !maxedOut;
+
+        let buttonText = 'Buy';
+        if (maxedOut) buttonText = 'Max Purchases';
+        else if (!canAfford) buttonText = `Need ${item.cost - player.trustTokens} more`;
+
+        html += `
+            <div class="token-shop-item ${!isPurchasable ? 'disabled' : ''}"
+                 data-type="${item.type}"
+                 data-item-id="${item.id}">
+                <div class="item-icon">${item.icon}</div>
+                <div class="item-name">${t(item.name)}</div>
+                <div class="item-desc">${t(item.description)}</div>
+                <div class="item-cost">💎 ${item.cost} tokens</div>
+                ${item.maxPurchases ? `
+                    <div class="purchase-count">
+                        Purchased: ${purchaseCount}/${item.maxPurchases}
+                    </div>
+                ` : ''}
+                <button class="buy-token-item-btn"
+                        data-item-id="${item.id}"
+                        ${!isPurchasable ? 'disabled' : ''}
+                        title="${!canAfford ? `Need ${item.cost - player.trustTokens} more tokens` : ''}">
+                    ${buttonText}
+                </button>
+            </div>
+        `;
+    });
+
+    DOM.tokenShopItemsGrid.innerHTML = html || '<p style="text-align: center; grid-column: 1/-1;">No items available</p>';
+
+    // Update token counter
+    updateTokenCounter();
+}
+
+/**
+ * Update token count display
+ */
+export function updateTokenCounter() {
+    const tokenCount = player.trustTokens || 0;
+    if (DOM.tokenCount) DOM.tokenCount.textContent = tokenCount;
+    if (DOM.headerTokenCount) DOM.headerTokenCount.textContent = tokenCount;
+}
+
+/**
+ * Get active token shop category
+ */
+function getActiveTokenCategory() {
+    const activeTab = document.querySelector('.token-shop-tabs .tab-btn.active');
+    return activeTab ? activeTab.dataset.category : 'boosts';
+}
 
 requestAnimationFrame(renderLoop);

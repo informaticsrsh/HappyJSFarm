@@ -37,8 +37,8 @@ export const cropTypes = {
         growthTime: 2000, // ms per stage
         visuals: ['🌱', '🌿', '🌾'],
         yieldRange: [1, 3],
-        maxPrice: 12,
-        minPrice: 5,
+        maxPrice: 8,  // REBALANCED: was 12 (-33%)
+        minPrice: 3,  // REBALANCED: was 5
         priceRecoveryRate: 20000, // ms to recover 1 price point
         salesVolumeForPriceDrop: 10, // amount of sales to drop price by 1
         xpValue: 1,
@@ -50,8 +50,8 @@ export const cropTypes = {
         growthTime: 2667,
         visuals: ['🌱', '🌿', '🥕'],
         yieldRange: [1, 2],
-        maxPrice: 20,
-        minPrice: 10,
+        maxPrice: 14,  // REBALANCED: was 20 (-30%)
+        minPrice: 7,   // REBALANCED: was 10
         priceRecoveryRate: 24000,
         salesVolumeForPriceDrop: 8,
         xpValue: 2,
@@ -63,8 +63,8 @@ export const cropTypes = {
         growthTime: 3333,
         visuals: ['🌱', '🌿', '🍅'],
         yieldRange: [2, 4],
-        maxPrice: 40,
-        minPrice: 20,
+        maxPrice: 28,  // REBALANCED: was 40 (-30%)
+        minPrice: 14,  // REBALANCED: was 20
         priceRecoveryRate: 30000,
         salesVolumeForPriceDrop: 5,
         xpValue: 4,
@@ -76,8 +76,8 @@ export const cropTypes = {
         growthTime: 4000,
         visuals: ['🌱', '🌿', '🥔'],
         yieldRange: [3, 6],
-        maxPrice: 60,
-        minPrice: 30,
+        maxPrice: 42,  // REBALANCED: was 60 (-30%)
+        minPrice: 21,  // REBALANCED: was 30
         priceRecoveryRate: 40000,
         salesVolumeForPriceDrop: 3,
         xpValue: 6,
@@ -85,8 +85,8 @@ export const cropTypes = {
     },
     'bread': {
         icon: '🍞',
-        maxPrice: 40,
-        minPrice: 20,
+        maxPrice: 28,  // REBALANCED: was 40 (-30%)
+        minPrice: 14,  // REBALANCED: was 20
         priceRecoveryRate: 20000,
         salesVolumeForPriceDrop: 5,
         xpValue: 8,
@@ -94,8 +94,8 @@ export const cropTypes = {
     },
     'milk': {
         icon: '🥛',
-        maxPrice: 50,
-        minPrice: 25,
+        maxPrice: 35,  // REBALANCED: was 50 (-30%)
+        minPrice: 18,  // REBALANCED: was 25
         priceRecoveryRate: 48000,
         salesVolumeForPriceDrop: 4,
         xpValue: 10,
@@ -103,8 +103,8 @@ export const cropTypes = {
     },
     'bacon': {
         icon: '🥓',
-        maxPrice: 70,
-        minPrice: 35,
+        maxPrice: 49,  // REBALANCED: was 70 (-30%)
+        minPrice: 25,  // REBALANCED: was 35
         priceRecoveryRate: 60000,
         salesVolumeForPriceDrop: 3,
         xpValue: 12,
@@ -112,8 +112,8 @@ export const cropTypes = {
     },
     'sandwich': {
         icon: '🥪',
-        maxPrice: 180,
-        minPrice: 100,
+        maxPrice: 126,  // REBALANCED: was 180 (-30%)
+        minPrice: 70,   // REBALANCED: was 100
         priceRecoveryRate: 80000,
         salesVolumeForPriceDrop: 2,
         xpValue: 25,
@@ -121,8 +121,8 @@ export const cropTypes = {
     },
     'cereal': {
         icon: '🥣',
-        maxPrice: 220,
-        minPrice: 120,
+        maxPrice: 154,  // REBALANCED: was 220 (-30%)
+        minPrice: 84,   // REBALANCED: was 120
         priceRecoveryRate: 100000,
         salesVolumeForPriceDrop: 1,
         xpValue: 35,
@@ -130,8 +130,8 @@ export const cropTypes = {
     },
     'tomato_juice': {
         icon: '🥤',
-        maxPrice: 80,
-        minPrice: 40,
+        maxPrice: 56,  // REBALANCED: was 80 (-30%)
+        minPrice: 28,  // REBALANCED: was 40
         priceRecoveryRate: 60000,
         salesVolumeForPriceDrop: 4,
         xpValue: 15,
@@ -139,8 +139,8 @@ export const cropTypes = {
     },
     'carrot_juice': {
         icon: '🧃',
-        maxPrice: 70,
-        minPrice: 30,
+        maxPrice: 49,  // REBALANCED: was 70 (-30%)
+        minPrice: 21,  // REBALANCED: was 30
         priceRecoveryRate: 48000,
         salesVolumeForPriceDrop: 5,
         xpValue: 12,
@@ -152,8 +152,8 @@ export const cropTypes = {
         growthTime: 9333,
         visuals: ['🌱', '🌿', '🍓'],
         yieldRange: [2, 5],
-        maxPrice: 100,
-        minPrice: 50,
+        maxPrice: 70,  // REBALANCED: was 100 (-30%)
+        minPrice: 35,  // REBALANCED: was 50
         priceRecoveryRate: 72000,
         salesVolumeForPriceDrop: 3,
         xpValue: 15,
@@ -165,8 +165,8 @@ export const cropTypes = {
         growthTime: 16000,
         visuals: ['🌱', '🌿', '🔵'],
         yieldRange: [3, 6],
-        maxPrice: 130,
-        minPrice: 60,
+        maxPrice: 91,  // REBALANCED: was 130 (-30%)
+        minPrice: 42,  // REBALANCED: was 60
         priceRecoveryRate: 88000,
         salesVolumeForPriceDrop: 2,
         xpValue: 20,
@@ -174,8 +174,8 @@ export const cropTypes = {
     },
     'strawberry_jam': {
         icon: '🍓🍯',
-        maxPrice: 250,
-        minPrice: 150,
+        maxPrice: 175,  // REBALANCED: was 250 (-30%)
+        minPrice: 105,  // REBALANCED: was 150
         priceRecoveryRate: 100000,
         salesVolumeForPriceDrop: 2,
         xpValue: 40,
@@ -183,8 +183,8 @@ export const cropTypes = {
     },
     'blueberry_jam': {
         icon: '🔵🍯',
-        maxPrice: 300,
-        minPrice: 180,
+        maxPrice: 210,  // REBALANCED: was 300 (-30%)
+        minPrice: 126,  // REBALANCED: was 180
         priceRecoveryRate: 120000,
         salesVolumeForPriceDrop: 1,
         xpValue: 50,
@@ -196,8 +196,8 @@ export const cropTypes = {
         growthTime: 18000,
         visuals: ['🌱', '🌿', '🌽'],
         yieldRange: [4, 8],
-        maxPrice: 160,
-        minPrice: 80,
+        maxPrice: 112,  // REBALANCED: was 160 (-30%)
+        minPrice: 56,   // REBALANCED: was 80
         priceRecoveryRate: 100000,
         salesVolumeForPriceDrop: 2,
         xpValue: 25,
@@ -209,8 +209,8 @@ export const cropTypes = {
         growthTime: 20000,
         visuals: ['🌱', '🌿', '🌶️'],
         yieldRange: [5, 10],
-        maxPrice: 200,
-        minPrice: 100,
+        maxPrice: 140,  // REBALANCED: was 200 (-30%)
+        minPrice: 70,   // REBALANCED: was 100
         priceRecoveryRate: 120000,
         salesVolumeForPriceDrop: 1,
         xpValue: 30,
@@ -218,8 +218,8 @@ export const cropTypes = {
     },
     'taco': {
         icon: '🌮',
-        maxPrice: 400,
-        minPrice: 250,
+        maxPrice: 280,  // REBALANCED: was 400 (-30%)
+        minPrice: 175,  // REBALANCED: was 250
         priceRecoveryRate: 140000,
         salesVolumeForPriceDrop: 1,
         xpValue: 60,
@@ -227,8 +227,8 @@ export const cropTypes = {
     },
     'salad': {
         icon: '🥗',
-        maxPrice: 500,
-        minPrice: 300,
+        maxPrice: 350,  // REBALANCED: was 500 (-30%)
+        minPrice: 210,  // REBALANCED: was 300
         priceRecoveryRate: 160000,
         salesVolumeForPriceDrop: 1,
         xpValue: 75,
@@ -236,8 +236,8 @@ export const cropTypes = {
     },
     'cheese': {
         icon: '🧀',
-        maxPrice: 120,
-        minPrice: 60,
+        maxPrice: 84,  // REBALANCED: was 120 (-30%)
+        minPrice: 42,  // REBALANCED: was 60
         priceRecoveryRate: 60000,
         salesVolumeForPriceDrop: 3,
         xpValue: 18,
@@ -245,8 +245,8 @@ export const cropTypes = {
     },
     'pizza': {
         icon: '🍕',
-        maxPrice: 600,
-        minPrice: 350,
+        maxPrice: 420,  // REBALANCED: was 600 (-30%)
+        minPrice: 245,  // REBALANCED: was 350
         priceRecoveryRate: 180000,
         salesVolumeForPriceDrop: 1,
         xpValue: 100,
@@ -254,8 +254,8 @@ export const cropTypes = {
     },
     'fruit_tart': {
         icon: '🍰',
-        maxPrice: 700,
-        minPrice: 400,
+        maxPrice: 490,  // REBALANCED: was 700 (-30%)
+        minPrice: 280,  // REBALANCED: was 400
         priceRecoveryRate: 200000,
         salesVolumeForPriceDrop: 1,
         xpValue: 120,
@@ -544,12 +544,13 @@ export const buildings = {
 export const customerConfig = {
     orderLifetime: 480000, // ms
     trustLevels: [
-        // size is a time range in minutes for order generation
-        { level: 1, trust: 0, size: [3, 5], reward: 1.1, trustReward: 20, trustPenalty: 15 },
-        { level: 2, trust: 100, size: [5, 10], reward: 1.15, trustReward: 25, trustPenalty: 20 },
-        { level: 3, trust: 200, size: [10, 15], reward: 1.2, trustReward: 30, trustPenalty: 25 },
-        { level: 4, trust: 300, size: [15, 20], reward: 1.25, trustReward: 40, trustPenalty: 35 },
-        { level: 5, trust: 400, size: [20, 30], reward: 1.3, trustReward: 50, trustPenalty: 50 },
+        // REBALANCED: reward multipliers increased significantly
+        // xpBonus and tokenReward added as new rewards
+        { level: 1, trust: 0, size: [3, 5], reward: 1.8, xpBonus: 50, tokenReward: 1, trustReward: 40, trustPenalty: 15 },
+        { level: 2, trust: 100, size: [5, 10], reward: 2.0, xpBonus: 75, tokenReward: 2, trustReward: 50, trustPenalty: 20 },
+        { level: 3, trust: 200, size: [10, 15], reward: 2.2, xpBonus: 100, tokenReward: 3, trustReward: 60, trustPenalty: 25 },
+        { level: 4, trust: 300, size: [15, 20], reward: 2.5, xpBonus: 150, tokenReward: 5, trustReward: 80, trustPenalty: 35 },
+        { level: 5, trust: 400, size: [20, 30], reward: 3.0, xpBonus: 200, tokenReward: 10, trustReward: 100, trustPenalty: 50 },
     ],
     customers: {
         'npc1': {

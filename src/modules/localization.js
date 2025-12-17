@@ -276,7 +276,55 @@ const locales = {
         "status_missing_resources": "Missing Resources",
         "status_idle": "Idle",
         "alert_not_enough_ingredients_generic": "Not enough ingredients to start production.",
-        "money": "money"
+        "money": "money",
+        
+        // Order Types (NEW)
+        "order_type_standard": "Standard Order",
+        "order_type_standard_desc": "Regular order with normal time limit",
+        "order_type_express": "⚡ EXPRESS ORDER",
+        "order_type_express_desc": "Urgent order with 2 minutes deadline and +50% reward!",
+        "order_type_bulk": "Bulk Order",
+        "order_type_bulk_desc": "Large order requiring 3x items with +30% reward",
+        "order_expiring": "EXPIRING SOON!",
+        "tokens": "tokens",
+        
+        // Special Seeds (NEW)
+        "alert_special_seed_depleted": "This special seed has no uses left!",
+        "alert_no_seeds": "You don't have any of these seeds!",
+        "special_eternal_harvest": "Eternal crop harvested! It will grow again!",
+        "special_golden_wheat": "Golden Wheat",
+        "special_golden_wheat_desc": "Grows 30% faster, +1 yield, sells for 1.5x price",
+        "special_instant_carrot": "Instant Carrot",
+        "special_instant_carrot_desc": "Grows 90% faster! Limited to 5 uses",
+        "special_giant_tomato": "Giant Tomato",
+        "special_giant_tomato_desc": "Double yield and XP, but grows 30% slower",
+        "special_premium_potato": "Premium Potato",
+        "special_premium_potato_desc": "Always high yield, sells for 2x price",
+        "special_rainbow_berry": "Rainbow Berry",
+        "special_rainbow_berry_desc": "LEGENDARY: Sells for 3x price!",
+        "special_mystic_blueberry": "Mystic Blueberry",
+        "special_mystic_blueberry_desc": "LEGENDARY: 20% chance for bonus tokens!",
+        "special_eternal_corn": "Eternal Corn",
+        "special_eternal_corn_desc": "LEGENDARY: Never disappears after harvest!",
+        "rarity_common": "Common",
+        "rarity_rare": "Rare",
+        "rarity_epic": "Epic",
+        "rarity_legendary": "Legendary",
+        
+        // Token Shop (NEW)
+        "alert_not_enough_tokens": "Not enough Trust Tokens!",
+        "alert_token_purchase_success": "Purchased: {item}!",
+        "boost_expired": "{name} has expired",
+        "token_boost_growth_1h": "⚡ Growth Boost (1h)",
+        "token_boost_growth_1h_desc": "All crops grow 50% faster for 1 hour",
+        "token_boost_double_harvest": "×2 Double Harvest",
+        "token_boost_double_harvest_desc": "Your next 5 harvests will give double yield",
+        "token_boost_lucky_day": "🍀 Lucky Day",
+        "token_boost_lucky_day_desc": "For 30 minutes: 2x XP, +2 yield, 1.5x prices",
+        "token_permanent_field_slot": "➕ Extra Field Slot",
+        "token_permanent_field_slot_desc": "Permanently add one more plot to your farm",
+        "token_permanent_warehouse": "📦 Warehouse Upgrade",
+        "token_permanent_warehouse_desc": "Increase warehouse capacity by 100"
     },
     "uk": {
         "title": "Моя Ферма",
@@ -546,7 +594,55 @@ const locales = {
         "status_missing_resources": "Відсутні ресурси",
         "status_idle": "Очікування",
         "alert_not_enough_ingredients_generic": "Недостатньо інгредієнтів для початку виробництва.",
-        "money": "гроші"
+        "money": "гроші",
+        
+        // Order Types (НОВЕ)
+        "order_type_standard": "Стандартне замовлення",
+        "order_type_standard_desc": "Звичайне замовлення з нормальним лімітом часу",
+        "order_type_express": "⚡ ЕКСПРЕС-ЗАМОВЛЕННЯ",
+        "order_type_express_desc": "Термінове замовлення на 2 хвилини з +50% винагородою!",
+        "order_type_bulk": "Оптове замовлення",
+        "order_type_bulk_desc": "Велике замовлення на в 3 рази більше товарів з +30% винагородою",
+        "order_expiring": "ЗАКІНЧУЄТЬСЯ!",
+        "tokens": "токенів",
+        
+        // Special Seeds (НОВЕ)
+        "alert_special_seed_depleted": "У цього особливого насіння не залишилося використань!",
+        "alert_no_seeds": "У вас немає таких насінь!",
+        "special_eternal_harvest": "Вічний врожай зібрано! Він виросте знову!",
+        "special_golden_wheat": "Золота пшениця",
+        "special_golden_wheat_desc": "Росте на 30% швидше, +1 врожай, продається за 1.5x ціну",
+        "special_instant_carrot": "Миттєва морква",
+        "special_instant_carrot_desc": "Росте на 90% швидше! Обмежено 5 використаннями",
+        "special_giant_tomato": "Гігантський помідор",
+        "special_giant_tomato_desc": "Подвійний врожай та XP, але росте на 30% повільніше",
+        "special_premium_potato": "Преміум картопля",
+        "special_premium_potato_desc": "Завжди високий врожай, продається за 2x ціну",
+        "special_rainbow_berry": "Веселкова ягода",
+        "special_rainbow_berry_desc": "ЛЕГЕНДАРНА: Продається за 3x ціну!",
+        "special_mystic_blueberry": "Містична чорниця",
+        "special_mystic_blueberry_desc": "ЛЕГЕНДАРНА: 20% шанс бонусних токенів!",
+        "special_eternal_corn": "Вічна кукурудза",
+        "special_eternal_corn_desc": "ЛЕГЕНДАРНА: Ніколи не зникає після збору!",
+        "rarity_common": "Звичайне",
+        "rarity_rare": "Рідкісне",
+        "rarity_epic": "Епічне",
+        "rarity_legendary": "Легендарне",
+        
+        // Token Shop (НОВЕ)
+        "alert_not_enough_tokens": "Недостатньо токенів довіри!",
+        "alert_token_purchase_success": "Куплено: {item}!",
+        "boost_expired": "{name} закінчився",
+        "token_boost_growth_1h": "⚡ Буст росту (1год)",
+        "token_boost_growth_1h_desc": "Усі культури ростуть на 50% швидше протягом 1 години",
+        "token_boost_double_harvest": "×2 Подвійний збір",
+        "token_boost_double_harvest_desc": "Наступні 5 зборів дадуть подвійний врожай",
+        "token_boost_lucky_day": "🍀 Щасливий день",
+        "token_boost_lucky_day_desc": "Протягом 30 хвилин: ×2 XP, +2 врожай, ×1.5 ціни",
+        "token_permanent_field_slot": "➕ Додаткова клітинка",
+        "token_permanent_field_slot_desc": "Назавжди додати ще одну клітинку на ферму",
+        "token_permanent_warehouse": "📦 Покращення складу",
+        "token_permanent_warehouse_desc": "Збільшити місткість складу на 100"
     }
 };
 

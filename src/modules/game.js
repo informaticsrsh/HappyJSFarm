@@ -1,7 +1,10 @@
 import { t } from './localization.js';
-import { player, field, warehouse, marketState, customers, saveGameState } from './state.js';
+import { player, field, warehouse, marketState, customers, saveGameState, activeBoosts } from './state.js';
 import { cropTypes, upgrades, NUM_COLS, store, customerConfig, buildings, leveling } from './config.js';
 import { showNotification, showLevelUpModal, showSimpleLevelUpModal, scheduleUpdate, showFloatingText } from './ui.js';
+import { determineOrderType, calculateOrderReward, calculateOrderAmount, ORDER_TYPES } from './orderTypes.js';
+import { SPECIAL_SEEDS, createSpecialCrop, hasSpecialSeed } from './specialSeeds.js';
+import { TOKEN_SHOP, getTokenShopItem, canAffordTokenItem } from './tokenShop.js';  // НОВИЙ
 
 let lastSaveTime = 0;
 const SAVE_INTERVAL = 5000; // 5 seconds
@@ -60,6 +63,14 @@ export function plantSeed(r, c, cropToPlant = null) {
         return false;
     }
 
+    // НОВИЙ: Перевірити, чи це особливе насіння
+    const isSpecialSeed = SPECIAL_SEEDS[seedName];
+    
+    if (isSpecialSeed) {
+        // Посадити особливе насіння
+        return plantSpecialSeed(r, c, seedName);
+    }
+
     const cropName = isAuto ? cropToPlant : seedName.replace('_seed', '');
     const crop = cropTypes[cropName];
     if (player.level < (crop.requiredLevel || 1)) {
@@ -72,6 +83,7 @@ export function plantSeed(r, c, cropToPlant = null) {
         field[r][c].crop = cropName;
         field[r][c].growthStage = 0;
         field[r][c].stageStartTime = Date.now();
+        field[r][c].isSpecial = false;  // НОВИЙ
 
         if (!isAuto && warehouse[seedName] === 0) {
             player.selectedSeed = null; // Deselect if none left
@@ -81,26 +93,191 @@ export function plantSeed(r, c, cropToPlant = null) {
     return false;
 }
 
+// НОВИЙ: Посадити особливе насіння
+export function plantSpecialSeed(r, c, seedId) {
+    const specialSeed = SPECIAL_SEEDS[seedId];
+    if (!specialSeed) {
+        console.error(`Unknown special seed: ${seedId}`);
+        return false;
+    }
+    
+    // Перевірити рівень
+    if (player.level < (specialSeed.requiredLevel || 1)) {
+        showNotification(t('alert_seed_locked'));
+        return false;
+    }
+    
+    // Перевірити limited uses
+    if (specialSeed.effects.limitedUses) {
+        const usesKey = `${seedId}_uses`;
+        if (!warehouse[usesKey]) {
+            warehouse[usesKey] = specialSeed.effects.limitedUses;
+        }
+        if (warehouse[usesKey] <= 0) {
+            showNotification(t('alert_special_seed_depleted'));
+            return false;
+        }
+    }
+    
+    // Перевірити наявність насіння
+    if ((warehouse[seedId] || 0) <= 0) {
+        showNotification(t('alert_no_seeds'));
+        return false;
+    }
+    
+    // Посадити
+    warehouse[seedId]--;
+    
+    // Зменшити uses якщо limited
+    if (specialSeed.effects.limitedUses) {
+        warehouse[`${seedId}_uses`]--;
+    }
+    
+    field[r][c].crop = seedId;  // Зберігаємо ID особливого насіння
+    field[r][c].growthStage = 0;
+    field[r][c].stageStartTime = Date.now();
+    field[r][c].isSpecial = true;
+    field[r][c].specialSeedId = seedId;
+    
+    if (warehouse[seedId] === 0 && player.selectedSeed === seedId) {
+        player.selectedSeed = null;
+    }
+    
+    return true;
+}
+
+// НОВИЙ: Зібрати особливу культуру
+export function harvestSpecialCrop(r, c) {
+    const cell = field[r][c];
+    const specialSeed = SPECIAL_SEEDS[cell.specialSeedId];
+    if (!specialSeed) return false;
+    
+    // Створити особливу конфігурацію культури
+    const specialCrop = createSpecialCrop(cell.specialSeedId);
+    if (!specialCrop) return false;
+    
+    // Перевірити, чи готова до збору
+    if (cell.growthStage < specialCrop.visuals.length - 1) {
+        showNotification(t('alert_not_ready_harvest'));
+        return false;
+    }
+    
+    // Обчислити врожай
+    const [min, max] = specialCrop.yieldRange;
+    let yieldAmount = Math.floor(Math.random() * (max - min + 1)) + min;
+    yieldAmount += (player.upgrades.yieldBonus + player.npcBonuses.yieldBonus);
+
+    // НОВИЙ: Перевірити Lucky Day boost для yield
+    const luckyBoost = activeBoosts.find(b => b.type === 'luckyDay');
+    if (luckyBoost) {
+        yieldAmount += luckyBoost.multipliers.yield;  // +2 extra yield
+    }
+
+    // Double harvest boost
+    if (player.activeEffects.doubleHarvestCharges > 0) {
+        yieldAmount *= 2;
+        player.activeEffects.doubleHarvestCharges--;
+        const plotElement = document.querySelector(`[data-row="${r}"][data-col="${c}"]`);
+        if (plotElement) {
+            const rect = plotElement.getBoundingClientRect();
+            showFloatingText(rect.left + rect.width / 2, rect.top - 20, '×2 BOOST!', '#FFD700');
+        }
+    }
+
+    // Додати врожай
+    const baseCropName = specialSeed.baseCrop;
+    warehouse[baseCropName] = (warehouse[baseCropName] || 0) + yieldAmount;
+
+    // НОВИЙ: XP з Lucky Day множником
+    let xpMultiplier = 1.0;
+    if (luckyBoost) {
+        xpMultiplier = luckyBoost.multipliers.xp;  // 2x XP
+    }
+    const xpGained = Math.floor(specialCrop.xpValue * yieldAmount * xpMultiplier);
+    addXp(xpGained);
+    
+    // Бонусні токени (для Mystic Blueberry)
+    if (specialCrop.bonusTokenChance && Math.random() < specialCrop.bonusTokenChance) {
+        player.trustTokens++;
+        showFloatingText(window.innerWidth / 2, 100, '+1 🪙 Bonus Token!', '#FFD700');
+    }
+    
+    // Floating text
+    const plotElement = document.querySelector(`[data-row="${r}"][data-col="${c}"]`);
+    if (plotElement) {
+        const rect = plotElement.getBoundingClientRect();
+        showFloatingText(rect.left + rect.width / 2, rect.top, `+${yieldAmount} ${specialCrop.icon}`, '#FFD700');
+        showFloatingText(rect.left + rect.width / 2 + 30, rect.top + 10, `+${specialCrop.xpValue * yieldAmount} XP`, '#FFC107');
+    }
+    
+    // Спеціальна логіка: Eternal Corn (нескінченний врожай)
+    if (specialCrop.infiniteHarvest) {
+        // Повернути до початкового стану росту
+        cell.growthStage = 0;
+        cell.stageStartTime = Date.now();
+        showNotification('♾️ ' + t('special_eternal_harvest'));
+    } else {
+        // Звичайний збір - очистити клітинку
+        cell.crop = null;
+        cell.growthStage = 0;
+        cell.stageStartTime = 0;
+        cell.isSpecial = false;
+        cell.specialSeedId = null;
+    }
+    
+    return true;
+}
+
 export function harvestCrop(r, c) {
     const cell = field[r][c];
     if (!cell.crop) return false;
+
+    // НОВИЙ: Перевірити, чи це особлива культура
+    if (cell.isSpecial && cell.specialSeedId) {
+        return harvestSpecialCrop(r, c);
+    }
 
     const crop = cropTypes[cell.crop];
     if (cell.growthStage >= crop.visuals.length - 1) {
         const [min, max] = crop.yieldRange;
         let yieldAmount = Math.floor(Math.random() * (max - min + 1)) + min;
         yieldAmount += (player.upgrades.yieldBonus + player.npcBonuses.yieldBonus);
+
+        // НОВИЙ: Перевірити Lucky Day boost для yield
+        const luckyBoost = activeBoosts.find(b => b.type === 'luckyDay');
+        if (luckyBoost) {
+            yieldAmount += luckyBoost.multipliers.yield;  // +2 extra yield
+        }
+
+        // НОВИЙ: Перевірити double harvest boost
+        if (player.activeEffects.doubleHarvestCharges > 0) {
+            yieldAmount *= 2;
+            player.activeEffects.doubleHarvestCharges--;
+            const plotElement = document.querySelector(`[data-row="${r}"][data-col="${c}"]`);
+            if (plotElement) {
+                const rect = plotElement.getBoundingClientRect();
+                showFloatingText(rect.left + rect.width / 2, rect.top - 20, '×2 BOOST!', '#FFD700');
+            }
+        }
+
         warehouse[cell.crop] = (warehouse[cell.crop] || 0) + yieldAmount;
-        
+
+        // НОВИЙ: Розрахувати XP з Lucky Day множником
+        let xpMultiplier = 1.0;
+        if (luckyBoost) {
+            xpMultiplier = luckyBoost.multipliers.xp;  // 2x XP
+        }
+        const xpGained = Math.floor(crop.xpValue * yieldAmount * xpMultiplier);
+
         // НОВЕ: Показати floating text
         const plotElement = document.querySelector(`[data-row="${r}"][data-col="${c}"]`);
         if (plotElement) {
             const rect = plotElement.getBoundingClientRect();
             showFloatingText(rect.left + rect.width / 2, rect.top, `+${yieldAmount} ${crop.icon}`, '#4CAF50');
-            showFloatingText(rect.left + rect.width / 2 + 30, rect.top + 10, `+${crop.xpValue * yieldAmount} XP`, '#FFC107');
+            showFloatingText(rect.left + rect.width / 2 + 30, rect.top + 10, `+${xpGained} XP`, '#FFC107');
         }
-        
-        addXp(crop.xpValue * yieldAmount);
+
+        addXp(xpGained);
         cell.crop = null;
         cell.growthStage = 0;
         cell.stageStartTime = 0;
@@ -125,7 +302,14 @@ export function sellCrop(cropName, amount) {
 
         // Calculate sale price based on the current market price
         const priceBonus = player.npcBonuses.priceBonus[cropName] || 0;
-        const salePrice = market.currentPrice + player.upgrades.marketBonus + player.npcBonuses.marketBonus + priceBonus;
+        let salePrice = market.currentPrice + player.upgrades.marketBonus + player.npcBonuses.marketBonus + priceBonus;
+
+        // НОВИЙ: Застосувати Lucky Day price boost
+        const luckyBoost = activeBoosts.find(b => b.type === 'luckyDay');
+        if (luckyBoost) {
+            salePrice = Math.floor(salePrice * luckyBoost.multipliers.price);  // 1.5x price
+        }
+
         const totalSalePrice = salePrice * amount;
 
         // Update player money and warehouse
@@ -368,7 +552,18 @@ function updateCropGrowth(now) {
 
             // Handle growth for all plots (manual and auto)
             if (cell.crop && cell.growthStage < cropTypes[cell.crop].visuals.length - 1) {
-                const timeToGrow = cropTypes[cell.crop].growthTime * player.upgrades.growthMultiplier * player.npcBonuses.growthMultiplier;
+                // НОВИЙ: Перевірити активний growth speed boost
+                let growthBoostMultiplier = 1.0;
+                const growthBoost = activeBoosts.find(b => b.type === 'growthSpeed');
+                if (growthBoost) {
+                    growthBoostMultiplier = 1 - growthBoost.value; // 0.5 -> 0.5x time (2x speed)
+                }
+
+                const timeToGrow = cropTypes[cell.crop].growthTime
+                    * player.upgrades.growthMultiplier
+                    * player.npcBonuses.growthMultiplier
+                    * growthBoostMultiplier;  // НОВИЙ: застосувати boost
+
                 if (now - cell.stageStartTime >= timeToGrow) {
                     cell.growthStage++;
                     cell.stageStartTime = now;
@@ -529,16 +724,29 @@ function generateOrder(customerId) {
         return;
     }
 
-    const amount = Math.max(1, Math.floor(targetTimeMs / timePerUnit));
+    // НОВИЙ: Визначити тип замовлення
+    const orderType = determineOrderType(player.level);
+
+    // Обчислити базову кількість
+    const baseAmount = Math.max(1, Math.floor(targetTimeMs / timePerUnit));
+    
+    // НОВИЙ: Застосувати amountMultiplier для типу замовлення
+    const finalAmount = calculateOrderAmount(baseAmount, orderType.id);
 
     const marketPrice = marketState[randomCrop].currentPrice;
-    const reward = Math.round(marketPrice * amount * tier.reward);
+    
+    // НОВИЙ: Базова винагорода з trust tier
+    const baseReward = Math.round(marketPrice * finalAmount * tier.reward);
+    
+    // НОВИЙ: Застосувати rewardMultiplier для типу замовлення
+    const finalReward = calculateOrderReward(baseReward, orderType.id);
 
     customer.order = {
         crop: randomCrop,
-        amount,
-        reward,
-        expiresAt: Date.now() + customerConfig.orderLifetime
+        amount: finalAmount,
+        reward: finalReward,
+        type: orderType.id,  // НОВИЙ: зберігаємо тип замовлення
+        expiresAt: Date.now() + orderType.duration  // НОВИЙ: використовуємо duration з типу
     };
 }
 
@@ -633,7 +841,8 @@ export function gameTick() {
         growth: updateCropGrowth(now),
         market: updateMarketPrices(now),
         orders: updateOrders(now),
-        production: updateProduction(now)
+        production: updateProduction(now),
+        boosts: updateActiveBoosts(now)  // НОВИЙ
     };
 
     if (now - lastSaveTime > SAVE_INTERVAL) {
@@ -654,18 +863,34 @@ export function fulfillOrder(customerId) {
     }
 
     if (warehouse[order.crop] >= order.amount) {
+        // Обчислити XP: базове + за ітеми + бонус з замовлення
         const xpForItems = (cropTypes[order.crop].xpValue || 0) * order.amount;
-        addXp(10 + xpForItems); // Base XP for order + XP for items
+        const tier = getCustomerTier(customer.trust);
+        const totalXP = 10 + xpForItems + (tier.xpBonus || 0);  // НОВИЙ: + xpBonus
+        addXp(totalXP);
 
+        // Відняти ітеми та дати гроші
         warehouse[order.crop] -= order.amount;
         player.money += order.reward;
 
-        const tier = getCustomerTier(customer.trust);
+        // НОВИЙ: Дати Trust Tokens
+        const tokensEarned = tier.tokenReward || 0;
+        if (tokensEarned > 0) {
+            player.trustTokens += tokensEarned;
+            showFloatingText(window.innerWidth / 2, 100, `+${tokensEarned} 🪙 Trust Tokens!`, '#FFD700');
+        }
+
+        // Збільшити trust
         customer.trust += tier.trustReward;
 
         customer.order = null;
         updateNpcBonuses();
-        showNotification(t('alert_order_fulfilled', { name: customerConfig.customers[customerId].name }));
+        
+        // Показати повідомлення з деталями
+        showNotification(
+            t('alert_order_fulfilled', { name: customerConfig.customers[customerId].name }) +
+            ` (+${order.reward}, +${totalXP} XP, +${tokensEarned} tokens)`
+        );
         return true;
     } else {
         showNotification(t('alert_not_enough_crops'));
@@ -710,4 +935,122 @@ export function devAddMoney() {
 export function devAddLevel() {
     addXp(player.xpToNextLevel - player.xp);
     return true;
+}
+
+// ========== TOKEN SHOP ==========
+
+/**
+ * Купити предмет з Token Shop
+ */
+export function buyTokenShopItem(itemId) {
+    const item = getTokenShopItem(itemId);
+    if (!item) {
+        console.error(`Unknown token shop item: ${itemId}`);
+        return false;
+    }
+    
+    // Перевірити вартість
+    if (player.trustTokens < item.cost) {
+        showNotification(t('alert_not_enough_tokens'));
+        return false;
+    }
+    
+    // Перевірити maxPurchases
+    if (item.maxPurchases) {
+        const purchased = player.tokenShopPurchases[itemId] || 0;
+        if (purchased >= item.maxPurchases) {
+            showNotification(t('alert_max_purchases'));
+            return false;
+        }
+    }
+    
+    // Відняти токени
+    player.trustTokens -= item.cost;
+    
+    // Застосувати ефект
+    applyTokenShopEffect(item);
+    
+    // Зберегти покупку
+    if (item.maxPurchases) {
+        player.tokenShopPurchases[itemId] = (player.tokenShopPurchases[itemId] || 0) + 1;
+    }
+    
+    showNotification(t('alert_token_purchase_success', { item: t(item.name) }));
+    return true;
+}
+
+/**
+ * Застосувати ефект предмета
+ */
+function applyTokenShopEffect(item) {
+    const effect = item.effect;
+    
+    switch (effect.type) {
+        case 'growthSpeed':
+            activeBoosts.push({
+                type: 'growthSpeed',
+                value: effect.value,
+                expiresAt: Date.now() + effect.duration,
+                name: item.name
+            });
+            showFloatingText(window.innerWidth / 2, 100, `⚡ ${t(item.name)} активовано!`, '#4CAF50');
+            break;
+            
+        case 'doubleHarvest':
+            player.activeEffects.doubleHarvestCharges += effect.charges;
+            showFloatingText(window.innerWidth / 2, 100, `×2 ${effect.charges} зборів!`, '#FFD700');
+            break;
+            
+        case 'luckyDay':
+            activeBoosts.push({
+                type: 'luckyDay',
+                multipliers: effect.multipliers,
+                expiresAt: Date.now() + effect.duration,
+                name: item.name
+            });
+            showFloatingText(window.innerWidth / 2, 100, `🍀 ${t(item.name)} активовано!`, '#FFD700');
+            break;
+            
+        case 'addFieldSlot':
+            // Додати клітинку до першого рядка, де є місце
+            for (let r = 0; r < field.length; r++) {
+                if (field[r].length < NUM_COLS + 10) {  // Макс +10 слотів
+                    field[r].push({
+                        crop: null,
+                        growthStage: 0,
+                        stageStartTime: 0,
+                        autoCrop: null,
+                        isSpecial: false
+                    });
+                    showFloatingText(window.innerWidth / 2, 100, `➕ Нова клітинка!`, '#4CAF50');
+                    scheduleUpdate('field');
+                    break;
+                }
+            }
+            break;
+            
+        case 'warehouseCapacity':
+            // Косметична покупка (немає лімітів зараз)
+            showFloatingText(window.innerWidth / 2, 100, `📦 +${effect.value} місця!`, '#4CAF50');
+            break;
+    }
+}
+
+/**
+ * Оновити активні бусти (викликати у gameTick)
+ */
+export function updateActiveBoosts(now) {
+    let changed = false;
+    
+    // Видалити прострочені бусти
+    for (let i = activeBoosts.length - 1; i >= 0; i--) {
+        const boost = activeBoosts[i];
+        if (boost.expiresAt && now > boost.expiresAt) {
+            showNotification(t('boost_expired', { name: t(boost.name) }));
+            activeBoosts.splice(i, 1);
+            changed = true;
+        }
+    }
+    
+    return changed;
 }
