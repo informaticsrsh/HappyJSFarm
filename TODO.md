@@ -595,12 +595,9 @@ Story-driven engagement. Multi-step quests з narrative. Велика нагор
 
 ## 🔵 НИЗЬКИЙ ПРІОРИТЕТ - Nice-to-have
 
-### Task 15: Harvest Mini-games
-### Task 16: Trading Post
-### Task 17: Cloud Save
-### Task 18: Seasonal Events
-### Task 19: Market Speculation
-### Task 20: Crop Combo System
+### Task 15: Trading Post
+**Час:** 2-3 години
+**Що:** NPC merchant з rotating inventory, купівля рідкісних seeds/items за premium ціну
 
 ---
 
@@ -727,16 +724,24 @@ Story-driven engagement. Multi-step quests з narrative. Велика нагор
 
 ---
 
-## 💡 FEATURE IDEAS (Backlog)
+## 💡 FEATURE IDEAS (Backlog - Далеке майбутнє)
 
+**Cosmetic/Visual:**
 - Seasonal skins для crops
-- Pet system (помічники на фермі)
 - Farm decorations
-- NPC visitors з random quests
-- Cooking system (recipes з multiple ingredients)
-- Trading caravan (купівля рідкісних items)
-- Farm expansion (купівля нових земель)
-- Multiplayer co-op (допомагати friends)
+- Day/night cycle з lighting effects
+- Animal animations
+
+**Gameplay:**
+- Pet system (farm helpers з bonuses)
+- Farm expansion (купівля додаткових земель)
+- Crop breeding/genetics (create new varieties)
+- Tool upgrades (faster planting/harvesting)
+
+**Social (якщо взагалі):**
+- Leaderboards (optional, non-competitive)
+- Share farm screenshots
+- Gift seeds to friends (async)
 
 ---
 
